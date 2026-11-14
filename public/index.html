@@ -582,6 +582,9 @@
         }
 
         .issue-group-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: var(--text-sm);
             font-weight: 600;
             color: var(--text-muted);
@@ -589,20 +592,33 @@
             border-bottom: 1px solid var(--border);
         }
 
+        .issue-group-count {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-muted);
+            background: var(--surface-muted);
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+
         /* Issue Item */
         .issue {
-            display: grid;
-            grid-template-columns: 20px 1fr auto;
-            gap: var(--space-3);
-            align-items: start;
-            padding: var(--space-3);
+            --sev: var(--border-strong);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            padding: 16px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: var(--radius-sm);
+            border-left: 4px solid var(--sev);
+            border-radius: var(--radius-md);
             transition: all 200ms ease;
             cursor: default;
             position: relative;
         }
+
+        .issue.error { --sev: var(--error); }
+        .issue.warning { --sev: var(--warning); }
 
         .issue:hover {
             background: var(--surface-muted);
@@ -621,26 +637,36 @@
             color: var(--text-muted);
         }
 
-        /* Custom Checkbox */
-        .checkbox-wrapper {
-            position: absolute;
-            top: var(--space-3);
-            right: var(--space-3);
+        /* Resolvido: checkbox com rótulo, no rodapé do card */
+        .issue-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .issue-resolve {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--text-muted);
+            cursor: pointer;
+            user-select: none;
         }
 
         .issue-checkbox {
-            width: 24px;
-            height: 24px;
+            width: 18px;
+            height: 18px;
+            margin: 0;
             cursor: pointer;
             accent-color: var(--primary);
-            margin: 0;
-            padding: 0;
         }
 
-        .issue-checkbox::-webkit-outer-spin-button,
-        .issue-checkbox::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+        .issue-checkbox:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+            border-radius: 4px;
         }
 
         .issue-icon {
@@ -684,6 +710,93 @@
             box-shadow: 0 0 8px rgba(22, 163, 74, 0.3);
         }
 
+        /* Cabeçalho do card: ícone + título/localização + etiqueta */
+        .issue-header {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+        }
+
+        .issue-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .issue.resolvido .issue-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .issue .done-glyph {
+            display: none;
+        }
+
+        .issue.resolvido .done-glyph {
+            display: inline;
+        }
+
+        .issue.resolvido .sev-glyph {
+            display: none;
+        }
+
+        /* Expandir detalhes */
+        .issue-details summary {
+            list-style: none;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--primary);
+            border-radius: 4px;
+        }
+
+        .issue-details summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .issue-details summary::after {
+            content: '▾';
+            transition: transform 200ms ease;
+        }
+
+        .issue-details[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        .issue-details summary:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        .issue-details-body {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .issue-values {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        .issue-value-label {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .issue-value-text {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
         .issue-content {
             display: flex;
             flex-direction: column;
@@ -697,7 +810,61 @@
         }
 
         .issue-location {
+            align-self: flex-start;
+            font-size: 13px;
+            color: var(--text-muted);
+            background: var(--surface-muted);
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+
+        .sumario-nota {
             font-size: var(--text-xs);
+            color: var(--text-muted);
+            margin-top: var(--space-2);
+        }
+
+        .sumario-sugestao {
+            margin-top: var(--space-3);
+        }
+
+        .sumario-texto {
+            white-space: pre-wrap;
+            font-family: inherit;
+            font-size: var(--text-sm);
+            background: var(--surface-muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: var(--space-3);
+            max-height: 260px;
+            overflow: auto;
+            margin: var(--space-2) 0;
+        }
+
+        .issue-trecho {
+            font-size: 13px;
+            font-style: italic;
+            color: var(--text-muted);
+            background: var(--surface-muted);
+            border-left: 3px solid var(--border-strong);
+            border-radius: 0 8px 8px 0;
+            padding: 8px 12px;
+        }
+
+        .issue-trecho-ref {
+            display: block;
+            font-style: normal;
+            font-size: 12px;
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+
+        .issue-trecho + .issue-trecho {
+            margin-top: 8px;
+        }
+
+        .issue-trecho-extra {
+            font-size: 12px;
             color: var(--text-muted);
         }
 
@@ -719,11 +886,6 @@
             color: var(--primary);
         }
 
-        .issue-badge.fixable::before {
-            content: '✓';
-            font-weight: 700;
-        }
-
         .issue:hover .issue-badge.fixable {
             background: var(--primary);
             color: white;
@@ -732,10 +894,6 @@
         .issue-badge.manual {
             background: var(--surface-muted);
             color: var(--text-muted);
-        }
-
-        .issue-badge.manual::before {
-            content: '→';
         }
 
         .empty-state {
@@ -1053,12 +1211,8 @@
                 grid-template-columns: 1fr;
             }
 
-            .issue {
-                grid-template-columns: 20px 1fr;
-            }
-
-            .issue-badge {
-                grid-column: 2 / 3;
+            .issue-values {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1709,9 +1863,15 @@
 
                 <div class="actions" id="rightPanelActions">
                     <button class="btn btn-primary" id="fixButton">Corrigir</button>
+                    <button class="btn btn-secondary" id="sumarioButton">Sugerir sumário</button>
                     <button class="btn btn-primary" id="downloadButton" style="display: none;">Baixar</button>
                     <button class="btn btn-secondary" id="exportChecklistBtn">Exportar checklist</button>
                     <button class="btn btn-secondary" id="newAnalysisBtn">Nova análise</button>
+                </div>
+                <div class="sumario-sugestao" id="sumarioSugestao" hidden>
+                    <p class="sumario-nota">Sugestão montada a partir dos títulos numerados. Copie e cole no Word, e confira os números de página no próprio Word.</p>
+                    <pre class="sumario-texto" id="sumarioTexto"></pre>
+                    <button class="btn btn-secondary" id="copiarSumario">Copiar sumário</button>
                 </div>
             </div>
 
@@ -2151,6 +2311,77 @@
                 .toLowerCase();
         }
 
+        const ORDEM_CATEGORIAS = ['Margens', 'Fonte', 'Espaçamento', 'Referências', 'Organização', 'Recuo'];
+
+        function ordenarIssues(issues) {
+            const posicao = categoria => {
+                const i = ORDEM_CATEGORIAS.indexOf(categoria);
+                return i === -1 ? ORDEM_CATEGORIAS.length : i;
+            };
+            const gravidade = severity => (severity === 'error' ? 0 : 1);
+            return [...issues].sort((a, b) =>
+                posicao(a.categoria) - posicao(b.categoria) || gravidade(a.severity) - gravidade(b.severity));
+        }
+
+        function agruparPorCategoria(issues) {
+            const grupos = new Map();
+            issues.forEach((issue, idx) => {
+                const categoria = issue.categoria || 'Outros';
+                if (!grupos.has(categoria)) grupos.set(categoria, []);
+                grupos.get(categoria).push({ ...issue, idx, globalIdx: idx });
+            });
+            return grupos;
+        }
+
+        function escaparHtml(texto) {
+            return String(texto)
+                .replace(/&/g, '&amp;')
+                .replace(/</g, '&lt;')
+                .replace(/>/g, '&gt;')
+                .replace(/"/g, '&quot;');
+        }
+
+        function trechosDoItem(issue, limite = 3) {
+            const trechos = issue.trechos || [];
+            if (!trechos.length) {
+                return issue.text_preview ? `<div class="issue-trecho">${escaparHtml(issue.text_preview)}</div>` : '';
+            }
+            const mostrarRef = trechos.length > 1;
+            const mostrados = trechos.slice(0, limite).map(t =>
+                `<div class="issue-trecho">${mostrarRef ? `<span class="issue-trecho-ref">Parágrafo ${t.paragrafo}</span>` : ''}${escaparHtml(t.texto)}</div>`).join('');
+            const restantes = trechos.length - limite;
+            return mostrados + (restantes > 0 ? `<div class="issue-trecho-extra">e mais ${restantes}</div>` : '');
+        }
+
+        function valoresHtml(issue) {
+            if (!issue.esperado && !issue.encontrado) return '';
+            const bloco = (rotulo, valor) => `
+                <div>
+                    <div class="issue-value-label">${rotulo}</div>
+                    <div class="issue-value-text">${escaparHtml(valor || '—')}</div>
+                </div>`;
+            return `<div class="issue-values">${bloco('Esperado', issue.esperado)}${bloco('Encontrado', issue.encontrado)}</div>`;
+        }
+
+        // Tudo que não é título/localização/etiqueta fica em "Ver detalhes"
+        function detalhesDoItem(issue) {
+            const valores = valoresHtml(issue);
+            const trechos = trechosDoItem(issue);
+            if (!valores && !trechos) return '';
+            return `
+                <details class="issue-details">
+                    <summary>Ver detalhes</summary>
+                    <div class="issue-details-body">${valores}${trechos}</div>
+                </details>`;
+        }
+
+        function valoresDoItem(issue) {
+            const partes = [];
+            if (issue.esperado) partes.push(`Esperado: ${issue.esperado}`);
+            if (issue.encontrado) partes.push(`Encontrado: ${issue.encontrado}`);
+            return partes.join(' · ');
+        }
+
         function gerarConteudoMarkdown() {
             const hoje = new Date();
             const dataFormatada = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
@@ -2162,19 +2393,12 @@
             conteudo += `Analisado em ${dataFormatada} · Perfil: NBR 14724\n`;
             conteudo += `Total: ${issuesFull.length} · Resolvidos: ${resolvidos} · Pendentes: ${pendentes}\n\n`;
 
-            // Agrupar por categoria
-            const grupos = {};
-            issuesFull.forEach((issue, idx) => {
-                const categoria = issue.severity === 'error' ? 'Erros' : 'Avisos';
-                if (!grupos[categoria]) grupos[categoria] = [];
-                grupos[categoria].push({ ...issue, idx });
-            });
-
-            Object.entries(grupos).forEach(([categoria, issues]) => {
+            agruparPorCategoria(issuesFull).forEach((issues, categoria) => {
                 conteudo += `## ${categoria}\n`;
                 issues.forEach(issue => {
                     const marcado = issuesResolvidos.includes(issue.idx) ? '[x]' : '[ ]';
-                    conteudo += `- ${marcado} ${issue.title}. ${issue.location}. Esperado: ${issue.description}. Norma: ${issue.severity === 'error' ? 'NBR 14724' : 'NBR 14724'}\n`;
+                    const valores = valoresDoItem(issue);
+                    conteudo += `- ${marcado} ${issue.title}. ${issue.location}. ${valores ? valores + '. ' : ''}Norma: NBR 14724\n`;
                 });
                 conteudo += '\n';
             });
@@ -2194,22 +2418,18 @@
             conteudo += `Total: ${issuesFull.length} | Resolvidos: ${resolvidos} | Pendentes: ${pendentes}\n`;
             conteudo += '='.repeat(80) + '\n\n';
 
-            // Agrupar por categoria
-            const grupos = {};
-            issuesFull.forEach((issue, idx) => {
-                const categoria = issue.severity === 'error' ? 'ERROS' : 'AVISOS';
-                if (!grupos[categoria]) grupos[categoria] = [];
-                grupos[categoria].push({ ...issue, idx });
-            });
-
-            Object.entries(grupos).forEach(([categoria, issues]) => {
-                conteudo += `${categoria}\n`;
+            agruparPorCategoria(issuesFull).forEach((issues, categoria) => {
+                conteudo += `${categoria.toUpperCase()}\n`;
                 conteudo += '-'.repeat(80) + '\n';
                 issues.forEach((issue, i) => {
                     const status = issuesResolvidos.includes(issue.idx) ? '[✓ RESOLVIDO]' : '[  PENDENTE ]';
+                    const valores = valoresDoItem(issue);
                     conteudo += `\n${i + 1}. ${status} ${issue.title}\n`;
                     conteudo += `   Local: ${issue.location}\n`;
-                    conteudo += `   Esperado: ${issue.description}\n`;
+                    (issue.trechos || []).forEach(t => {
+                        conteudo += `   Parágrafo ${t.paragrafo}: “${t.texto}”\n`;
+                    });
+                    if (valores) conteudo += `   ${valores}\n`;
                     conteudo += `   Norma: NBR 14724\n`;
                 });
                 conteudo += '\n' + '='.repeat(80) + '\n\n';
@@ -2381,32 +2601,28 @@
                 fixButton.disabled = true;
                 fixButtonLeft.disabled = true;
             } else {
-                issuesFull = result.issues;
+                issuesFull = ordenarIssues(result.issues);
                 checklistControls.style.display = 'flex';
 
-                const groupedIssues = {};
-                result.issues.forEach((issue, globalIdx) => {
-                    const category = issue.severity === 'error' ? 'Erros' : 'Avisos';
-                    if (!groupedIssues[category]) groupedIssues[category] = [];
-                    groupedIssues[category].push({ ...issue, globalIdx });
-                });
-
-                issuesList.innerHTML = Object.entries(groupedIssues).map(([category, issues], idx) => `
+                issuesList.innerHTML = Array.from(agruparPorCategoria(issuesFull).entries()).map(([category, issues], idx) => `
                     <div class="issue-group" style="animation-delay: ${idx * 100}ms">
-                        <div class="issue-group-title">${category} (${issues.length})</div>
+                        <div class="issue-group-title"><span>${category}</span><span class="issue-group-count">${issues.length}</span></div>
                         ${issues.map((issue, iIdx) => `
                             <div class="issue ${issue.severity}" data-issue-idx="${issue.globalIdx}" style="animation-delay: ${(idx * 100) + (iIdx * 50)}ms">
-                                <div class="checkbox-wrapper">
-                                    <input type="checkbox" class="issue-checkbox" data-idx="${issue.globalIdx}" ${issuesResolvidos.includes(issue.globalIdx) ? 'checked' : ''} />
+                                <div class="issue-header">
+                                    <div class="issue-icon"><span class="sev-glyph">${issue.severity === 'error' ? '●' : '◆'}</span><span class="done-glyph">✓</span></div>
+                                    <div class="issue-main">
+                                        <div class="issue-title">${escaparHtml(issue.title)}</div>
+                                        <span class="issue-location">${issue.severity === 'error' ? 'Erro' : 'Aviso'} · ${escaparHtml(issue.location || '')}</span>
+                                    </div>
+                                    <span class="issue-badge ${issue.fixable ? 'fixable' : 'manual'}">${issue.fixable ? 'Corrigível' : 'Revisão manual'}</span>
                                 </div>
-                                <div class="issue-icon">${issue.severity === 'error' ? '●' : '◆'}</div>
-                                <div class="issue-content">
-                                    <div class="issue-title">${issue.title}</div>
-                                    <div class="issue-location">${issue.description} • ${issue.location}</div>
-                                    ${issue.text_preview ? `<div style="font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-2); font-style: italic;">"${issue.text_preview}"</div>` : ''}
-                                </div>
-                                <div class="issue-badge ${issue.fixable ? 'fixable' : 'manual'}">
-                                    ${issue.fixable ? 'Auto' : 'Manual'}
+                                ${detalhesDoItem(issue)}
+                                <div class="issue-footer">
+                                    <label class="issue-resolve">
+                                        <input type="checkbox" class="issue-checkbox" data-idx="${issue.globalIdx}" ${issuesResolvidos.includes(issue.globalIdx) ? 'checked' : ''} />
+                                        <span>Marcar como resolvido</span>
+                                    </label>
                                 </div>
                             </div>
                         `).join('')}
@@ -2554,6 +2770,52 @@
 
         newAnalysisBtn.addEventListener('click', resetForm);
         fixButtonLeft.addEventListener('click', () => fixButton.click());
+
+        const sumarioButton = document.getElementById('sumarioButton');
+        const sumarioSugestao = document.getElementById('sumarioSugestao');
+        const sumarioTexto = document.getElementById('sumarioTexto');
+        const copiarSumario = document.getElementById('copiarSumario');
+
+        sumarioButton.addEventListener('click', async () => {
+            if (!currentFile) return;
+            sumarioButton.disabled = true;
+
+            try {
+                const formData = new FormData();
+                formData.append('file', currentFile);
+
+                const response = await fetch('/api/sugestao-sumario', { method: 'POST', body: formData });
+                const dados = await response.json().catch(() => ({}));
+
+                if (!response.ok) {
+                    showToast(dados.message || 'Erro ao sugerir sumário', 'error');
+                } else {
+                    sumarioTexto.textContent = dados.entradas
+                        .map(e => '    '.repeat(e.nivel - 1) + e.texto)
+                        .join('\n');
+                    sumarioSugestao.hidden = false;
+                }
+            } catch (error) {
+                showToast('Erro ao sugerir sumário: ' + error.message, 'error');
+            }
+
+            sumarioButton.disabled = false;
+        });
+
+        copiarSumario.addEventListener('click', async () => {
+            const texto = sumarioTexto.textContent;
+            try {
+                await navigator.clipboard.writeText(texto);
+                showToast('✓ Sumário copiado', 'success');
+            } catch (error) {
+                const intervalo = document.createRange();
+                intervalo.selectNodeContents(sumarioTexto);
+                const selecao = window.getSelection();
+                selecao.removeAllRanges();
+                selecao.addRange(intervalo);
+                showToast('Selecione o texto e copie com Ctrl+C', 'info');
+            }
+        });
         newAnalysisButtonLeft.addEventListener('click', resetForm);
 
         function resetForm() {
