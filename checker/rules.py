@@ -121,7 +121,7 @@ class ABNTRules:
                 description=f'Encontrado: {font_name} | Esperado: Times New Roman ou Arial',
                 severity='error',
                 location=f'Parágrafo {para_num}',
-                fixable=True,
+                fixable=False,
                 fix_type='font',
                 text_preview=self._get_text_preview(para['text']) if para else None
             ))
@@ -134,7 +134,7 @@ class ABNTRules:
                 description=f'Encontrado: {font_size} pt | Esperado: {self.FONT_SIZE} pt',
                 severity='error',
                 location=f'Parágrafo {para_num}',
-                fixable=True,
+                fixable=False,
                 fix_type='font_size',
                 text_preview=self._get_text_preview(para['text']) if para else None
             ))
@@ -193,7 +193,7 @@ class ABNTRules:
                         description=f'Esperado: {self.FIRST_LINE_INDENT} cm | Encontrado: {first_line:.2f} cm',
                         severity='error',
                         location=f'Parágrafo {para["index"] + 1}',
-                        fixable=True,
+                        fixable=False,
                         fix_type='indentation',
                         text_preview=self._get_text_preview(para['text'])
                     ))
@@ -205,7 +205,7 @@ class ABNTRules:
                         description=f'Esperado: {self.FIRST_LINE_INDENT} cm | Encontrado: {first_line:.2f} cm',
                         severity='error',
                         location=f'Parágrafo {para["index"] + 1}',
-                        fixable=True,
+                        fixable=False,
                         fix_type='indentation',
                         text_preview=self._get_text_preview(para['text'])
                     ))
@@ -232,6 +232,7 @@ class ABNTRules:
                         severity='warning',
                         location=f'Parágrafo {para["index"] + 1}',
                         fixable=False,
+                        fix_type='alignment',
                         text_preview=self._get_text_preview(para['text'])
                     ))
                     align_issues += 1

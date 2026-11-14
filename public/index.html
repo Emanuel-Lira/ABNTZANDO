@@ -4,6 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ABNTzando com Lala</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        // Aplicar tema antes do render para evitar flash
+        (function() {
+            const savedTheme = localStorage.getItem('abntzando.tema');
+            if (savedTheme) {
+                document.documentElement.setAttribute('data-theme', savedTheme);
+            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                document.documentElement.setAttribute('data-theme', 'dark');
+            }
+        })();
+    </script>
     <style>
         * {
             margin: 0;
@@ -12,14 +26,97 @@
         }
 
         :root {
-            --primary: #9c27b0;
-            --primary-dark: #6a1b9a;
-            --primary-light: #ba68c8;
-            --accent: #00bcd4;
-            --dark-bg: #0d0d0d;
-            --dark-surface: #1a1a1a;
-            --text-primary: #ffffff;
-            --text-secondary: #b0b0b0;
+            /* Cores base - Light */
+            --bg: #F7F8FA;
+            --surface: #FFFFFF;
+            --surface-muted: #F3F4F6;
+            --border: #E5E7EB;
+            --border-strong: #D1D5DB;
+            --text: #111827;
+            --text-muted: #6B7280;
+
+            /* Destaque */
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --primary-soft: #EFF6FF;
+            --focus-ring: 0 0 0 3px rgba(37, 99, 235, 0.35);
+
+            /* Status */
+            --success: #16A34A;
+            --success-soft: #F0FDF4;
+            --warning: #D97706;
+            --warning-soft: #FFFBEB;
+            --error: #DC2626;
+            --error-soft: #FEF2F2;
+
+            /* Forma */
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 1px 2px rgba(16, 24, 40, 0.06);
+            --shadow-md: 0 4px 12px rgba(16, 24, 40, 0.08);
+
+            /* Espaçamento */
+            --space-1: 4px;
+            --space-2: 8px;
+            --space-3: 12px;
+            --space-4: 16px;
+            --space-6: 24px;
+            --space-8: 32px;
+            --space-12: 48px;
+
+            /* Tipografia */
+            --font-ui: Inter, system-ui, -apple-system, "Segoe UI", sans-serif;
+            --text-xs: 13px;
+            --text-sm: 14px;
+            --text-md: 16px;
+            --text-lg: 20px;
+            --text-xl: 28px;
+        }
+
+        /* Dark Theme */
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) {
+                --bg: #0F1115;
+                --surface: #171A21;
+                --surface-muted: #1E222B;
+                --border: #2A2F3A;
+                --border-strong: #3A4150;
+                --text: #F3F4F6;
+                --text-muted: #9CA3AF;
+                --primary: #60A5FA;
+                --primary-hover: #93C5FD;
+                --primary-soft: rgba(96, 165, 250, 0.12);
+                --success: #4ADE80;
+                --success-soft: rgba(74, 222, 128, 0.12);
+                --warning: #FBBF24;
+                --warning-soft: rgba(251, 191, 36, 0.12);
+                --error: #F87171;
+                --error-soft: rgba(248, 113, 113, 0.12);
+                --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+                --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
+            }
+        }
+
+        [data-theme="dark"] {
+            --bg: #0F1115;
+            --surface: #171A21;
+            --surface-muted: #1E222B;
+            --border: #2A2F3A;
+            --border-strong: #3A4150;
+            --text: #F3F4F6;
+            --text-muted: #9CA3AF;
+            --primary: #60A5FA;
+            --primary-hover: #93C5FD;
+            --primary-soft: rgba(96, 165, 250, 0.12);
+            --success: #4ADE80;
+            --success-soft: rgba(74, 222, 128, 0.12);
+            --warning: #FBBF24;
+            --warning-soft: rgba(251, 191, 36, 0.12);
+            --error: #F87171;
+            --error-soft: rgba(248, 113, 113, 0.12);
+            --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+            --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
         }
 
         html {
@@ -27,219 +124,193 @@
         }
 
         body {
-            font-family: 'Georgia', 'Garamond', 'Segoe UI', serif;
-            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0033 100%);
-            background-attachment: fixed;
+            font-family: var(--font-ui);
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
-            color: var(--text-primary);
-            overflow-x: hidden;
             display: flex;
             flex-direction: column;
+            line-height: 1.5;
         }
 
-        /* Efeito de fundo animado */
-        body::before {
-            content: '';
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(156, 39, 176, 0.1) 0%, transparent 50%),
-                        radial-gradient(circle at 80% 80%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
-            pointer-events: none;
-            z-index: -1;
-        }
-
-        /* Header Minimalista */
+        /* Header */
         .header {
-            background: var(--dark-surface);
-            border-bottom: 1px solid rgba(156, 39, 176, 0.2);
-            padding: 18px 40px;
+            height: 56px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 0 var(--space-6);
             display: flex;
             justify-content: space-between;
             align-items: center;
             position: sticky;
             top: 0;
             z-index: 100;
-            backdrop-filter: blur(10px);
-            background: rgba(26, 26, 26, 0.95);
         }
 
         .header-brand {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: var(--space-4);
             text-decoration: none;
         }
 
-        .syringe-logo {
-            width: 32px;
-            height: 32px;
+        .header-icon {
+            width: 20px;
+            height: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            font-size: 20px;
         }
 
         .header-title {
-            font-size: 1.4em;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-family: 'Georgia', serif;
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--text);
+            font-family: var(--font-ui);
         }
 
         .header-actions {
             display: flex;
-            gap: 15px;
+            gap: var(--space-4);
             align-items: center;
         }
 
-        .btn-convert {
-            padding: 10px 20px;
-            background: rgba(156, 39, 176, 0.2);
-            border: 1px solid var(--primary);
-            color: var(--primary);
-            border-radius: 6px;
+        .theme-toggle {
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            color: var(--text);
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9em;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            transition: all 200ms ease;
+            padding: 0;
         }
 
-        .btn-convert:hover:not(:disabled) {
-            background: rgba(156, 39, 176, 0.3);
-            border-color: var(--accent);
-            color: var(--accent);
+        .theme-toggle:hover {
+            background: var(--surface-muted);
+            border-color: var(--text-muted);
         }
 
-        .btn-convert:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        .theme-toggle:active {
+            transform: scale(0.95);
         }
 
         /* Main Container */
         .main-content {
             flex: 1;
             display: grid;
-            grid-template-columns: 420px 1fr;
-            gap: 30px;
-            padding: 40px;
-            max-width: 1600px;
+            grid-template-columns: 360px 1fr;
+            gap: var(--space-6);
+            padding: var(--space-6);
+            max-width: 1120px;
             margin: 0 auto;
             width: 100%;
         }
 
-        /* Panel */
-        .panel {
+        /* Card Base */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
             display: flex;
             flex-direction: column;
-            background: var(--dark-surface);
-            border: 1px solid rgba(156, 39, 176, 0.2);
-            border-radius: 12px;
-            padding: 35px;
-            transition: all 0.3s ease;
+            transition: all 200ms ease;
         }
 
-        .panel:hover {
-            border-color: rgba(156, 39, 176, 0.4);
-            box-shadow: 0 20px 40px rgba(156, 39, 176, 0.1);
+        .card:hover {
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-md);
         }
 
-        .panel-title {
-            font-size: 1.3em;
-            font-weight: 700;
-            margin-bottom: 25px;
-            color: var(--text-primary);
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .card-title {
+            font-size: var(--text-md);
+            font-weight: 600;
+            margin-bottom: var(--space-4);
+            color: var(--text);
         }
 
-        .panel-title::before {
-            content: '';
-            width: 4px;
-            height: 24px;
-            background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
-            border-radius: 2px;
-        }
-
-        /* Upload Section */
+        /* Upload Area */
         .upload-area {
+            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 50px 30px;
-            border: 2px dashed rgba(156, 39, 176, 0.3);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: var(--space-8);
+            border: 1.5px dashed var(--border-strong);
+            border-radius: var(--radius-md);
+            background: var(--surface-muted);
             text-align: center;
-            flex: 1;
+            cursor: pointer;
+            transition: all 200ms ease;
+            min-height: 180px;
+            position: relative;
         }
 
         .upload-area:hover {
-            border-color: rgba(156, 39, 176, 0.6);
-            background: rgba(156, 39, 176, 0.05);
+            border-color: var(--primary);
+            background: var(--primary-soft);
+            transform: translateY(-2px);
+            box-shadow: 0 0 0 1px var(--primary);
         }
 
         .upload-area.active {
+            border-style: solid;
             border-color: var(--primary);
-            background: rgba(156, 39, 176, 0.1);
+            background: var(--primary-soft);
+            transform: scale(1.01);
         }
 
         .upload-icon {
-            font-size: 3.5em;
-            margin-bottom: 20px;
-            transition: transform 0.3s ease;
-        }
-
-        .upload-area:hover .upload-icon {
-            transform: scale(1.15);
+            font-size: 32px;
+            margin-bottom: var(--space-4);
+            display: block;
         }
 
         .upload-text {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--text-primary);
+            font-size: var(--text-md);
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: var(--space-2);
         }
 
         .upload-hint {
-            font-size: 0.9em;
-            color: var(--text-secondary);
+            font-size: var(--text-xs);
+            color: var(--text-muted);
         }
 
         #fileInput {
             display: none;
         }
 
-        /* File Info */
+        /* File Info Chip */
         .file-info {
             display: none;
-            padding: 20px;
-            background: rgba(156, 39, 176, 0.1);
-            border: 1px solid rgba(156, 39, 176, 0.3);
-            border-radius: 8px;
-            margin-bottom: 20px;
+            padding: var(--space-4);
+            background: var(--surface-muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            margin-bottom: var(--space-4);
+            transition: all 200ms ease;
         }
 
         .file-info.show {
             display: block;
-            animation: slideIn 0.3s ease-out;
+            animation: slideDown 250ms ease-out;
         }
 
-        @keyframes slideIn {
+        @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateY(-10px);
+                transform: translateY(-12px);
             }
             to {
                 opacity: 1;
@@ -248,53 +319,62 @@
         }
 
         .file-name {
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--text);
+            margin-bottom: var(--space-2);
+            font-size: var(--text-sm);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: var(--space-2);
         }
 
-        .file-name::before {
-            content: '📄';
-            font-size: 1.2em;
+        .file-size {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            margin-bottom: var(--space-3);
         }
 
         .file-actions {
             display: flex;
-            gap: 10px;
+            gap: var(--space-2);
         }
 
         .btn-small {
-            padding: 8px 16px;
-            background: rgba(244, 67, 54, 0.2);
-            border: 1px solid rgba(244, 67, 54, 0.4);
-            color: #ff6b6b;
-            border-radius: 4px;
+            padding: var(--space-2) var(--space-3);
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            color: var(--text);
+            border-radius: var(--radius-sm);
             cursor: pointer;
-            font-size: 0.85em;
-            font-weight: 600;
-            transition: all 0.3s ease;
+            font-size: var(--text-xs);
+            font-weight: 500;
+            transition: all 200ms ease;
+            min-height: 32px;
         }
 
         .btn-small:hover {
-            background: rgba(244, 67, 54, 0.3);
-            border-color: #ff6b6b;
+            background: var(--surface-muted);
+            border-color: var(--text-muted);
+            transform: translateY(-1px);
+        }
+
+        .btn-small:active {
+            transform: translateY(0);
         }
 
         /* Analyzing State */
         .analyzing {
-            display: none !important;
+            display: none;
             text-align: center;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: var(--space-4);
         }
 
         .analyzing.show {
-            display: flex !important;
-            animation: fadeIn 0.3s ease-in;
+            display: flex;
+            animation: fadeIn 200ms ease-in;
         }
 
         @keyframes fadeIn {
@@ -302,60 +382,57 @@
             to { opacity: 1; }
         }
 
-        .spinner-container {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin-bottom: 25px;
-        }
-
         .spinner {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            border: 3px solid rgba(156, 39, 176, 0.2);
-            border-top: 3px solid var(--primary);
-            border-right: 3px solid var(--accent);
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--primary);
             border-radius: 50%;
-            animation: spin 2s linear infinite;
+            animation: spin 1.2s cubic-bezier(0.6, 0.2, 0.4, 0.8) infinite;
         }
 
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            to { transform: rotate(360deg); }
         }
 
         .analyzing-text {
-            font-size: 1.1em;
-            font-weight: 600;
-            margin-bottom: 20px;
+            font-size: var(--text-md);
+            font-weight: 500;
+            color: var(--text);
         }
 
         .analyzer-steps {
             display: flex;
-            gap: 10px;
+            gap: var(--space-3);
             flex-wrap: wrap;
             justify-content: center;
         }
 
         .step {
-            padding: 6px 12px;
-            background: rgba(156, 39, 176, 0.1);
-            border: 1px solid rgba(156, 39, 176, 0.3);
-            border-radius: 16px;
-            font-size: 0.85em;
-            color: var(--accent);
+            padding: var(--space-1) var(--space-3);
+            background: var(--primary-soft);
+            color: var(--primary);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-xs);
+            font-weight: 500;
             animation: pulse 2s ease-in-out infinite;
-            font-weight: 600;
         }
 
-        .step:nth-child(1) { animation-delay: 0s; }
-        .step:nth-child(2) { animation-delay: 0.3s; }
-        .step:nth-child(3) { animation-delay: 0.6s; }
+        .step:nth-child(2) {
+            animation-delay: 300ms;
+        }
+
+        .step:nth-child(3) {
+            animation-delay: 600ms;
+        }
 
         @keyframes pulse {
-            0%, 100% { background: rgba(156, 39, 176, 0.1); }
-            50% { background: rgba(156, 39, 176, 0.2); }
+            0%, 100% {
+                opacity: 0.5;
+            }
+            50% {
+                opacity: 1;
+            }
         }
 
         /* Results Section */
@@ -364,7 +441,6 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            max-height: calc(100vh - 200px);
         }
 
         .results.show {
@@ -372,373 +448,513 @@
             flex-direction: column;
         }
 
-        .result-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            padding-bottom: 20px;
-            border-bottom: 2px solid rgba(156, 39, 176, 0.3);
+        .result-summary {
+            background: var(--surface-muted);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: var(--space-4);
+            animation: slideDown 300ms ease-out;
         }
 
-        .result-header h2 {
-            font-size: 1.3em;
-            font-weight: 700;
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+            animation: fadeInUp 400ms ease-out;
+        }
+
+        .summary-item:nth-child(2) {
+            animation-delay: 50ms;
+        }
+
+        .summary-item:nth-child(3) {
+            animation-delay: 100ms;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .summary-label {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .summary-value {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        /* Controles do checklist */
+        .checklist-controls {
+            display: flex;
+            gap: var(--space-3);
+            margin-bottom: var(--space-4);
+            flex-wrap: wrap;
+        }
+
+        .checklist-filter {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--text-sm);
+        }
+
+        .checklist-filter input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        .checklist-filter label {
+            cursor: pointer;
+            color: var(--text);
+            font-weight: 500;
+        }
+
+        .btn-desmarcar-todos {
+            padding: var(--space-2) var(--space-3);
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            color: var(--text);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: var(--text-sm);
+            font-weight: 500;
+            transition: all 200ms ease;
+        }
+
+        .btn-desmarcar-todos:hover {
+            background: var(--surface-muted);
+            border-color: var(--text-muted);
+        }
+
+        .btn-desmarcar-todos:disabled {
+            opacity: 50%;
+            cursor: not-allowed;
         }
 
         .fix-info {
-            background: rgba(0, 188, 212, 0.1);
-            border: 1px solid rgba(0, 188, 212, 0.3);
-            border-radius: 6px;
-            padding: 12px 16px;
-            margin-bottom: 20px;
-            font-size: 0.9em;
-            color: var(--text-secondary);
+            background: var(--primary-soft);
+            border-left: 3px solid var(--primary);
+            padding: var(--space-4);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-4);
+            font-size: var(--text-sm);
+            color: var(--text);
             line-height: 1.5;
+            animation: slideDown 300ms ease-out;
         }
 
         .fix-info strong {
-            color: var(--accent);
-            display: block;
-            margin-bottom: 8px;
-        }
-
-        .status-badge {
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.85em;
-            font-weight: 700;
-            white-space: nowrap;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            background: rgba(156, 39, 176, 0.2);
-            border: 1px solid rgba(156, 39, 176, 0.4);
             color: var(--primary);
-        }
-
-        .status-badge.error {
-            background: rgba(244, 67, 54, 0.15);
-            border-color: rgba(244, 67, 54, 0.3);
-            color: #ff6b6b;
-        }
-
-        .status-badge.warning {
-            background: rgba(255, 152, 0, 0.15);
-            border-color: rgba(255, 152, 0, 0.3);
-            color: #ffb74d;
-        }
-
-        .status-badge.success {
-            background: rgba(76, 175, 80, 0.15);
-            border-color: rgba(76, 175, 80, 0.3);
-            color: #81c784;
-        }
-
-        /* Issue Cards */
-        .issues-list {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 18px;
-            flex: 1;
-        }
-
-        .issue {
-            background: rgba(156, 39, 176, 0.05);
-            border: 1px solid rgba(156, 39, 176, 0.2);
-            border-left: 4px solid var(--primary);
-            padding: 18px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            cursor: default;
-        }
-
-        .issue:hover {
-            background: rgba(156, 39, 176, 0.08);
-            border-color: rgba(156, 39, 176, 0.4);
-            transform: translateX(5px);
-        }
-
-        .issue.error {
-            border-left-color: #ff6b6b;
-        }
-
-        .issue.warning {
-            border-left-color: #ffb74d;
-        }
-
-        .issue-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 10px;
-            gap: 12px;
-        }
-
-        .issue-title {
-            font-size: 1em;
-            font-weight: 700;
-            color: var(--text-primary);
-            flex: 1;
-        }
-
-        .issue-severity {
-            font-size: 0.7em;
-            padding: 4px 10px;
-            border-radius: 3px;
-            background: rgba(156, 39, 176, 0.2);
-            color: var(--primary);
-            font-weight: 700;
-            white-space: nowrap;
-            text-transform: uppercase;
-        }
-
-        .issue.error .issue-severity {
-            background: rgba(244, 67, 54, 0.2);
-            color: #ff6b6b;
-        }
-
-        .issue.warning .issue-severity {
-            background: rgba(255, 152, 0, 0.2);
-            color: #ffb74d;
-        }
-
-        .issue-description {
-            color: var(--text-secondary);
-            font-size: 0.95em;
-            margin-bottom: 8px;
-            line-height: 1.5;
-        }
-
-        .issue-location {
-            font-size: 0.85em;
-            color: var(--text-secondary);
-            opacity: 0.8;
-        }
-
-        .issue-text-preview {
             display: block;
-            font-size: 0.9em;
-            color: var(--text-secondary);
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(156, 39, 176, 0.15);
-            font-style: italic;
-            max-height: 60px;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .issue-suggestion {
-            display: block;
-            font-size: 0.9em;
-            color: var(--accent);
-            margin-top: 10px;
-            padding-top: 10px;
-            border-top: 1px solid rgba(156, 39, 176, 0.2);
+            margin-bottom: var(--space-2);
             font-weight: 600;
         }
 
-        .issue.fixable::after {
-            content: "✓ Corrigível automaticamente";
-            display: block;
-            font-size: 0.85em;
-            color: #81c784;
-            margin-top: 8px;
+        /* Issues List */
+        .issues-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+            flex: 1;
+        }
+
+        .issue-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            animation: fadeInUp 400ms ease-out;
+        }
+
+        .issue-group-title {
+            font-size: var(--text-sm);
+            font-weight: 600;
+            color: var(--text-muted);
+            padding-bottom: var(--space-2);
+            border-bottom: 1px solid var(--border);
+        }
+
+        /* Issue Item */
+        .issue {
+            display: grid;
+            grid-template-columns: 20px 1fr auto;
+            gap: var(--space-3);
+            align-items: start;
+            padding: var(--space-3);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            transition: all 200ms ease;
+            cursor: default;
+            position: relative;
+        }
+
+        .issue:hover {
+            background: var(--surface-muted);
+            border-color: var(--border-strong);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+
+        .issue.resolvido {
+            opacity: 0.7;
+            background: var(--surface-muted);
+        }
+
+        .issue.resolvido .issue-title {
+            text-decoration: line-through;
+            color: var(--text-muted);
+        }
+
+        /* Custom Checkbox Wrapper */
+        .checkbox-wrapper {
+            position: absolute;
+            top: var(--space-3);
+            right: var(--space-3);
+            width: 24px;
+            height: 24px;
+        }
+
+        .issue-checkbox {
+            position: absolute;
+            width: 0;
+            height: 0;
+            opacity: 0;
+        }
+
+        .checkbox-visual {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--border-strong);
+            border-radius: 4px;
+            background: var(--surface);
+            transition: all 200ms ease;
+            cursor: pointer;
+        }
+
+        .issue-checkbox:hover + .checkbox-visual {
+            border-color: var(--primary);
+            background: var(--primary-soft);
+        }
+
+        .issue-checkbox:checked + .checkbox-visual {
+            background: var(--primary);
+            border-color: var(--primary);
+        }
+
+        .issue-checkbox:checked + .checkbox-visual::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
             font-weight: bold;
+            font-size: 14px;
+        }
+
+        .issue-checkbox:focus-visible + .checkbox-visual {
+            outline: var(--focus-ring);
+        }
+
+        .issue-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-size: 12px;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transition: all 200ms ease;
+        }
+
+        .issue.error .issue-icon {
+            background: var(--error-soft);
+            color: var(--error);
+        }
+
+        .issue.error:hover .issue-icon {
+            box-shadow: 0 0 8px rgba(220, 38, 38, 0.3);
+        }
+
+        .issue.warning .issue-icon {
+            background: var(--warning-soft);
+            color: var(--warning);
+        }
+
+        .issue.warning:hover .issue-icon {
+            box-shadow: 0 0 8px rgba(217, 119, 6, 0.3);
+        }
+
+        .issue.success .issue-icon {
+            background: var(--success-soft);
+            color: var(--success);
+        }
+
+        .issue.success:hover .issue-icon {
+            box-shadow: 0 0 8px rgba(22, 163, 74, 0.3);
+        }
+
+        .issue-content {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+        }
+
+        .issue-title {
+            font-size: var(--text-md);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .issue-location {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+        }
+
+        .issue-badge {
+            padding: var(--space-1) var(--space-2);
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            height: fit-content;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: all 200ms ease;
+        }
+
+        .issue-badge.fixable {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+
+        .issue-badge.fixable::before {
+            content: '✓';
+            font-weight: 700;
+        }
+
+        .issue:hover .issue-badge.fixable {
+            background: var(--primary);
+            color: white;
+        }
+
+        .issue-badge.manual {
+            background: var(--surface-muted);
+            color: var(--text-muted);
+        }
+
+        .issue-badge.manual::before {
+            content: '→';
         }
 
         .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: var(--text-secondary);
-            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            gap: var(--space-4);
+            padding: var(--space-12);
+            text-align: center;
+            color: var(--text-muted);
+            min-height: 300px;
+            animation: fadeIn 300ms ease-out;
         }
 
         .empty-state-icon {
-            font-size: 3em;
-            margin-bottom: 15px;
+            font-size: 48px;
+            animation: bounceIn 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
-        /* Actions */
-        .result-actions {
-            display: none;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(156, 39, 176, 0.2);
+        @keyframes bounceIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.3);
+            }
+            50% {
+                opacity: 1;
+            }
+            100% {
+                transform: scale(1);
+            }
         }
 
-        .result-actions.show {
-            display: flex;
+        .empty-state p {
+            font-size: var(--text-md);
+            font-weight: 500;
         }
 
-        .btn-action {
-            width: 100%;
-            padding: 14px 24px;
+        /* Estado de sucesso */
+        .empty-state.success-state {
+            color: var(--success);
+        }
+
+        .empty-state.success-state .empty-state-icon {
+            font-size: 64px;
+        }
+
+        /* Estado de erro */
+        .empty-state.error-state {
+            color: var(--error);
+        }
+
+        .error-message {
+            background: var(--error-soft);
+            border: 1px solid var(--error);
+            border-radius: var(--radius-md);
+            padding: var(--space-4);
+            margin-bottom: var(--space-4);
+            color: var(--error);
+            font-size: var(--text-sm);
+            animation: slideDown 250ms ease-out;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: var(--space-3) var(--space-4);
             border: none;
-            border-radius: 6px;
-            font-weight: 700;
+            border-radius: var(--radius-sm);
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.9em;
+            transition: all 200ms ease;
+            font-family: var(--font-ui);
+            font-size: var(--text-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            text-decoration: none;
+            outline: 2px solid transparent;
+            outline-offset: 2px;
+            min-height: 40px;
         }
 
-        .btn-fix {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            border: 2px solid var(--primary);
+        .btn:focus-visible {
+            outline: var(--focus-ring);
         }
 
-        .btn-fix:hover:not(:disabled) {
-            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.3);
-            transform: translateY(-2px);
+        .btn:active:not(:disabled) {
+            transform: scale(0.98);
         }
 
-        .btn-fix:disabled {
-            opacity: 0.5;
+        .btn:disabled {
+            opacity: 50%;
             cursor: not-allowed;
         }
 
-        .btn-new {
-            background: rgba(156, 39, 176, 0.1);
-            color: var(--primary);
-            border: 2px solid var(--primary);
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: var(--shadow-sm);
         }
 
-        .btn-new:hover {
-            background: rgba(156, 39, 176, 0.2);
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-hover);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-secondary {
+            background: var(--surface);
+            color: var(--text);
+            border: 1px solid var(--border-strong);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: var(--surface-muted);
+            border-color: var(--text-muted);
+            box-shadow: var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        /* Actions */
+        .actions {
+            display: none;
+            flex-direction: column;
+            gap: var(--space-3);
+            margin-top: var(--space-4);
+            padding-top: var(--space-4);
+            border-top: 1px solid var(--border);
+        }
+
+        .actions.show {
+            display: flex;
+        }
+
+        .actions .btn {
+            width: 100%;
         }
 
         /* Download Modal */
-        .download-modal {
+        .modal-overlay {
             display: none;
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.7);
+            background: rgba(0, 0, 0, 0);
             z-index: 1000;
             align-items: center;
             justify-content: center;
+            transition: all 200ms ease;
         }
 
-        .download-modal.show {
+        .modal-overlay.show {
             display: flex;
-            animation: fadeIn 0.3s ease-in;
+            background: rgba(0, 0, 0, 0.5);
+            animation: fadeInOverlay 200ms ease-out;
         }
 
-        .modal-content {
-            background: var(--dark-surface);
-            border: 1px solid rgba(156, 39, 176, 0.3);
-            border-radius: 12px;
-            padding: 40px;
-            max-width: 400px;
+        @keyframes fadeInOverlay {
+            from {
+                background: rgba(0, 0, 0, 0);
+            }
+            to {
+                background: rgba(0, 0, 0, 0.5);
+            }
+        }
+
+        .modal {
+            background: var(--surface);
+            border-radius: var(--radius-lg);
+            padding: var(--space-8);
+            max-width: 360px;
+            width: 90%;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .modal-content h3 {
-            font-size: 1.3em;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-
-        .modal-content p {
-            color: var(--text-secondary);
-            margin-bottom: 30px;
-            font-size: 0.95em;
-        }
-
-        .modal-buttons {
-            display: flex;
-            gap: 15px;
-            flex-direction: column;
-        }
-
-        .btn-modal {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-size: 0.9em;
-        }
-
-        .btn-modal-primary {
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
-            color: white;
-            border: 2px solid var(--primary);
-        }
-
-        .btn-modal-primary:hover {
-            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.3);
-            transform: translateY(-2px);
-        }
-
-        .btn-modal-secondary {
-            background: rgba(156, 39, 176, 0.1);
-            color: var(--primary);
-            border: 2px solid var(--primary);
-        }
-
-        .btn-modal-secondary:hover {
-            background: rgba(156, 39, 176, 0.2);
-        }
-
-        .btn-modal-cancel {
-            background: rgba(100, 100, 100, 0.2);
-            color: var(--text-secondary);
-            border: 2px solid rgba(100, 100, 100, 0.3);
-        }
-
-        .btn-modal-cancel:hover {
-            background: rgba(100, 100, 100, 0.3);
-        }
-
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            right: 30px;
-            background: var(--dark-surface);
-            border: 1px solid rgba(156, 39, 176, 0.3);
-            border-radius: 8px;
-            padding: 16px 24px;
-            color: var(--text-primary);
-            font-size: 0.95em;
-            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
-            z-index: 999;
-            animation: slideInUp 0.3s ease-out;
-            max-width: 400px;
-        }
-
-        .toast.success {
-            border-color: rgba(76, 175, 80, 0.4);
-            background: rgba(76, 175, 80, 0.1);
-            color: #81c784;
-        }
-
-        .toast.error {
-            border-color: rgba(244, 67, 54, 0.4);
-            background: rgba(244, 67, 54, 0.1);
-            color: #ff6b6b;
-        }
-
-        .toast.info {
-            border-color: rgba(0, 188, 212, 0.4);
-            background: rgba(0, 188, 212, 0.1);
-            color: var(--accent);
+            box-shadow: 0 20px 25px rgba(0, 0, 0, 0.15);
+            animation: slideInUp 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
         }
 
         @keyframes slideInUp {
@@ -752,185 +968,699 @@
             }
         }
 
-        @keyframes slideOutDown {
+        .modal-overlay.show .modal {
+            animation: slideInUp 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .modal-title {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: var(--space-3);
+        }
+
+        .modal-description {
+            font-size: var(--text-md);
+            color: var(--text-muted);
+            margin-bottom: var(--space-6);
+            line-height: 1.5;
+        }
+
+        .modal-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+        }
+
+        .modal-buttons .btn {
+            width: 100%;
+        }
+
+        /* Toast */
+        .toast-container {
+            position: fixed;
+            bottom: var(--space-6);
+            right: var(--space-6);
+            z-index: 999;
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            max-width: 360px;
+            pointer-events: none;
+        }
+
+        .toast {
+            background: var(--surface);
+            border-left: 3px solid;
+            padding: var(--space-4);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-md);
+            animation: slideInRight 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
+            pointer-events: auto;
+        }
+
+        @keyframes slideInRight {
             from {
-                opacity: 1;
-                transform: translateY(0);
+                opacity: 0;
+                transform: translateX(360px);
             }
             to {
-                opacity: 0;
-                transform: translateY(20px);
+                opacity: 1;
+                transform: translateX(0);
             }
         }
 
         .toast.hide {
-            animation: slideOutDown 0.3s ease-out forwards;
+            animation: slideOutRight 250ms ease-out forwards;
         }
 
-        /* Panel adjustments */
-        .panel:first-child {
-            min-height: 400px;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .left-panel-actions {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(156, 39, 176, 0.2);
-        }
-
-        .left-panel-actions .btn-action {
-            width: 100%;
-            padding: 12px 16px;
-            font-size: 0.85em;
-        }
-
-        /* Responsive */
-        @media (max-width: 1400px) {
-            .issues-list {
-                grid-template-columns: 1fr;
+        @keyframes slideOutRight {
+            to {
+                opacity: 0;
+                transform: translateX(360px);
             }
         }
 
+        .toast-message {
+            font-size: var(--text-md);
+            font-weight: 500;
+        }
+
+        .toast.success {
+            border-color: var(--success);
+            color: var(--success);
+        }
+
+        .toast.error {
+            border-color: var(--error);
+            color: var(--error);
+        }
+
+        .toast.info {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        /* Responsive: Tablet (1200px) */
         @media (max-width: 1200px) {
             .main-content {
-                grid-template-columns: 350px 1fr;
-                gap: 20px;
-                padding: 30px;
+                gap: var(--space-4);
+                padding: var(--space-4);
             }
 
-            .panel {
-                padding: 25px;
+            .card {
+                padding: var(--space-4);
             }
         }
 
-        @media (max-width: 1024px) {
+        /* Responsive: Tablet (960px) */
+        @media (max-width: 960px) {
             .main-content {
                 grid-template-columns: 1fr;
-                gap: 20px;
-                padding: 25px;
+                gap: var(--space-4);
+                padding: var(--space-4);
             }
 
-            .left-panel-actions {
-                margin-top: 20px;
-            }
-
-            .results {
-                max-height: 500px;
-            }
-
-            .modal-content {
-                margin: 20px;
-                max-width: 90%;
-            }
-
-            .result-actions {
-                padding: 15px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .main-content {
-                padding: 15px;
-                gap: 15px;
-            }
-
-            .panel {
-                padding: 15px;
-            }
-
-            .header {
-                padding: 15px 20px;
-                flex-wrap: wrap;
-            }
-
-            .header-title {
-                font-size: 1.2em;
+            .result-summary {
+                grid-template-columns: 1fr;
             }
 
             .issue {
-                padding: 12px;
+                grid-template-columns: 20px 1fr;
             }
 
-            .btn-action {
-                padding: 10px 16px;
-                font-size: 0.8em;
-            }
-
-            .left-panel-actions .btn-action {
-                padding: 10px 12px;
+            .issue-badge {
+                grid-column: 2 / 3;
             }
         }
 
-        @media (max-width: 480px) {
-            .main-content {
-                padding: 10px;
-                gap: 10px;
-            }
-
-            .panel {
-                padding: 12px;
-            }
-
-            .panel-title {
-                font-size: 1.1em;
-            }
-
-            .issue {
-                padding: 10px;
-            }
-
-            .header-title {
-                font-size: 1em;
-            }
-
-            .btn-action {
-                padding: 8px 12px;
-                font-size: 0.75em;
-            }
-
-            .issue-title {
-                font-size: 0.95em;
-            }
-
-            .issue-description {
-                font-size: 0.9em;
-            }
-        }
-
+        /* Responsive: Mobile (768px) */
         @media (max-width: 768px) {
             .header {
-                padding: 15px 20px;
-                flex-wrap: wrap;
-                gap: 15px;
+                height: 52px;
+                padding: var(--space-3) var(--space-4);
             }
 
             .header-title {
-                font-size: 1.1em;
+                font-size: var(--text-md);
             }
 
-            .header-actions {
-                width: 100%;
+            .header-icon {
+                font-size: 18px;
             }
 
             .main-content {
-                padding: 15px;
+                padding: var(--space-3);
+                gap: var(--space-3);
             }
 
-            .panel {
-                padding: 20px;
+            .card {
+                padding: var(--space-4);
+            }
+
+            .card-title {
+                font-size: var(--text-md);
+                margin-bottom: var(--space-3);
             }
 
             .upload-area {
-                padding: 35px 20px;
+                min-height: 140px;
+                padding: var(--space-6) var(--space-4);
             }
 
             .upload-icon {
-                font-size: 2.5em;
+                font-size: 28px;
+            }
+
+            .upload-text {
+                font-size: var(--text-sm);
+            }
+
+            .upload-hint {
+                font-size: var(--text-xs);
+            }
+
+            .result-summary {
+                grid-template-columns: 1fr;
+                gap: var(--space-3);
+                padding: var(--space-3);
+            }
+
+            .summary-value {
+                font-size: var(--text-lg);
+            }
+
+            .fix-info {
+                padding: var(--space-3);
+                font-size: var(--text-xs);
+            }
+
+            .issue {
+                padding: var(--space-2);
+            }
+
+            .issue-title {
+                font-size: var(--text-sm);
+            }
+
+            .actions .btn {
+                padding: var(--space-2) var(--space-3);
+                font-size: var(--text-sm);
+                min-height: 36px;
+            }
+
+            .toast-container {
+                bottom: var(--space-4);
+                right: var(--space-4);
+                left: var(--space-4);
+                max-width: none;
+            }
+
+            .modal {
+                padding: var(--space-6);
+                margin: var(--space-4);
+            }
+
+            .modal-title {
+                font-size: var(--text-md);
+            }
+
+            .modal-description {
+                font-size: var(--text-sm);
+            }
+        }
+
+        /* Responsive: Smartphone (480px) */
+        @media (max-width: 480px) {
+            .header {
+                height: 48px;
+                padding: var(--space-2) var(--space-3);
+                gap: var(--space-2);
+            }
+
+            .header-brand {
+                gap: var(--space-2);
+            }
+
+            .header-title {
+                font-size: 14px;
+                font-weight: 600;
+            }
+
+            .header-icon {
+                font-size: 16px;
+            }
+
+            .main-content {
+                padding: var(--space-2);
+                gap: var(--space-2);
+            }
+
+            .card {
+                padding: var(--space-3);
+            }
+
+            .card-title {
+                font-size: var(--text-sm);
+                margin-bottom: var(--space-2);
+            }
+
+            .upload-area {
+                min-height: 120px;
+                padding: var(--space-4);
+            }
+
+            .upload-icon {
+                font-size: 24px;
+                margin-bottom: var(--space-2);
+            }
+
+            .upload-text {
+                font-size: var(--text-xs);
+                margin-bottom: var(--space-1);
+            }
+
+            .file-info {
+                padding: var(--space-2);
+                margin-bottom: var(--space-2);
+            }
+
+            .file-name {
+                font-size: var(--text-xs);
+                margin-bottom: var(--space-1);
+            }
+
+            .file-size {
+                font-size: 11px;
+                margin-bottom: var(--space-2);
+            }
+
+            .file-actions {
+                gap: var(--space-1);
+            }
+
+            .btn-small {
+                padding: var(--space-1) var(--space-2);
+                font-size: 11px;
+            }
+
+            .result-summary {
+                grid-template-columns: 1fr;
+                gap: var(--space-2);
+                padding: var(--space-2);
+            }
+
+            .summary-label {
+                font-size: 11px;
+            }
+
+            .summary-value {
+                font-size: var(--text-md);
+            }
+
+            .fix-info {
+                padding: var(--space-2);
+                font-size: 12px;
+                margin-bottom: var(--space-3);
+            }
+
+            .issue-group {
+                gap: var(--space-2);
+            }
+
+            .issue-group-title {
+                font-size: 12px;
+                padding-bottom: var(--space-1);
+            }
+
+            .issue {
+                grid-template-columns: 16px 1fr;
+                gap: var(--space-2);
+                padding: var(--space-2);
+            }
+
+            .issue-icon {
+                width: 16px;
+                height: 16px;
+                font-size: 10px;
+            }
+
+            .issue-title {
+                font-size: var(--text-xs);
+            }
+
+            .issue-location {
+                font-size: 11px;
+            }
+
+            .issue-badge {
+                padding: var(--space-1) var(--space-2);
+                font-size: 10px;
+            }
+
+            .actions {
+                gap: var(--space-2);
+                margin-top: var(--space-2);
+                padding-top: var(--space-2);
+            }
+
+            .actions .btn {
+                padding: var(--space-2) var(--space-3);
+                font-size: 12px;
+                min-height: 32px;
+            }
+
+            .toast-container {
+                bottom: var(--space-2);
+                right: var(--space-2);
+                left: var(--space-2);
+                max-width: none;
+            }
+
+            .toast {
+                padding: var(--space-3);
+            }
+
+            .toast-message {
+                font-size: var(--text-sm);
+            }
+
+            .modal {
+                padding: var(--space-4);
+                margin: var(--space-2);
+            }
+
+            .modal-title {
+                font-size: var(--text-md);
+                margin-bottom: var(--space-2);
+            }
+
+            .modal-description {
+                font-size: var(--text-xs);
+                margin-bottom: var(--space-4);
+            }
+
+            .modal-buttons {
+                gap: var(--space-2);
+            }
+
+            .modal-buttons .btn {
+                padding: var(--space-2) var(--space-3);
+                font-size: 12px;
+            }
+
+            .empty-state {
+                padding: var(--space-4);
+            }
+
+            .empty-state-icon {
+                font-size: 40px;
+            }
+
+            .empty-state p {
+                font-size: var(--text-sm);
+            }
+
+            .analyzing {
+                gap: var(--space-2);
+            }
+
+            .spinner {
+                width: 32px;
+                height: 32px;
+                border: 2px solid var(--border);
+                border-top-color: var(--primary);
+            }
+
+            .analyzing-text {
+                font-size: var(--text-sm);
+            }
+
+            .analyzer-steps {
+                gap: var(--space-2);
+            }
+
+            .step {
+                padding: 2px var(--space-2);
+                font-size: 11px;
+            }
+        }
+
+        /* Accessibility: Reduced motion */
+        /* Glossário */
+        .glossario-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+        }
+
+        .glossario-overlay.show {
+            display: block;
+            animation: fadeIn 200ms ease-out;
+        }
+
+        .glossario-panel {
+            position: fixed;
+            top: 0;
+            right: 0;
+            width: 100%;
+            max-width: 400px;
+            height: 100vh;
+            background: var(--surface);
+            box-shadow: -4px 0 12px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 2001;
+            transform: translateX(100%);
+            transition: transform 250ms ease-out;
+        }
+
+        .glossario-panel.show {
+            transform: translateX(0);
+        }
+
+        .glossario-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .glossario-title {
+            font-size: var(--text-md);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .glossario-close {
+            background: transparent;
+            border: none;
+            color: var(--text);
+            cursor: pointer;
+            font-size: 24px;
+            padding: 0;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 200ms ease;
+        }
+
+        .glossario-close:hover {
+            color: var(--text-muted);
+        }
+
+        .glossario-search {
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--border);
+            flex-shrink: 0;
+        }
+
+        .glossario-search input {
+            width: 100%;
+            padding: var(--space-3);
+            border: 1px solid var(--border-strong);
+            border-radius: var(--radius-sm);
+            background: var(--surface-muted);
+            color: var(--text);
+            font-size: var(--text-sm);
+            font-family: var(--font-ui);
+            transition: all 200ms ease;
+        }
+
+        .glossario-search input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: var(--surface);
+            box-shadow: 0 0 0 3px var(--primary-soft);
+        }
+
+        .glossario-search input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .glossario-content {
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        .glossario-empty {
+            padding: var(--space-6);
+            text-align: center;
+            color: var(--text-muted);
+            font-size: var(--text-sm);
+        }
+
+        .glossario-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .glossario-group-letter {
+            position: sticky;
+            top: 0;
+            padding: var(--space-3) var(--space-4);
+            background: var(--surface-muted);
+            font-weight: 600;
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            border-bottom: 1px solid var(--border);
+            z-index: 10;
+        }
+
+        .glossario-item {
+            padding: var(--space-4);
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+            transition: all 200ms ease;
+        }
+
+        .glossario-item:hover {
+            background: var(--surface-muted);
+        }
+
+        .glossario-item-nome {
+            font-weight: 600;
+            color: var(--primary);
+            font-size: var(--text-md);
+            margin-bottom: var(--space-2);
+        }
+
+        .glossario-item-definicao {
+            color: var(--text);
+            font-size: var(--text-sm);
+            line-height: 1.5;
+            margin-bottom: var(--space-2);
+        }
+
+        .glossario-item-norma {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+        }
+
+        .glossario-termo-expandido {
+            padding: var(--space-6);
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-4);
+        }
+
+        .glossario-termo-header {
+            display: flex;
+            gap: var(--space-3);
+            align-items: start;
+        }
+
+        .glossario-termo-back {
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            color: var(--text);
+            cursor: pointer;
+            width: 40px;
+            height: 40px;
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 200ms ease;
+        }
+
+        .glossario-termo-back:hover {
+            background: var(--surface-muted);
+            border-color: var(--text-muted);
+        }
+
+        .glossario-termo-titulo {
+            font-size: var(--text-lg);
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .glossario-termo-definicao {
+            font-size: var(--text-md);
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .glossario-termo-norma {
+            padding: var(--space-3);
+            background: var(--primary-soft);
+            border-left: 3px solid var(--primary);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-sm);
+            color: var(--text);
+        }
+
+        .glossario-termo-relacionados {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-2);
+        }
+
+        .glossario-termo-relacionados-label {
+            font-weight: 600;
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+        }
+
+        .glossario-termo-relacionado {
+            padding: var(--space-2) var(--space-3);
+            background: var(--surface-muted);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--primary);
+            cursor: pointer;
+            font-size: var(--text-sm);
+            transition: all 200ms ease;
+        }
+
+        .glossario-termo-relacionado:hover {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .glossario-panel {
+                max-width: 100%;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 1ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 1ms !important;
             }
         }
     </style>
@@ -939,103 +1669,139 @@
     <!-- Header -->
     <header class="header">
         <div class="header-brand">
-            <div class="syringe-logo">💉</div>
-            <h1 class="header-title">abntzando com lala</h1>
+            <div class="header-icon">📎</div>
+            <h1 class="header-title">ABNTzando com Lala</h1>
         </div>
         <div class="header-actions">
-            <button class="btn-convert" id="convertPdfBtn" disabled>Converter PDF</button>
+            <button class="theme-toggle" id="glossarioBtn" aria-label="Abrir glossário" title="Glossário">📖</button>
+            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema escuro/claro" title="Alternar tema">🌙</button>
         </div>
     </header>
 
     <!-- Main Content -->
     <div class="main-content">
         <!-- Left Panel: Upload -->
-        <div class="panel">
-            <div class="panel-title">Envie seu documento</div>
+        <div class="card">
+            <h2 class="card-title">Enviar documento</h2>
 
             <div class="file-info" id="fileInfo">
                 <div class="file-name" id="fileName"></div>
+                <div class="file-size" id="fileSize"></div>
                 <div class="file-actions">
-                    <button class="btn-small" id="changeFileBtn">Enviar outro</button>
+                    <button class="btn-small" id="changeFileBtn">Alterar</button>
                     <button class="btn-small" id="removeFileBtn">Remover</button>
                 </div>
             </div>
 
-            <div class="left-panel-actions" id="leftPanelActions" style="display: none;">
-                <button class="btn-action btn-fix" id="fixButtonLeft">Ajustar</button>
-                <button class="btn-action btn-fix" id="downloadButtonLeft" style="display: none;">Baixar</button>
-                <button class="btn-action btn-new" id="newAnalysisButtonLeft">Nova análise</button>
-            </div>
-
             <div class="upload-area" id="uploadArea">
-                <div class="upload-icon">📎</div>
-                <div class="upload-text">Clique ou arraste seu arquivo</div>
-                <div class="upload-hint">Apenas .docx</div>
+                <span class="upload-icon">📄</span>
+                <div class="upload-text">Arraste seu arquivo aqui ou clique</div>
+                <div class="upload-hint">Apenas .docx, até 4 MB</div>
                 <input type="file" id="fileInput" accept=".docx" />
             </div>
 
             <div class="analyzing" id="analyzing">
-                <div class="spinner-container">
-                    <div class="spinner"></div>
-                </div>
-                <div class="analyzing-text">Analisando...</div>
+                <div class="spinner"></div>
+                <div class="analyzing-text">Analisando</div>
                 <div class="analyzer-steps">
-                    <span class="step">📄 Lendo</span>
-                    <span class="step">⚙️ Verificando</span>
-                    <span class="step">✓ Finalizando</span>
+                    <span class="step">Lendo</span>
+                    <span class="step">Verificando</span>
+                    <span class="step">Finalizando</span>
                 </div>
+            </div>
+
+            <div class="actions" id="leftPanelActions">
+                <button class="btn btn-primary" id="fixButtonLeft">Corrigir</button>
+                <button class="btn btn-primary" id="downloadButtonLeft" style="display: none;">Baixar</button>
+                <button class="btn btn-secondary" id="newAnalysisButtonLeft">Nova análise</button>
             </div>
         </div>
 
         <!-- Right Panel: Results -->
-        <div class="panel">
-            <div class="panel-title">Resultado da análise</div>
+        <div class="card">
+            <h2 class="card-title">Resultado da análise</h2>
 
             <div class="results" id="results">
-                <div class="result-header">
-                    <h2>Problemas encontrados</h2>
-                    <span class="status-badge" id="statusBadge"></span>
-                </div>
+                <div class="result-summary" id="resultSummary"></div>
+
                 <div class="fix-info">
                     <strong>💡 O que pode ser ajustado automaticamente:</strong>
-                    Apenas as margens são corrigidas com segurança. Outros problemas (fonte, espaçamento, indentação) precisam ser ajustados manualmente no Word para não danificar a formatação.
+                    Apenas as margens são corrigidas com segurança. Outros problemas precisam de ajustes manuais no Word.
                 </div>
+
+                <div class="checklist-controls" id="checklistControls" style="display: none;">
+                    <div class="checklist-filter">
+                        <input type="checkbox" id="filterPendentes" />
+                        <label for="filterPendentes">Mostrar só pendentes</label>
+                    </div>
+                    <button class="btn-desmarcar-todos" id="desmarcarTodos">Desmarcar todos</button>
+                </div>
+
                 <div class="issues-list" id="issuesList"></div>
-                <div class="result-actions">
-                    <button class="btn-action btn-fix" id="fixButton">Ajustar</button>
-                    <button class="btn-action btn-fix" id="downloadButton" style="display: none;">Baixar</button>
-                    <button class="btn-action btn-new" id="newAnalysisBtn">Nova análise</button>
+
+                <div class="actions" id="rightPanelActions">
+                    <button class="btn btn-primary" id="fixButton">Corrigir</button>
+                    <button class="btn btn-primary" id="downloadButton" style="display: none;">Baixar</button>
+                    <button class="btn btn-secondary" id="exportChecklistBtn">Exportar checklist</button>
+                    <button class="btn btn-secondary" id="newAnalysisBtn">Nova análise</button>
                 </div>
             </div>
 
             <div class="empty-state" id="emptyState">
-                <div class="empty-state-icon"></div>
+                <div class="empty-state-icon">📋</div>
                 <p>Envie um documento para começar</p>
             </div>
         </div>
     </div>
 
     <!-- Download Modal -->
-    <div class="download-modal" id="downloadModal">
-        <div class="modal-content">
-            <h3>Selecione o formato</h3>
-            <p>Em qual formato você deseja baixar o documento?</p>
+    <div class="modal-overlay" id="downloadModal">
+        <div class="modal">
+            <h3 class="modal-title">Selecionar formato</h3>
+            <p class="modal-description">Em qual formato você deseja baixar?</p>
             <div class="modal-buttons">
-                <button class="btn-modal btn-modal-primary" id="downloadDocx">📄 Baixar DOCX</button>
-                <button class="btn-modal btn-modal-secondary" id="downloadPdf">📕 Baixar PDF</button>
-                <button class="btn-modal btn-modal-cancel" id="cancelDownload">Cancelar</button>
+                <button class="btn btn-primary" id="downloadDocx">📄 Baixar DOCX</button>
+                <button class="btn btn-secondary" id="downloadPdf">📕 Baixar PDF</button>
+                <button class="btn btn-secondary" id="cancelDownload">Cancelar</button>
             </div>
         </div>
     </div>
 
+    <!-- Export Checklist Modal -->
+    <div class="modal-overlay" id="exportModal">
+        <div class="modal">
+            <h3 class="modal-title">Exportar checklist</h3>
+            <p class="modal-description">Escolha o formato de exportação</p>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="exportMarkdown">📝 Markdown (.md)</button>
+                <button class="btn btn-secondary" id="exportText">📄 Texto (.txt)</button>
+                <button class="btn btn-secondary" id="cancelExport">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Glossário -->
+    <div class="glossario-overlay" id="glossarioOverlay"></div>
+    <div class="glossario-panel" id="glossarioPanel">
+        <div class="glossario-header">
+            <h2 class="glossario-title">Glossário</h2>
+            <button class="glossario-close" id="glossarioCloseBtn" aria-label="Fechar glossário">✕</button>
+        </div>
+        <div class="glossario-search">
+            <input type="text" id="glossarioSearch" placeholder="Buscar termo..." />
+        </div>
+        <div class="glossario-content" id="glossarioContent"></div>
+    </div>
+
     <!-- Toast Container -->
-    <div id="toastContainer"></div>
+    <div class="toast-container" id="toastContainer"></div>
 
     <script>
         const uploadArea = document.getElementById('uploadArea');
         const fileInput = document.getElementById('fileInput');
         const fileInfo = document.getElementById('fileInfo');
         const fileName = document.getElementById('fileName');
+        const fileSize = document.getElementById('fileSize');
         const analyzing = document.getElementById('analyzing');
         const results = document.getElementById('results');
         const emptyState = document.getElementById('emptyState');
@@ -1046,28 +1812,469 @@
         const downloadButtonLeft = document.getElementById('downloadButtonLeft');
         const newAnalysisButtonLeft = document.getElementById('newAnalysisButtonLeft');
         const leftPanelActions = document.getElementById('leftPanelActions');
+        const rightPanelActions = document.getElementById('rightPanelActions');
         const changeFileBtn = document.getElementById('changeFileBtn');
         const removeFileBtn = document.getElementById('removeFileBtn');
-        const convertPdfBtn = document.getElementById('convertPdfBtn');
         const downloadModal = document.getElementById('downloadModal');
         const downloadDocxBtn = document.getElementById('downloadDocx');
         const downloadPdfBtn = document.getElementById('downloadPdf');
         const cancelDownloadBtn = document.getElementById('cancelDownload');
         const toastContainer = document.getElementById('toastContainer');
+        const themeToggle = document.getElementById('themeToggle');
         let currentFile = null;
         let documentAdjusted = false;
+        let currentFileHash = null;
+        let issuesResolvidos = [];
+        let issuesFull = [];
+
+        // Theme toggle
+        function updateThemeIcon() {
+            const theme = document.documentElement.getAttribute('data-theme');
+            const isDark = theme === 'dark' ||
+                          (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            themeToggle.textContent = isDark ? '☀️' : '🌙';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+            let newTheme;
+            if (currentTheme === 'dark') {
+                newTheme = 'light';
+            } else if (currentTheme === 'light') {
+                newTheme = null; // Sistema
+            } else {
+                newTheme = prefersDark ? 'light' : 'dark';
+            }
+
+            if (newTheme) {
+                document.documentElement.setAttribute('data-theme', newTheme);
+                localStorage.setItem('abntzando.tema', newTheme);
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                localStorage.removeItem('abntzando.tema');
+            }
+
+            updateThemeIcon();
+        });
+
+        // Atualizar ícone ao carregar
+        updateThemeIcon();
+
+        // Escutar mudanças no sistema de preferência de tema
+        if (window.matchMedia) {
+            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeIcon);
+        }
+
+        // Glossário
+        const glossarioBtn = document.getElementById('glossarioBtn');
+        const glossarioPanel = document.getElementById('glossarioPanel');
+        const glossarioOverlay = document.getElementById('glossarioOverlay');
+        const glossarioCloseBtn = document.getElementById('glossarioCloseBtn');
+        const glossarioSearch = document.getElementById('glossarioSearch');
+        const glossarioContent = document.getElementById('glossarioContent');
+        let glossarioData = null;
+        let glossarioTermoSelecionado = null;
+
+        // Carregar glossário
+        async function carregarGlossario() {
+            try {
+                const response = await fetch('/static/data/glossario.json');
+                if (!response.ok) throw new Error(`HTTP ${response.status}`);
+                glossarioData = await response.json();
+                renderizarGlossario(glossarioData.termos);
+            } catch (error) {
+                console.error('Erro ao carregar glossário:', error);
+                glossarioContent.innerHTML = '<div class="glossario-empty">Erro ao carregar glossário. Tente recarregar a página.</div>';
+            }
+        }
+
+        function removerAcentos(str) {
+            return str.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
+        }
+
+        function renderizarGlossario(termos, filtro = '') {
+            glossarioTermoSelecionado = null;
+
+            if (filtro) {
+                const filtroNorm = removerAcentos(filtro);
+                termos = termos.filter(termo => {
+                    const nomeNorm = removerAcentos(termo.nome);
+                    const defNorm = removerAcentos(termo.definicao);
+                    return nomeNorm.includes(filtroNorm) || defNorm.includes(filtroNorm);
+                });
+            }
+
+            if (termos.length === 0) {
+                glossarioContent.innerHTML = '<div class="glossario-empty">Nenhum termo encontrado</div>';
+                return;
+            }
+
+            // Agrupar por letra
+            const grupos = {};
+            termos.forEach(termo => {
+                const letra = termo.nome[0].toUpperCase();
+                if (!grupos[letra]) grupos[letra] = [];
+                grupos[letra].push(termo);
+            });
+
+            glossarioContent.innerHTML = Object.keys(grupos).sort().map(letra => `
+                <div class="glossario-group">
+                    <div class="glossario-group-letter">${letra}</div>
+                    ${grupos[letra].map(termo => `
+                        <div class="glossario-item" data-id="${termo.id}">
+                            <div class="glossario-item-nome">${termo.nome}</div>
+                            <div class="glossario-item-definicao">${termo.definicao}</div>
+                            <div class="glossario-item-norma">${termo.norma}</div>
+                        </div>
+                    `).join('')}
+                </div>
+            `).join('');
+
+            // Adicionar event listeners
+            glossarioContent.querySelectorAll('.glossario-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const id = item.getAttribute('data-id');
+                    const termo = glossarioData.termos.find(t => t.id === id);
+                    if (termo) expandirTermo(termo);
+                });
+            });
+        }
+
+        function expandirTermo(termo) {
+            glossarioTermoSelecionado = termo;
+            const relacionados = termo.relacionados
+                .map(nomeTermo => glossarioData.termos.find(t => removerAcentos(t.nome) === removerAcentos(nomeTermo)))
+                .filter(Boolean);
+
+            glossarioContent.innerHTML = `
+                <div class="glossario-termo-expandido">
+                    <div class="glossario-termo-header">
+                        <button class="glossario-termo-back" id="voltarBtn">←</button>
+                        <div>
+                            <div class="glossario-termo-titulo">${termo.nome}</div>
+                        </div>
+                    </div>
+                    <div class="glossario-termo-definicao">${termo.definicao}</div>
+                    <div class="glossario-termo-norma"><strong>Norma:</strong> ${termo.norma}</div>
+                    ${relacionados.length > 0 ? `
+                        <div class="glossario-termo-relacionados">
+                            <div class="glossario-termo-relacionados-label">Termos relacionados</div>
+                            ${relacionados.map(t => `
+                                <button class="glossario-termo-relacionado" data-id="${t.id}">${t.nome}</button>
+                            `).join('')}
+                        </div>
+                    ` : ''}
+                </div>
+            `;
+
+            document.getElementById('voltarBtn').addEventListener('click', () => {
+                renderizarGlossario(glossarioData.termos, glossarioSearch.value);
+            });
+
+            glossarioContent.querySelectorAll('.glossario-termo-relacionado').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const id = btn.getAttribute('data-id');
+                    const termoRel = glossarioData.termos.find(t => t.id === id);
+                    if (termoRel) expandirTermo(termoRel);
+                });
+            });
+        }
+
+        function abrirGlossario() {
+            glossarioPanel.classList.add('show');
+            glossarioOverlay.classList.add('show');
+            glossarioSearch.focus();
+            if (!glossarioData) carregarGlossario();
+        }
+
+        function fecharGlossario() {
+            glossarioPanel.classList.remove('show');
+            glossarioOverlay.classList.remove('show');
+            glossarioBtn.focus();
+        }
+
+        glossarioBtn.addEventListener('click', abrirGlossario);
+        glossarioCloseBtn.addEventListener('click', fecharGlossario);
+        glossarioOverlay.addEventListener('click', fecharGlossario);
+
+        glossarioSearch.addEventListener('input', () => {
+            if (glossarioData && !glossarioTermoSelecionado) {
+                renderizarGlossario(glossarioData.termos, glossarioSearch.value);
+            }
+        });
+
+        // Fechar com Esc
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && glossarioPanel.classList.contains('show')) {
+                fecharGlossario();
+            }
+        });
+
+        // Foco preso no glossário quando aberto
+        glossarioPanel.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab' && glossarioPanel.classList.contains('show')) {
+                const focusableElements = glossarioPanel.querySelectorAll('input, button');
+                const firstElement = focusableElements[0];
+                const lastElement = focusableElements[focusableElements.length - 1];
+
+                if (e.shiftKey && document.activeElement === firstElement) {
+                    e.preventDefault();
+                    lastElement.focus();
+                } else if (!e.shiftKey && document.activeElement === lastElement) {
+                    e.preventDefault();
+                    firstElement.focus();
+                }
+            }
+        });
+
+        // F3: Marcar itens como resolvidos
+        async function gerarHashArquivo(arquivo) {
+            const buffer = await arquivo.arrayBuffer();
+            const hashBuffer = await crypto.subtle.digest('SHA-256', buffer);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            const hashHex = hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+            return hashHex.substring(0, 16);
+        }
+
+        function carregarResolvidos(hash) {
+            const chave = `abntzando.resolvidos.${hash}`;
+            const salvo = localStorage.getItem(chave);
+            issuesResolvidos = salvo ? JSON.parse(salvo) : [];
+        }
+
+        function salvarResolvidos(hash) {
+            const chave = `abntzando.resolvidos.${hash}`;
+            localStorage.setItem(chave, JSON.stringify(issuesResolvidos));
+        }
+
+        function marcarResolvido(index) {
+            if (!issuesResolvidos.includes(index)) {
+                issuesResolvidos.push(index);
+            }
+            salvarResolvidos(currentFileHash);
+            atualizarIssuesUI();
+        }
+
+        function desmarcarResolvido(index) {
+            issuesResolvidos = issuesResolvidos.filter(i => i !== index);
+            salvarResolvidos(currentFileHash);
+            atualizarIssuesUI();
+        }
+
+        function atualizarIssuesUI() {
+            const filterPendentes = document.getElementById('filterPendentes').checked;
+            const checklistControls = document.getElementById('checklistControls');
+            const issuesList = document.getElementById('issuesList');
+            const resultSummary = document.getElementById('resultSummary');
+
+            if (!issuesFull.length) return;
+
+            // Atualizar classes de resolvido
+            issuesFull.forEach((issue, idx) => {
+                const issueEl = issuesList.querySelector(`[data-issue-idx="${idx}"]`);
+                if (issueEl) {
+                    if (issuesResolvidos.includes(idx)) {
+                        issueEl.classList.add('resolvido');
+                    } else {
+                        issueEl.classList.remove('resolvido');
+                    }
+                    issueEl.querySelector('input[type="checkbox"]').checked = issuesResolvidos.includes(idx);
+                }
+            });
+
+            // Filtrar se necessário
+            issuesList.querySelectorAll('[data-issue-idx]').forEach((el, idx) => {
+                if (filterPendentes && issuesResolvidos.includes(parseInt(el.getAttribute('data-issue-idx')))) {
+                    el.style.display = 'none';
+                } else {
+                    el.style.display = 'grid';
+                }
+            });
+
+            // Atualizar resumo
+            const resolvidos = issuesResolvidos.length;
+            const pendentes = issuesFull.length - resolvidos;
+            resultSummary.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-label">Total de problemas</div>
+                    <div class="summary-value">${issuesFull.length}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Resolvidos</div>
+                    <div class="summary-value">${resolvidos}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Pendentes</div>
+                    <div class="summary-value">${pendentes}</div>
+                </div>
+            `;
+
+            // Atualizar botão "Desmarcar todos"
+            document.getElementById('desmarcarTodos').disabled = resolvidos === 0;
+        }
+
+        document.getElementById('filterPendentes').addEventListener('change', atualizarIssuesUI);
+        document.getElementById('desmarcarTodos').addEventListener('click', () => {
+            if (confirm('Desmarcar todos os itens como resolvidos?')) {
+                issuesResolvidos = [];
+                salvarResolvidos(currentFileHash);
+                document.getElementById('filterPendentes').checked = false;
+                atualizarIssuesUI();
+            }
+        });
+
+        // F5: Exportar checklist
+        const exportModal = document.getElementById('exportModal');
+        const exportChecklistBtn = document.getElementById('exportChecklistBtn');
+        const exportMarkdownBtn = document.getElementById('exportMarkdown');
+        const exportTextBtn = document.getElementById('exportText');
+        const cancelExportBtn = document.getElementById('cancelExport');
+
+        function sanitizarNomeArquivo(nome) {
+            return nome
+                .replace(/\.docx$/i, '')
+                .replace(/[^a-z0-9áéíóúàâãõç\s-]/gi, '')
+                .replace(/\s+/g, '-')
+                .toLowerCase();
+        }
+
+        function gerarConteudoMarkdown() {
+            const hoje = new Date();
+            const dataFormatada = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+            const nomeArquivo = sanitizarNomeArquivo(currentFile.name);
+            const resolvidos = issuesResolvidos.length;
+            const pendentes = issuesFull.length - resolvidos;
+
+            let conteudo = `# Checklist: ${nomeArquivo}\n`;
+            conteudo += `Analisado em ${dataFormatada} · Perfil: NBR 14724\n`;
+            conteudo += `Total: ${issuesFull.length} · Resolvidos: ${resolvidos} · Pendentes: ${pendentes}\n\n`;
+
+            // Agrupar por categoria
+            const grupos = {};
+            issuesFull.forEach((issue, idx) => {
+                const categoria = issue.severity === 'error' ? 'Erros' : 'Avisos';
+                if (!grupos[categoria]) grupos[categoria] = [];
+                grupos[categoria].push({ ...issue, idx });
+            });
+
+            Object.entries(grupos).forEach(([categoria, issues]) => {
+                conteudo += `## ${categoria}\n`;
+                issues.forEach(issue => {
+                    const marcado = issuesResolvidos.includes(issue.idx) ? '[x]' : '[ ]';
+                    conteudo += `- ${marcado} ${issue.title}. ${issue.location}. Esperado: ${issue.description}. Norma: ${issue.severity === 'error' ? 'NBR 14724' : 'NBR 14724'}\n`;
+                });
+                conteudo += '\n';
+            });
+
+            return conteudo;
+        }
+
+        function gerarConteudoTexto() {
+            const hoje = new Date();
+            const dataFormatada = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+            const nomeArquivo = sanitizarNomeArquivo(currentFile.name);
+            const resolvidos = issuesResolvidos.length;
+            const pendentes = issuesFull.length - resolvidos;
+
+            let conteudo = `CHECKLIST: ${nomeArquivo}\n`;
+            conteudo += `Analisado em ${dataFormatada} | Perfil: NBR 14724\n`;
+            conteudo += `Total: ${issuesFull.length} | Resolvidos: ${resolvidos} | Pendentes: ${pendentes}\n`;
+            conteudo += '='.repeat(80) + '\n\n';
+
+            // Agrupar por categoria
+            const grupos = {};
+            issuesFull.forEach((issue, idx) => {
+                const categoria = issue.severity === 'error' ? 'ERROS' : 'AVISOS';
+                if (!grupos[categoria]) grupos[categoria] = [];
+                grupos[categoria].push({ ...issue, idx });
+            });
+
+            Object.entries(grupos).forEach(([categoria, issues]) => {
+                conteudo += `${categoria}\n`;
+                conteudo += '-'.repeat(80) + '\n';
+                issues.forEach((issue, i) => {
+                    const status = issuesResolvidos.includes(issue.idx) ? '[✓ RESOLVIDO]' : '[  PENDENTE ]';
+                    conteudo += `\n${i + 1}. ${status} ${issue.title}\n`;
+                    conteudo += `   Local: ${issue.location}\n`;
+                    conteudo += `   Esperado: ${issue.description}\n`;
+                    conteudo += `   Norma: NBR 14724\n`;
+                });
+                conteudo += '\n' + '='.repeat(80) + '\n\n';
+            });
+
+            return conteudo;
+        }
+
+        function exportarChecklist(formato) {
+            const nomeArquivo = sanitizarNomeArquivo(currentFile.name);
+            const hoje = new Date();
+            const data = `${hoje.getFullYear()}-${String(hoje.getMonth() + 1).padStart(2, '0')}-${String(hoje.getDate()).padStart(2, '0')}`;
+
+            let conteudo, nomeDownload, mimeType;
+
+            if (formato === 'md') {
+                conteudo = gerarConteudoMarkdown();
+                nomeDownload = `checklist-${nomeArquivo}-${data}.md`;
+                mimeType = 'text/markdown;charset=utf-8';
+            } else {
+                conteudo = gerarConteudoTexto();
+                nomeDownload = `checklist-${nomeArquivo}-${data}.txt`;
+                // UTF-8 com BOM para Windows Notepad
+                const BOM = '﻿';
+                conteudo = BOM + conteudo;
+                mimeType = 'text/plain;charset=utf-8';
+            }
+
+            const blob = new Blob([conteudo], { type: mimeType });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = nomeDownload;
+            a.click();
+            URL.revokeObjectURL(url);
+
+            showToast(`✓ Checklist exportado como ${formato.toUpperCase()}`, 'success');
+        }
+
+        exportChecklistBtn.addEventListener('click', () => {
+            if (issuesFull.length === 0) {
+                showToast('Nenhum problema para exportar', 'info');
+                return;
+            }
+            exportModal.classList.add('show');
+        });
+
+        exportMarkdownBtn.addEventListener('click', () => {
+            exportModal.classList.remove('show');
+            exportarChecklist('md');
+        });
+
+        exportTextBtn.addEventListener('click', () => {
+            exportModal.classList.remove('show');
+            exportarChecklist('txt');
+        });
+
+        cancelExportBtn.addEventListener('click', () => {
+            exportModal.classList.remove('show');
+        });
+
+        exportModal.addEventListener('click', (e) => {
+            if (e.target === exportModal) {
+                exportModal.classList.remove('show');
+            }
+        });
 
         function showToast(message, type = 'info', duration = 4000) {
             const toast = document.createElement('div');
             toast.className = `toast ${type}`;
-            toast.textContent = message;
+            toast.innerHTML = `<div class="toast-message">${message}</div>`;
             toastContainer.appendChild(toast);
 
             setTimeout(() => {
                 toast.classList.add('hide');
-                setTimeout(() => {
-                    toast.remove();
-                }, 300);
+                setTimeout(() => toast.remove(), 200);
             }, duration);
         }
 
@@ -1095,6 +2302,14 @@
         changeFileBtn.addEventListener('click', () => fileInput.click());
         removeFileBtn.addEventListener('click', resetForm);
 
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+        }
+
         async function handleFile(file) {
             if (!file.name.endsWith('.docx')) {
                 showToast('Por favor, envie um arquivo .docx', 'error');
@@ -1102,12 +2317,17 @@
             }
 
             currentFile = file;
+            currentFileHash = await gerarHashArquivo(file);
+            carregarResolvidos(currentFileHash);
             fileInfo.classList.add('show');
             fileName.textContent = file.name;
+            fileSize.textContent = formatFileSize(file.size);
             uploadArea.style.display = 'none';
             analyzing.classList.add('show');
             emptyState.style.display = 'none';
             results.classList.remove('show');
+            leftPanelActions.classList.remove('show');
+            rightPanelActions.classList.remove('show');
 
             try {
                 const formData = new FormData();
@@ -1133,44 +2353,98 @@
         function displayResults(result) {
             analyzing.classList.remove('show');
             results.classList.add('show');
-            convertPdfBtn.disabled = false;
-            leftPanelActions.style.display = 'flex';
 
             const issuesList = document.getElementById('issuesList');
-            const statusBadge = document.getElementById('statusBadge');
+            const resultSummary = document.getElementById('resultSummary');
+            const checklistControls = document.getElementById('checklistControls');
+
+            // Calcular resumo
+            const totalIssues = result.issues ? result.issues.length : 0;
+            const fixableCount = result.issues ? result.issues.filter(i => i.fixable).length : 0;
+            const manualCount = totalIssues - fixableCount;
 
             if (!result.issues || result.issues.length === 0) {
-                statusBadge.textContent = '✓ OK';
-                statusBadge.className = 'status-badge success';
-                issuesList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎉</div><p>Documento conforme ABNT!</p></div>';
+                issuesFull = [];
+                issuesList.innerHTML = '<div class="empty-state success-state"><div class="empty-state-icon">✓</div><p>Nenhum problema encontrado</p><p style="font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-2);">Seu documento está em conformidade com a ABNT!</p></div>';
+                checklistControls.style.display = 'none';
                 fixButton.disabled = true;
+                fixButtonLeft.disabled = true;
             } else {
-                statusBadge.textContent = result.issues.length + ' problema' + (result.issues.length > 1 ? 's' : '');
-                statusBadge.className = 'status-badge error';
+                issuesFull = result.issues;
+                checklistControls.style.display = 'flex';
 
-                issuesList.innerHTML = result.issues.map(issue => {
-                    let suggestion = '';
-                    if (issue.title.includes('Fonte')) {
-                        suggestion = '<span class="issue-suggestion">💡 Sugestão: Times New Roman ou Arial</span>';
-                    }
-                    let preview = '';
-                    if (issue.text_preview) {
-                        preview = `<span class="issue-text-preview">"${issue.text_preview}"</span>`;
-                    }
-                    return `
-                        <div class="issue ${issue.severity}${issue.fixable ? ' fixable' : ''}">
-                            <div class="issue-header">
-                                <span class="issue-title">${issue.title}</span>
-                                <span class="issue-severity ${issue.severity}">${issue.severity === 'error' ? 'Erro' : 'Aviso'}</span>
+                const groupedIssues = {};
+                result.issues.forEach((issue, globalIdx) => {
+                    const category = issue.severity === 'error' ? 'Erros' : 'Avisos';
+                    if (!groupedIssues[category]) groupedIssues[category] = [];
+                    groupedIssues[category].push({ ...issue, globalIdx });
+                });
+
+                issuesList.innerHTML = Object.entries(groupedIssues).map(([category, issues], idx) => `
+                    <div class="issue-group" style="animation-delay: ${idx * 100}ms">
+                        <div class="issue-group-title">${category} (${issues.length})</div>
+                        ${issues.map((issue, iIdx) => `
+                            <div class="issue ${issue.severity}" data-issue-idx="${issue.globalIdx}" style="animation-delay: ${(idx * 100) + (iIdx * 50)}ms">
+                                <div class="checkbox-wrapper">
+                                    <input type="checkbox" class="issue-checkbox" data-idx="${issue.globalIdx}" ${issuesResolvidos.includes(issue.globalIdx) ? 'checked' : ''} />
+                                    <div class="checkbox-visual"></div>
+                                </div>
+                                <div class="issue-icon">${issue.severity === 'error' ? '●' : '◆'}</div>
+                                <div class="issue-content">
+                                    <div class="issue-title">${issue.title}</div>
+                                    <div class="issue-location">${issue.description} • ${issue.location}</div>
+                                    ${issue.text_preview ? `<div style="font-size: var(--text-xs); color: var(--text-muted); margin-top: var(--space-2); font-style: italic;">"${issue.text_preview}"</div>` : ''}
+                                </div>
+                                <div class="issue-badge ${issue.fixable ? 'fixable' : 'manual'}">
+                                    ${issue.fixable ? 'Auto' : 'Manual'}
+                                </div>
                             </div>
-                            <div class="issue-description">${issue.description}</div>
-                            <div class="issue-location">${issue.location}</div>
-                            ${preview}
-                            ${suggestion}
-                        </div>
-                    `;
-                }).join('');
+                        `).join('')}
+                    </div>
+                `).join('');
+
+                // Adicionar event listeners aos checkboxes
+                issuesList.querySelectorAll('.issue-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', (e) => {
+                        const idx = parseInt(e.target.getAttribute('data-idx'));
+                        if (e.target.checked) {
+                            marcarResolvido(idx);
+                        } else {
+                            desmarcarResolvido(idx);
+                        }
+                    });
+                });
+
+                // Aplicar classe de resolvido aos itens
+                atualizarIssuesUI();
+
+                fixButton.disabled = false;
+                fixButtonLeft.disabled = false;
             }
+
+            // Atualizar resumo inicial
+            const resolvidos = issuesResolvidos.length;
+            const pendentes = totalIssues - resolvidos;
+            resultSummary.innerHTML = `
+                <div class="summary-item">
+                    <div class="summary-label">Total de problemas</div>
+                    <div class="summary-value">${totalIssues}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Resolvidos</div>
+                    <div class="summary-value">${resolvidos}</div>
+                </div>
+                <div class="summary-item">
+                    <div class="summary-label">Pendentes</div>
+                    <div class="summary-value">${pendentes}</div>
+                </div>
+            `;
+
+            // Resetar filtro
+            document.getElementById('filterPendentes').checked = false;
+
+            leftPanelActions.classList.add('show');
+            rightPanelActions.classList.add('show');
         }
 
         fixButton.addEventListener('click', async () => {
@@ -1196,11 +2470,15 @@
 
                     // Trocar botões de ajustar por baixar
                     fixButton.style.display = 'none';
-                    downloadButton.style.display = 'block';
+                    downloadButton.style.display = 'flex';
                     fixButtonLeft.style.display = 'none';
-                    downloadButtonLeft.style.display = 'block';
+                    downloadButtonLeft.style.display = 'flex';
 
-                    showToast('✓ Documento ajustado! Escolha o formato para baixar.', 'success');
+                    showToast('✓ Documento ajustado!', 'success');
+                } else {
+                    showToast('Erro ao ajustar documento', 'error');
+                    analyzing.classList.remove('show');
+                    results.classList.add('show');
                 }
             } catch (error) {
                 showToast('Erro ao ajustar: ' + error.message, 'error');
@@ -1212,6 +2490,10 @@
         });
 
         downloadButton.addEventListener('click', () => {
+            downloadModal.classList.add('show');
+        });
+
+        downloadButtonLeft.addEventListener('click', () => {
             downloadModal.classList.add('show');
         });
 
@@ -1251,68 +2533,41 @@
                     a.download = currentFile.name.replace('.docx', `_ajustado.${ext}`);
                     a.click();
                     window.URL.revokeObjectURL(url);
+                    showToast(`✓ ${ext.toUpperCase()} baixado com sucesso`, 'success');
+                } else {
+                    showToast('Erro ao baixar arquivo', 'error');
                 }
             } catch (error) {
                 showToast('Erro ao baixar: ' + error.message, 'error');
             }
         }
 
-        convertPdfBtn.addEventListener('click', async () => {
-            if (!currentFile) return;
-
-            convertPdfBtn.disabled = true;
-            convertPdfBtn.textContent = 'Convertendo...';
-
-            try {
-                const formData = new FormData();
-                formData.append('file', currentFile);
-
-                const response = await fetch('/api/convert-pdf', {
-                    method: 'POST',
-                    body: formData
-                });
-
-                if (response.ok) {
-                    const blob = await response.blob();
-                    const url = window.URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = currentFile.name.replace('.docx', '.pdf');
-                    a.click();
-                    window.URL.revokeObjectURL(url);
-                } else {
-                    const error = await response.json();
-                    showToast('Erro: ' + error.message, 'error');
-                }
-            } catch (error) {
-                showToast('Erro ao converter: ' + error.message, 'error');
-            } finally {
-                convertPdfBtn.disabled = false;
-                convertPdfBtn.textContent = 'Converter PDF';
-            }
-        });
-
         newAnalysisBtn.addEventListener('click', resetForm);
-        fixButtonLeft.addEventListener('click', fixButton.onclick = (e) => fixButton.click());
-        downloadButtonLeft.addEventListener('click', () => downloadModal.classList.add('show'));
+        fixButtonLeft.addEventListener('click', () => fixButton.click());
         newAnalysisButtonLeft.addEventListener('click', resetForm);
 
         function resetForm() {
             currentFile = null;
+            currentFileHash = null;
+            issuesResolvidos = [];
+            issuesFull = [];
             fileInput.value = '';
             fileInfo.classList.remove('show');
             analyzing.classList.remove('show');
             results.classList.remove('show');
             emptyState.style.display = 'flex';
             uploadArea.style.display = 'flex';
-            convertPdfBtn.disabled = true;
             fixButton.disabled = false;
+            fixButtonLeft.disabled = false;
             documentAdjusted = false;
-            fixButton.style.display = 'block';
+            fixButton.style.display = 'flex';
             downloadButton.style.display = 'none';
-            leftPanelActions.style.display = 'none';
-            fixButtonLeft.style.display = 'block';
+            fixButtonLeft.style.display = 'flex';
             downloadButtonLeft.style.display = 'none';
+            leftPanelActions.classList.remove('show');
+            rightPanelActions.classList.remove('show');
+            document.getElementById('filterPendentes').checked = false;
+            document.getElementById('checklistControls').style.display = 'none';
         }
     </script>
 </body>

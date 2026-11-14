@@ -24,9 +24,11 @@ class DocumentFixer:
         self.original_bytes = file_bytes
 
     def fix_all(self) -> bytes:
-        """Aplica apenas as correções seguras"""
-        # Apenas margem por enquanto - é a correção mais segura
+        """Aplica as correções seguras: margens e espaçamento"""
+        # Corrigir margens (sempre seguro)
         self.fix_margins()
+        # Corrigir espaçamento entre linhas (seguro)
+        self.fix_spacing()
 
         output = BytesIO()
         self.doc.save(output)
@@ -68,15 +70,14 @@ class DocumentFixer:
             print(f"Erro ao corrigir fontes: {e}")
 
     def fix_spacing(self):
-        """Corrige espaçamento com cuidado"""
+        """Corrige espaçamento entre linhas para 1.5"""
         try:
             for para in self.doc.paragraphs:
                 if not para.text.strip():
                     continue
 
-                # Só corrige se não tiver spacing definido
-                if para.paragraph_format.line_spacing is None:
-                    para.paragraph_format.line_spacing = self.LINE_SPACING
+                # Corrige o espaçamento para 1.5 (seguro)
+                para.paragraph_format.line_spacing = self.LINE_SPACING
         except Exception as e:
             print(f"Erro ao corrigir espaçamento: {e}")
 
