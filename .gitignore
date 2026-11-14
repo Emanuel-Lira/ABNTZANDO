@@ -54,3 +54,8 @@ Thumbs.db
 # Fixtures de teste com documentos reais: ficam fora do git
 tests/fixtures/
 .impeccable/config.local.json
+
+# Ferramentas locais de design/IA (Impeccable, Gemini) e configurações pessoais
+.claude/
+.gemini/
+.impeccable/
