@@ -1860,7 +1860,7 @@
         // Carregar glossário
         async function carregarGlossario() {
             try {
-                const response = await fetch('/static/data/glossario.json');
+                const response = await fetch('/api/glossario');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
                 glossarioData = await response.json();
                 renderizarGlossario(glossarioData.termos);

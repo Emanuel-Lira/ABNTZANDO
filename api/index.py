@@ -175,6 +175,16 @@ async def convert_to_pdf(file: UploadFile = File(...)):
             "message": f"Conversão para PDF indisponível. Tente baixar como DOCX."
         }
 
+@app.get("/api/glossario")
+async def get_glossario():
+    """Retorna os termos do glossário"""
+    try:
+        glossario_file = public_dir / "data" / "glossario.json"
+        with open(glossario_file, "r", encoding="utf-8") as f:
+            return json.load(f)
+    except Exception as e:
+        return {"error": str(e)}, 500
+
 @app.get("/health")
 async def health():
     """Health check"""
