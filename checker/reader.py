@@ -53,11 +53,7 @@ class DocumentReader:
                 'style': para.style.name if para.style else None,
                 'alignment': str(para.alignment),
                 'font_info': self.get_paragraph_font_info(para),
-                'spacing': {
-                    'line_spacing': para.paragraph_format.line_spacing,
-                    'space_before': para.paragraph_format.space_before.pt if para.paragraph_format.space_before else 0,
-                    'space_after': para.paragraph_format.space_after.pt if para.paragraph_format.space_after else 0,
-                },
+                'spacing': self._get_effective_spacing(para),
                 'indentation': {
                     'first_line': para.paragraph_format.first_line_indent.cm if para.paragraph_format.first_line_indent else 0,
                     'left': para.paragraph_format.left_indent.cm if para.paragraph_format.left_indent else 0,
@@ -68,19 +64,92 @@ class DocumentReader:
 
         return paragraphs_info
 
-    def get_paragraph_font_info(self, paragraph) -> Dict[str, Any]:
-        """Extrai informações de fonte de um parágrafo"""
-        if not paragraph.runs:
-            return {'font_name': None, 'font_size': None}
+    def _get_effective_spacing(self, paragraph) -> Dict[str, Any]:
+        """Extrai valor efetivo de espaçamento (entrelinhas e espaço entre parágrafos)"""
+        pf = paragraph.paragraph_format
 
-        run = paragraph.runs[0]
-        font_info = {
-            'font_name': run.font.name,
-            'font_size': run.font.size.pt if run.font.size else None,
-            'bold': run.font.bold,
-            'italic': run.font.italic,
+        # 1. Valor direto do parágrafo
+        line_spacing = pf.line_spacing
+        space_before = pf.space_before.pt if pf.space_before else 0
+        space_after = pf.space_after.pt if pf.space_after else 0
+
+        # 2. Se não tiver, tentar estilo do parágrafo
+        if not line_spacing:
+            try:
+                para_style = paragraph.style
+                if para_style and para_style.paragraph_format:
+                    line_spacing = para_style.paragraph_format.line_spacing
+            except:
+                pass
+
+        # 3. Se ainda não tiver, tentar estilo Normal
+        if not line_spacing:
+            try:
+                base_style = self.doc.styles['Normal']
+                if base_style and base_style.paragraph_format:
+                    line_spacing = base_style.paragraph_format.line_spacing
+            except:
+                pass
+
+        # 4. Padrão: 1.5
+        if not line_spacing:
+            line_spacing = 1.5
+
+        return {
+            'line_spacing': line_spacing,
+            'space_before': space_before,
+            'space_after': space_after,
         }
-        return font_info
+
+    def get_paragraph_font_info(self, paragraph) -> Dict[str, Any]:
+        """Extrai valor efetivo de fonte seguindo cadeia de estilos"""
+        font_name = None
+        font_size = None
+
+        # 1. Tentar formatação direta do primeiro run
+        if paragraph.runs:
+            run = paragraph.runs[0]
+            if run.font.name:
+                font_name = run.font.name
+            if run.font.size:
+                font_size = run.font.size.pt
+
+        # 2. Se não tiver, tentar estilo do parágrafo
+        if not font_name or not font_size:
+            try:
+                para_style = paragraph.style
+                if para_style and para_style.font:
+                    if not font_name and para_style.font.name:
+                        font_name = para_style.font.name
+                    if not font_size and para_style.font.size:
+                        font_size = para_style.font.size.pt
+            except:
+                pass
+
+        # 3. Se ainda não tiver, tentar estilo base (Normal)
+        if not font_name or not font_size:
+            try:
+                base_style = self.doc.styles['Normal']
+                if base_style and base_style.font:
+                    if not font_name and base_style.font.name:
+                        font_name = base_style.font.name
+                    if not font_size and base_style.font.size:
+                        font_size = base_style.font.size.pt
+            except:
+                pass
+
+        # 4. Padrões finais
+        if not font_name:
+            font_name = 'Times New Roman'
+        if not font_size:
+            font_size = 12
+
+        return {
+            'font_name': font_name,
+            'font_size': font_size,
+            'bold': None,
+            'italic': None,
+        }
 
     def get_styles_info(self) -> Dict[str, Any]:
         """Extrai informações dos estilos do documento"""
