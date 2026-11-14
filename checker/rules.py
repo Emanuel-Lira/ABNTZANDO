@@ -4,6 +4,7 @@ from .citacoes import VerificadorCitacoes
 from .sumario import VerificadorSumario
 from .zone_classifier import ZoneClassifier
 from .references_validator import ReferencesValidator
+from .organization_validator import OrganizationValidator
 
 @dataclass
 class Issue:
@@ -64,6 +65,7 @@ class ABNTRules:
         self.check_citacoes()
         self.check_sumario()
         self.check_references_format()
+        self.check_organization()
 
         return self.issues
 
@@ -335,4 +337,30 @@ class ABNTRules:
                 ))
         except Exception as e:
             # Silenciosamente ignorar erros de referências
+            pass
+
+    def check_organization(self):
+        """Verifica estrutura e organização do documento"""
+        try:
+            paragraphs = self.document_info.get('paragraphs', [])
+            if not paragraphs:
+                return
+
+            # Usar validador de organização
+            validator = OrganizationValidator(paragraphs)
+            org_issues = validator.validate()
+
+            # Converter para Issue
+            for org_issue in org_issues:
+                self.issues.append(Issue(
+                    title=org_issue.title,
+                    description=org_issue.description,
+                    severity=org_issue.severity,
+                    location=org_issue.location,
+                    fixable=False,
+                    fix_type='organization',
+                    text_preview=None
+                ))
+        except Exception as e:
+            # Silenciosamente ignorar erros de organização
             pass
