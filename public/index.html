@@ -10,12 +10,13 @@
     <script>
         // Aplicar tema antes do render para evitar flash
         (function() {
-            const savedTheme = localStorage.getItem('abntzando.tema');
-            if (savedTheme) {
-                document.documentElement.setAttribute('data-theme', savedTheme);
-            } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-                document.documentElement.setAttribute('data-theme', 'dark');
-            }
+            // Padrão: escuro, independente do sistema. A escolha do usuário fica salva.
+            let tema = 'dark';
+            try {
+                const salvo = localStorage.getItem('abntzando.tema.v2');
+                if (salvo === 'light' || salvo === 'dark') tema = salvo;
+            } catch (e) { /* sem armazenamento: usa o padrão */ }
+            document.documentElement.setAttribute('data-theme', tema);
         })();
     </script>
     <style>
@@ -783,6 +784,8 @@
             --box-line: #1B1B19;
             --sev-error: #B3412F;
             --sev-warning: #8A6A10;
+            --head: #5E5E58;
+            --item-bg: #EFEEE9;
             background: transparent;
             border: none;
             padding: var(--space-6) var(--space-6) 0;
@@ -812,6 +815,8 @@
             --btn-hover: #D6D6CE;
             --sev-error: #E5766E;
             --sev-warning: #D9A441;
+            --head: #9AA0AB;
+            --item-bg: #181B21;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -834,6 +839,8 @@
                 --btn-hover: #D6D6CE;
                 --sev-error: #E5766E;
                 --sev-warning: #D9A441;
+                --head: #9AA0AB;
+                --item-bg: #181B21;
             }
         }
 
@@ -2887,6 +2894,183 @@
                 scroll-behavior: auto !important;
             }
         }
+        /* Corrigir e "Desmarcar todos" lado a lado, na coluna de ação do cabeçalho */
+        .res-acoes {
+            grid-area: action;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            justify-self: end;
+        }
+
+        .review #desmarcarTodos {
+            min-height: 24px;
+            padding: 0;
+            background: none;
+            border: none;
+            font: inherit;
+            font-size: 13px;
+            color: var(--text);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .review #desmarcarTodos:disabled {
+            color: var(--muted);
+            text-decoration: none;
+            cursor: default;
+        }
+
+        .review #desmarcarTodos:focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 2px;
+        }
+
+        @media (max-width: 600px) {
+            .res-acoes {
+                width: 100%;
+                justify-self: stretch;
+                justify-content: space-between;
+            }
+        }
+        /* Hierarquia da lista: cabeçalhos de seção discretos; itens como linhas com fundo.
+           A seta de recolher continua; IDs, classes e JavaScript não mudam. */
+        .review .res-group-head {
+            padding: 16px 0;
+            border-top: 1px solid var(--line);
+            border-bottom: none;
+        }
+
+        .review .res-group:first-child .res-group-head {
+            border-top: none;
+        }
+
+        .review .res-group-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--head);
+        }
+
+        /* Botão Corrigir: texto centralizado na altura e sempre numa linha só */
+        .review .res-action {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1.2;
+            min-width: max-content;
+            flex: 0 0 auto;
+            white-space: nowrap;
+        }
+
+        .review .res-acoes {
+            flex-wrap: wrap;
+        }
+
+        .review .res-group-toggle {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--head);
+        }
+
+        .review .res-group-count {
+            color: var(--head);
+        }
+
+        .review .res-item {
+            padding: 16px;
+            background: var(--item-bg);
+            border-radius: 8px;
+        }
+
+        .review .res-item-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text);
+        }
+        /* O painel de resultados não é cartão: o hover do .card não pode desenhar sombra nem borda nele */
+        .review.card:hover {
+            box-shadow: none;
+            border-color: transparent;
+        }
+
+        /* Estado vazio: mesmo cartão do painel "Enviar documento" (borda, fundo e raio) */
+        #emptyState.empty-state {
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--surface);
+            box-shadow: var(--shadow-sm);
+            min-height: 320px;
+            box-sizing: border-box;
+        }
+        /* Tela inicial: só o cartão de envio, centralizado. O painel de resultados aparece após a análise. */
+        .intro-envio {
+            margin: 0 0 var(--space-4);
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+            line-height: 1.5;
+        }
+
+        .card:has(#fileInfo.show) .intro-envio {
+            display: none;
+        }
+
+        .main-content:not(:has(#results.show)) .upload-area {
+            min-height: 260px;
+        }
+
+        @keyframes resultadosEntram {
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Celular (uma coluna): o painel entra com fade, sem reorganizar a tela */
+        @media (max-width: 960px) {
+            .main-content:not(:has(#results.show)) {
+                grid-template-columns: minmax(0, 1fr);
+                max-width: 560px;
+            }
+
+            .main-content:not(:has(#results.show)) .review {
+                display: none;
+            }
+
+            .main-content:has(#results.show) .review {
+                animation: resultadosEntram 320ms ease-out both;
+            }
+        }
+
+        /* Desktop: a coluna do envio encolhe enquanto o painel de resultados abre ao lado */
+        @media (min-width: 961px) {
+            .main-content {
+                transition: grid-template-columns 400ms ease, column-gap 400ms ease;
+            }
+
+            .main-content:not(:has(#results.show)) {
+                grid-template-columns: 560px 0fr;
+                column-gap: 0;
+                justify-content: center;
+            }
+
+            .review {
+                min-width: 0;
+                overflow: hidden;
+                transition: opacity 320ms ease 150ms;
+            }
+
+            .main-content:not(:has(#results.show)) .review {
+                opacity: 0;
+                visibility: hidden;
+                pointer-events: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -2902,9 +3086,7 @@
                 <button type="button" class="ajustes-btn" id="ajustesBtn" aria-haspopup="true" aria-expanded="false" aria-controls="ajustesMenu">Ajustes</button>
                 <div class="ajustes-menu" id="ajustesMenu" role="menu" hidden>
                     <button type="button" role="menuitem" id="themeToggle">Tema escuro</button>
-                    <button type="button" role="menuitem" id="glossarioBtn">Guia</button>
-                    <button type="button" role="menuitem" id="desmarcarTodos" disabled>Desmarcar todos</button>
-                </div>
+                    <button type="button" role="menuitem" id="glossarioBtn">Guia</button>                </div>
             </div>
         </div>
     </header>
@@ -2914,6 +3096,7 @@
         <!-- Left Panel: Upload -->
         <div class="card">
             <h2 class="card-title">Enviar documento</h2>
+            <p class="intro-envio">Envie seu .docx para ver os problemas de formatação ABNT.</p>
 
             <div class="file-info" id="fileInfo">
                 <div class="file-name" id="fileName"></div>
@@ -2952,7 +3135,10 @@
             <div class="results" id="results">
                 <header class="res-head">
                     <h2 class="res-title">Resultado</h2>
-                    <button type="button" class="res-action" id="fixButton" disabled>Nenhum item corrigível</button>
+                    <div class="res-acoes">
+                        <button type="button" class="res-action" id="fixButton" disabled>Nenhum item corrigível</button>
+                        <button type="button" id="desmarcarTodos" disabled>Desmarcar todos</button>
+                    </div>
                     <p class="res-summary" id="resultSummary"></p>
                 </header>
 
@@ -3094,32 +3280,15 @@
 
         // Theme toggle
         function updateThemeIcon() {
-            const theme = document.documentElement.getAttribute('data-theme');
-            const isDark = theme === 'dark' ||
-                          (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
+            const isDark = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark';
             themeToggle.textContent = isDark ? 'Tema claro' : 'Tema escuro';
         }
 
         themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-
-            let newTheme;
-            if (currentTheme === 'dark') {
-                newTheme = 'light';
-            } else if (currentTheme === 'light') {
-                newTheme = null; // Sistema
-            } else {
-                newTheme = prefersDark ? 'light' : 'dark';
-            }
-
-            if (newTheme) {
-                document.documentElement.setAttribute('data-theme', newTheme);
-                localStorage.setItem('abntzando.tema', newTheme);
-            } else {
-                document.documentElement.removeAttribute('data-theme');
-                localStorage.removeItem('abntzando.tema');
-            }
+            const atual = document.documentElement.getAttribute('data-theme') || 'dark';
+            const novo = atual === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', novo);
+            try { localStorage.setItem('abntzando.tema.v2', novo); } catch (e) { /* sem armazenamento: vale só nesta sessão */ }
 
             updateThemeIcon();
         });
