@@ -1862,8 +1862,13 @@
             try {
                 const response = await fetch('/api/glossario');
                 if (!response.ok) throw new Error(`HTTP ${response.status}`);
-                glossarioData = await response.json();
-                renderizarGlossario(glossarioData.termos);
+                const data = await response.json();
+                glossarioData = data;
+                const termos = data.termos || data;
+                if (!Array.isArray(termos)) {
+                    throw new Error('Formato de glossário inválido');
+                }
+                renderizarGlossario(termos);
             } catch (error) {
                 console.error('Erro ao carregar glossário:', error);
                 glossarioContent.innerHTML = '<div class="glossario-empty">Erro ao carregar glossário. Tente recarregar a página.</div>';
@@ -1877,6 +1882,11 @@
         function renderizarGlossario(termos, filtro = '') {
             glossarioTermoSelecionado = null;
 
+            if (!termos || termos.length === 0) {
+                glossarioContent.innerHTML = '<div class="glossario-empty">Nenhum termo encontrado</div>';
+                return;
+            }
+
             if (filtro) {
                 const filtroNorm = removerAcentos(filtro);
                 termos = termos.filter(termo => {
@@ -1884,11 +1894,11 @@
                     const defNorm = removerAcentos(termo.definicao);
                     return nomeNorm.includes(filtroNorm) || defNorm.includes(filtroNorm);
                 });
-            }
 
-            if (termos.length === 0) {
-                glossarioContent.innerHTML = '<div class="glossario-empty">Nenhum termo encontrado</div>';
-                return;
+                if (termos.length === 0) {
+                    glossarioContent.innerHTML = '<div class="glossario-empty">Nenhum termo encontrado</div>';
+                    return;
+                }
             }
 
             // Agrupar por letra
@@ -1924,8 +1934,9 @@
 
         function expandirTermo(termo) {
             glossarioTermoSelecionado = termo;
+            const todosOsTermos = glossarioData.termos || glossarioData;
             const relacionados = termo.relacionados
-                .map(nomeTermo => glossarioData.termos.find(t => removerAcentos(t.nome) === removerAcentos(nomeTermo)))
+                .map(nomeTermo => todosOsTermos.find(t => removerAcentos(t.nome) === removerAcentos(nomeTermo)))
                 .filter(Boolean);
 
             glossarioContent.innerHTML = `
@@ -1950,7 +1961,8 @@
             `;
 
             document.getElementById('voltarBtn').addEventListener('click', () => {
-                renderizarGlossario(glossarioData.termos, glossarioSearch.value);
+                const todosOsTermos = glossarioData.termos || glossarioData;
+                renderizarGlossario(todosOsTermos, glossarioSearch.value);
             });
 
             glossarioContent.querySelectorAll('.glossario-termo-relacionado').forEach(btn => {
@@ -1981,7 +1993,8 @@
 
         glossarioSearch.addEventListener('input', () => {
             if (glossarioData && !glossarioTermoSelecionado) {
-                renderizarGlossario(glossarioData.termos, glossarioSearch.value);
+                const todosOsTermos = glossarioData.termos || glossarioData;
+                renderizarGlossario(todosOsTermos, glossarioSearch.value);
             }
         });
 
