@@ -621,58 +621,26 @@
             color: var(--text-muted);
         }
 
-        /* Custom Checkbox Wrapper */
+        /* Custom Checkbox */
         .checkbox-wrapper {
             position: absolute;
             top: var(--space-3);
             right: var(--space-3);
-            width: 24px;
-            height: 24px;
         }
 
         .issue-checkbox {
-            position: absolute;
-            width: 0;
-            height: 0;
-            opacity: 0;
-        }
-
-        .checkbox-visual {
-            position: absolute;
-            top: 0;
-            left: 0;
             width: 24px;
             height: 24px;
-            border: 2px solid var(--border-strong);
-            border-radius: 4px;
-            background: var(--surface);
-            transition: all 200ms ease;
             cursor: pointer;
+            accent-color: var(--primary);
+            margin: 0;
+            padding: 0;
         }
 
-        .issue-checkbox:hover + .checkbox-visual {
-            border-color: var(--primary);
-            background: var(--primary-soft);
-        }
-
-        .issue-checkbox:checked + .checkbox-visual {
-            background: var(--primary);
-            border-color: var(--primary);
-        }
-
-        .issue-checkbox:checked + .checkbox-visual::after {
-            content: '✓';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: white;
-            font-weight: bold;
-            font-size: 14px;
-        }
-
-        .issue-checkbox:focus-visible + .checkbox-visual {
-            outline: var(--focus-ring);
+        .issue-checkbox::-webkit-outer-spin-button,
+        .issue-checkbox::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .issue-icon {
@@ -1780,6 +1748,18 @@
         </div>
     </div>
 
+    <!-- Confirm Desmarcar Todos Modal -->
+    <div class="modal-overlay" id="confirmDesmarcarModal">
+        <div class="modal">
+            <h3 class="modal-title">Desmarcar todos?</h3>
+            <p class="modal-description">Todos os itens serão marcados como pendentes. Tem certeza?</p>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="confirmDesmarcar">Desmarcar</button>
+                <button class="btn btn-secondary" id="cancelDesmarcar">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Glossário -->
     <div class="glossario-overlay" id="glossarioOverlay"></div>
     <div class="glossario-panel" id="glossarioPanel">
@@ -2116,12 +2096,30 @@
         }
 
         document.getElementById('filterPendentes').addEventListener('change', atualizarIssuesUI);
+        const confirmDesmarcarModal = document.getElementById('confirmDesmarcarModal');
+        const confirmDesmarcarBtn = document.getElementById('confirmDesmarcar');
+        const cancelDesmarcarBtn = document.getElementById('cancelDesmarcar');
+
         document.getElementById('desmarcarTodos').addEventListener('click', () => {
-            if (confirm('Desmarcar todos os itens como resolvidos?')) {
-                issuesResolvidos = [];
-                salvarResolvidos(currentFileHash);
-                document.getElementById('filterPendentes').checked = false;
-                atualizarIssuesUI();
+            confirmDesmarcarModal.classList.add('show');
+        });
+
+        confirmDesmarcarBtn.addEventListener('click', () => {
+            confirmDesmarcarModal.classList.remove('show');
+            issuesResolvidos = [];
+            salvarResolvidos(currentFileHash);
+            document.getElementById('filterPendentes').checked = false;
+            atualizarIssuesUI();
+            showToast('✓ Todos os itens foram desmarcados', 'success');
+        });
+
+        cancelDesmarcarBtn.addEventListener('click', () => {
+            confirmDesmarcarModal.classList.remove('show');
+        });
+
+        confirmDesmarcarModal.addEventListener('click', (e) => {
+            if (e.target === confirmDesmarcarModal) {
+                confirmDesmarcarModal.classList.remove('show');
             }
         });
 
@@ -2387,7 +2385,6 @@
                             <div class="issue ${issue.severity}" data-issue-idx="${issue.globalIdx}" style="animation-delay: ${(idx * 100) + (iIdx * 50)}ms">
                                 <div class="checkbox-wrapper">
                                     <input type="checkbox" class="issue-checkbox" data-idx="${issue.globalIdx}" ${issuesResolvidos.includes(issue.globalIdx) ? 'checked' : ''} />
-                                    <div class="checkbox-visual"></div>
                                 </div>
                                 <div class="issue-icon">${issue.severity === 'error' ? '●' : '◆'}</div>
                                 <div class="issue-content">
