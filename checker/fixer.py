@@ -24,9 +24,19 @@ class DocumentFixer:
         self.original_bytes = file_bytes
 
     def fix_all(self) -> bytes:
-        """Aplica as correções seguras: margens e espaçamento"""
+        """Aplica correções seguras: margens, fonte e espaçamento
+
+        Correções aplicadas:
+        - Margens: 3cm superior/esquerda, 2cm inferior/direita
+        - Fonte: Times New Roman 12pt (se não recomendada)
+        - Espaçamento: 1.5 entrelinhas no texto
+        """
         # Corrigir margens (sempre seguro)
         self.fix_margins()
+
+        # Corrigir fonte (seguro - apenas não recomendadas)
+        self.fix_fonts()
+
         # Corrigir espaçamento entre linhas (seguro)
         self.fix_spacing()
 
@@ -47,37 +57,66 @@ class DocumentFixer:
             print(f"Erro ao corrigir margens: {e}")
 
     def fix_fonts(self):
-        """Corrige a fonte com cuidado"""
+        """Corrige fonte para Times New Roman 12pt se estiver incorreta
+
+        Estratégia segura:
+        - Se font.name é None ou não é Times/Arial: corrige para Times
+        - Se font.size é None: corrige para 12pt
+        - Mantém a formatação direta explícita
+        """
         try:
             for para in self.doc.paragraphs:
-                # Apenas parágrafo com texto
+                # Pular parágrafos vazios
                 if not para.text.strip():
                     continue
 
-                # Apenas se tiver runs
+                # Pular se não tem runs
                 if not para.runs:
                     continue
 
-                # Aplicar apenas para runs sem formatação específica
+                # Corrigir cada run
                 for run in para.runs:
-                    # Se a fonte for None ou não recomendada, corrige
-                    if run.font.name is None or run.font.name not in ['Times New Roman', 'Arial']:
+                    # Corrigir font.name se não for recomendada
+                    if run.font.name:
+                        # Se não é Times ou Arial, corrige
+                        if run.font.name not in ['Times New Roman', 'Arial']:
+                            run.font.name = self.FONT_NAME
+                    else:
+                        # Se é None, corrige para Times
                         run.font.name = self.FONT_NAME
 
-                    if run.font.size is None:
+                    # Corrigir font.size se não for 12pt
+                    if run.font.size:
+                        # Se não é 12pt, corrige
+                        if run.font.size.pt != self.FONT_SIZE:
+                            run.font.size = Pt(self.FONT_SIZE)
+                    else:
+                        # Se é None, corrige para 12pt
                         run.font.size = Pt(self.FONT_SIZE)
         except Exception as e:
             print(f"Erro ao corrigir fontes: {e}")
 
     def fix_spacing(self):
-        """Corrige espaçamento entre linhas para 1.5"""
+        """Corrige espaçamento entre linhas para 1.5 (entrelinhas)
+
+        Nota: Aplicará 1.5 para todos os parágrafos
+        (idealmente seria 1.5 em corpo e 1.0 em referências, mas isso requer detecção de zona)
+        """
         try:
             for para in self.doc.paragraphs:
+                # Pular parágrafos vazios
                 if not para.text.strip():
                     continue
 
-                # Corrige o espaçamento para 1.5 (seguro)
-                para.paragraph_format.line_spacing = self.LINE_SPACING
+                # Corrigir espaçamento para 1.5
+                current = para.paragraph_format.line_spacing
+
+                # Se tiver valor e não for 1.5, corrige
+                if current and current != self.LINE_SPACING:
+                    para.paragraph_format.line_spacing = self.LINE_SPACING
+                elif not current:
+                    # Se for None, também define
+                    para.paragraph_format.line_spacing = self.LINE_SPACING
         except Exception as e:
             print(f"Erro ao corrigir espaçamento: {e}")
 
