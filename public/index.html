@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABNTzando com Lala</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #9c27b0;
+            --primary-dark: #6a1b9a;
+            --primary-light: #ba68c8;
+            --accent: #00bcd4;
+            --dark-bg: #0d0d0d;
+            --dark-surface: #1a1a1a;
+            --text-primary: #ffffff;
+            --text-secondary: #b0b0b0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Georgia', 'Garamond', 'Segoe UI', serif;
+            background: linear-gradient(135deg, var(--dark-bg) 0%, #1a0033 100%);
+            background-attachment: fixed;
+            min-height: 100vh;
+            color: var(--text-primary);
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Efeito de fundo animado */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(156, 39, 176, 0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 80%, rgba(0, 188, 212, 0.1) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        /* Header Minimalista */
+        .header {
+            background: var(--dark-surface);
+            border-bottom: 1px solid rgba(156, 39, 176, 0.2);
+            padding: 18px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            backdrop-filter: blur(10px);
+            background: rgba(26, 26, 26, 0.95);
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            text-decoration: none;
+        }
+
+        .syringe-logo {
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+        }
+
+        .header-title {
+            font-size: 1.4em;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-family: 'Georgia', serif;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        .btn-convert {
+            padding: 10px 20px;
+            background: rgba(156, 39, 176, 0.2);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .btn-convert:hover:not(:disabled) {
+            background: rgba(156, 39, 176, 0.3);
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .btn-convert:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Main Container */
+        .main-content {
+            flex: 1;
+            display: grid;
+            grid-template-columns: 420px 1fr;
+            gap: 30px;
+            padding: 40px;
+            max-width: 1600px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* Panel */
+        .panel {
+            display: flex;
+            flex-direction: column;
+            background: var(--dark-surface);
+            border: 1px solid rgba(156, 39, 176, 0.2);
+            border-radius: 12px;
+            padding: 35px;
+            transition: all 0.3s ease;
+        }
+
+        .panel:hover {
+            border-color: rgba(156, 39, 176, 0.4);
+            box-shadow: 0 20px 40px rgba(156, 39, 176, 0.1);
+        }
+
+        .panel-title {
+            font-size: 1.3em;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: var(--text-primary);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .panel-title::before {
+            content: '';
+            width: 4px;
+            height: 24px;
+            background: linear-gradient(180deg, var(--primary) 0%, var(--accent) 100%);
+            border-radius: 2px;
+        }
+
+        /* Upload Section */
+        .upload-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 30px;
+            border: 2px dashed rgba(156, 39, 176, 0.3);
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            flex: 1;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(156, 39, 176, 0.6);
+            background: rgba(156, 39, 176, 0.05);
+        }
+
+        .upload-area.active {
+            border-color: var(--primary);
+            background: rgba(156, 39, 176, 0.1);
+        }
+
+        .upload-icon {
+            font-size: 3.5em;
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .upload-area:hover .upload-icon {
+            transform: scale(1.15);
+        }
+
+        .upload-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-primary);
+        }
+
+        .upload-hint {
+            font-size: 0.9em;
+            color: var(--text-secondary);
+        }
+
+        #fileInput {
+            display: none;
+        }
+
+        /* File Info */
+        .file-info {
+            display: none;
+            padding: 20px;
+            background: rgba(156, 39, 176, 0.1);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .file-info.show {
+            display: block;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .file-name::before {
+            content: '📄';
+            font-size: 1.2em;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-small {
+            padding: 8px 16px;
+            background: rgba(244, 67, 54, 0.2);
+            border: 1px solid rgba(244, 67, 54, 0.4);
+            color: #ff6b6b;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.85em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-small:hover {
+            background: rgba(244, 67, 54, 0.3);
+            border-color: #ff6b6b;
+        }
+
+        /* Analyzing State */
+        .analyzing {
+            display: none !important;
+            text-align: center;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .analyzing.show {
+            display: flex !important;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .spinner-container {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin-bottom: 25px;
+        }
+
+        .spinner {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid rgba(156, 39, 176, 0.2);
+            border-top: 3px solid var(--primary);
+            border-right: 3px solid var(--accent);
+            border-radius: 50%;
+            animation: spin 2s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .analyzing-text {
+            font-size: 1.1em;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .analyzer-steps {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .step {
+            padding: 6px 12px;
+            background: rgba(156, 39, 176, 0.1);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            border-radius: 16px;
+            font-size: 0.85em;
+            color: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+            font-weight: 600;
+        }
+
+        .step:nth-child(1) { animation-delay: 0s; }
+        .step:nth-child(2) { animation-delay: 0.3s; }
+        .step:nth-child(3) { animation-delay: 0.6s; }
+
+        @keyframes pulse {
+            0%, 100% { background: rgba(156, 39, 176, 0.1); }
+            50% { background: rgba(156, 39, 176, 0.2); }
+        }
+
+        /* Results Section */
+        .results {
+            display: none;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            max-height: calc(100vh - 200px);
+        }
+
+        .results.show {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 2px solid rgba(156, 39, 176, 0.3);
+        }
+
+        .result-header h2 {
+            font-size: 1.3em;
+            font-weight: 700;
+        }
+
+        .fix-info {
+            background: rgba(0, 188, 212, 0.1);
+            border: 1px solid rgba(0, 188, 212, 0.3);
+            border-radius: 6px;
+            padding: 12px 16px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        .fix-info strong {
+            color: var(--accent);
+            display: block;
+            margin-bottom: 8px;
+        }
+
+        .status-badge {
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 700;
+            white-space: nowrap;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            background: rgba(156, 39, 176, 0.2);
+            border: 1px solid rgba(156, 39, 176, 0.4);
+            color: var(--primary);
+        }
+
+        .status-badge.error {
+            background: rgba(244, 67, 54, 0.15);
+            border-color: rgba(244, 67, 54, 0.3);
+            color: #ff6b6b;
+        }
+
+        .status-badge.warning {
+            background: rgba(255, 152, 0, 0.15);
+            border-color: rgba(255, 152, 0, 0.3);
+            color: #ffb74d;
+        }
+
+        .status-badge.success {
+            background: rgba(76, 175, 80, 0.15);
+            border-color: rgba(76, 175, 80, 0.3);
+            color: #81c784;
+        }
+
+        /* Issue Cards */
+        .issues-list {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            flex: 1;
+        }
+
+        .issue {
+            background: rgba(156, 39, 176, 0.05);
+            border: 1px solid rgba(156, 39, 176, 0.2);
+            border-left: 4px solid var(--primary);
+            padding: 18px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .issue:hover {
+            background: rgba(156, 39, 176, 0.08);
+            border-color: rgba(156, 39, 176, 0.4);
+            transform: translateX(5px);
+        }
+
+        .issue.error {
+            border-left-color: #ff6b6b;
+        }
+
+        .issue.warning {
+            border-left-color: #ffb74d;
+        }
+
+        .issue-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 10px;
+            gap: 12px;
+        }
+
+        .issue-title {
+            font-size: 1em;
+            font-weight: 700;
+            color: var(--text-primary);
+            flex: 1;
+        }
+
+        .issue-severity {
+            font-size: 0.7em;
+            padding: 4px 10px;
+            border-radius: 3px;
+            background: rgba(156, 39, 176, 0.2);
+            color: var(--primary);
+            font-weight: 700;
+            white-space: nowrap;
+            text-transform: uppercase;
+        }
+
+        .issue.error .issue-severity {
+            background: rgba(244, 67, 54, 0.2);
+            color: #ff6b6b;
+        }
+
+        .issue.warning .issue-severity {
+            background: rgba(255, 152, 0, 0.2);
+            color: #ffb74d;
+        }
+
+        .issue-description {
+            color: var(--text-secondary);
+            font-size: 0.95em;
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .issue-location {
+            font-size: 0.85em;
+            color: var(--text-secondary);
+            opacity: 0.8;
+        }
+
+        .issue-text-preview {
+            display: block;
+            font-size: 0.9em;
+            color: var(--text-secondary);
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(156, 39, 176, 0.15);
+            font-style: italic;
+            max-height: 60px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .issue-suggestion {
+            display: block;
+            font-size: 0.9em;
+            color: var(--accent);
+            margin-top: 10px;
+            padding-top: 10px;
+            border-top: 1px solid rgba(156, 39, 176, 0.2);
+            font-weight: 600;
+        }
+
+        .issue.fixable::after {
+            content: "✓ Corrigível automaticamente";
+            display: block;
+            font-size: 0.85em;
+            color: #81c784;
+            margin-top: 8px;
+            font-weight: bold;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .empty-state-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        /* Actions */
+        .result-actions {
+            display: none;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(156, 39, 176, 0.2);
+        }
+
+        .result-actions.show {
+            display: flex;
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 14px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9em;
+        }
+
+        .btn-fix {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-fix:hover:not(:disabled) {
+            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-fix:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-new {
+            background: rgba(156, 39, 176, 0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-new:hover {
+            background: rgba(156, 39, 176, 0.2);
+        }
+
+        /* Download Modal */
+        .download-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .download-modal.show {
+            display: flex;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .modal-content {
+            background: var(--dark-surface);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            border-radius: 12px;
+            padding: 40px;
+            max-width: 400px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-content h3 {
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: var(--text-primary);
+        }
+
+        .modal-content p {
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            font-size: 0.95em;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 15px;
+            flex-direction: column;
+        }
+
+        .btn-modal {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-size: 0.9em;
+        }
+
+        .btn-modal-primary {
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: white;
+            border: 2px solid var(--primary);
+        }
+
+        .btn-modal-primary:hover {
+            box-shadow: 0 8px 20px rgba(156, 39, 176, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .btn-modal-secondary {
+            background: rgba(156, 39, 176, 0.1);
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-modal-secondary:hover {
+            background: rgba(156, 39, 176, 0.2);
+        }
+
+        .btn-modal-cancel {
+            background: rgba(100, 100, 100, 0.2);
+            color: var(--text-secondary);
+            border: 2px solid rgba(100, 100, 100, 0.3);
+        }
+
+        .btn-modal-cancel:hover {
+            background: rgba(100, 100, 100, 0.3);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--dark-surface);
+            border: 1px solid rgba(156, 39, 176, 0.3);
+            border-radius: 8px;
+            padding: 16px 24px;
+            color: var(--text-primary);
+            font-size: 0.95em;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            z-index: 999;
+            animation: slideInUp 0.3s ease-out;
+            max-width: 400px;
+        }
+
+        .toast.success {
+            border-color: rgba(76, 175, 80, 0.4);
+            background: rgba(76, 175, 80, 0.1);
+            color: #81c784;
+        }
+
+        .toast.error {
+            border-color: rgba(244, 67, 54, 0.4);
+            background: rgba(244, 67, 54, 0.1);
+            color: #ff6b6b;
+        }
+
+        .toast.info {
+            border-color: rgba(0, 188, 212, 0.4);
+            background: rgba(0, 188, 212, 0.1);
+            color: var(--accent);
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideOutDown {
+            from {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            to {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+        }
+
+        .toast.hide {
+            animation: slideOutDown 0.3s ease-out forwards;
+        }
+
+        /* Panel adjustments */
+        .panel:first-child {
+            min-height: 400px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .left-panel-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 20px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(156, 39, 176, 0.2);
+        }
+
+        .left-panel-actions .btn-action {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 0.85em;
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .issues-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 25px;
+            }
+
+            .results {
+                max-height: 500px;
+            }
+
+            .modal-content {
+                margin: 20px;
+                max-width: 90%;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 20px;
+                flex-wrap: wrap;
+                gap: 15px;
+            }
+
+            .header-title {
+                font-size: 1.1em;
+            }
+
+            .header-actions {
+                width: 100%;
+            }
+
+            .main-content {
+                padding: 15px;
+            }
+
+            .panel {
+                padding: 20px;
+            }
+
+            .upload-area {
+                padding: 35px 20px;
+            }
+
+            .upload-icon {
+                font-size: 2.5em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-brand">
+            <div class="syringe-logo">💉</div>
+            <h1 class="header-title">abntzando com lala</h1>
+        </div>
+        <div class="header-actions">
+            <button class="btn-convert" id="convertPdfBtn" disabled>Converter PDF</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Left Panel: Upload -->
+        <div class="panel">
+            <div class="panel-title">Envie seu documento</div>
+
+            <div class="file-info" id="fileInfo">
+                <div class="file-name" id="fileName"></div>
+                <div class="file-actions">
+                    <button class="btn-small" id="changeFileBtn">Enviar outro</button>
+                    <button class="btn-small" id="removeFileBtn">Remover</button>
+                </div>
+            </div>
+
+            <div class="left-panel-actions" id="leftPanelActions" style="display: none;">
+                <button class="btn-action btn-fix" id="fixButtonLeft">Ajustar</button>
+                <button class="btn-action btn-fix" id="downloadButtonLeft" style="display: none;">Baixar</button>
+                <button class="btn-action btn-new" id="newAnalysisButtonLeft">Nova análise</button>
+            </div>
+
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📎</div>
+                <div class="upload-text">Clique ou arraste seu arquivo</div>
+                <div class="upload-hint">Apenas .docx</div>
+                <input type="file" id="fileInput" accept=".docx" />
+            </div>
+
+            <div class="analyzing" id="analyzing">
+                <div class="spinner-container">
+                    <div class="spinner"></div>
+                </div>
+                <div class="analyzing-text">Analisando...</div>
+                <div class="analyzer-steps">
+                    <span class="step">📄 Lendo</span>
+                    <span class="step">⚙️ Verificando</span>
+                    <span class="step">✓ Finalizando</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Panel: Results -->
+        <div class="panel">
+            <div class="panel-title">Resultado da análise</div>
+
+            <div class="results" id="results">
+                <div class="result-header">
+                    <h2>Problemas encontrados</h2>
+                    <span class="status-badge" id="statusBadge"></span>
+                </div>
+                <div class="fix-info">
+                    <strong>💡 O que pode ser ajustado automaticamente:</strong>
+                    Apenas as margens são corrigidas com segurança. Outros problemas (fonte, espaçamento, indentação) precisam ser ajustados manualmente no Word para não danificar a formatação.
+                </div>
+                <div class="issues-list" id="issuesList"></div>
+                <div class="result-actions">
+                    <button class="btn-action btn-fix" id="fixButton">Ajustar</button>
+                    <button class="btn-action btn-fix" id="downloadButton" style="display: none;">Baixar</button>
+                    <button class="btn-action btn-new" id="newAnalysisBtn">Nova análise</button>
+                </div>
+            </div>
+
+            <div class="empty-state" id="emptyState">
+                <div class="empty-state-icon"></div>
+                <p>Envie um documento para começar</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Download Modal -->
+    <div class="download-modal" id="downloadModal">
+        <div class="modal-content">
+            <h3>Selecione o formato</h3>
+            <p>Em qual formato você deseja baixar o documento?</p>
+            <div class="modal-buttons">
+                <button class="btn-modal btn-modal-primary" id="downloadDocx">📄 Baixar DOCX</button>
+                <button class="btn-modal btn-modal-secondary" id="downloadPdf">📕 Baixar PDF</button>
+                <button class="btn-modal btn-modal-cancel" id="cancelDownload">Cancelar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <script>
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const fileName = document.getElementById('fileName');
+        const analyzing = document.getElementById('analyzing');
+        const results = document.getElementById('results');
+        const emptyState = document.getElementById('emptyState');
+        const fixButton = document.getElementById('fixButton');
+        const downloadButton = document.getElementById('downloadButton');
+        const newAnalysisBtn = document.getElementById('newAnalysisBtn');
+        const fixButtonLeft = document.getElementById('fixButtonLeft');
+        const downloadButtonLeft = document.getElementById('downloadButtonLeft');
+        const newAnalysisButtonLeft = document.getElementById('newAnalysisButtonLeft');
+        const leftPanelActions = document.getElementById('leftPanelActions');
+        const changeFileBtn = document.getElementById('changeFileBtn');
+        const removeFileBtn = document.getElementById('removeFileBtn');
+        const convertPdfBtn = document.getElementById('convertPdfBtn');
+        const downloadModal = document.getElementById('downloadModal');
+        const downloadDocxBtn = document.getElementById('downloadDocx');
+        const downloadPdfBtn = document.getElementById('downloadPdf');
+        const cancelDownloadBtn = document.getElementById('cancelDownload');
+        const toastContainer = document.getElementById('toastContainer');
+        let currentFile = null;
+        let documentAdjusted = false;
+
+        function showToast(message, type = 'info', duration = 4000) {
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            toastContainer.appendChild(toast);
+
+            setTimeout(() => {
+                toast.classList.add('hide');
+                setTimeout(() => {
+                    toast.remove();
+                }, 300);
+            }, duration);
+        }
+
+        uploadArea.addEventListener('click', () => fileInput.click());
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('active');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('active');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('active');
+            if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length) handleFile(e.target.files[0]);
+        });
+
+        changeFileBtn.addEventListener('click', () => fileInput.click());
+        removeFileBtn.addEventListener('click', resetForm);
+
+        async function handleFile(file) {
+            if (!file.name.endsWith('.docx')) {
+                showToast('Por favor, envie um arquivo .docx', 'error');
+                return;
+            }
+
+            currentFile = file;
+            fileInfo.classList.add('show');
+            fileName.textContent = file.name;
+            uploadArea.style.display = 'none';
+            analyzing.classList.add('show');
+            emptyState.style.display = 'none';
+            results.classList.remove('show');
+
+            try {
+                const formData = new FormData();
+                formData.append('file', file);
+
+                const response = await fetch('/api/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                // Delay de 2 segundos para mostrar as animações
+                await new Promise(resolve => setTimeout(resolve, 2000));
+
+                displayResults(result);
+            } catch (error) {
+                showToast('Erro ao analisar: ' + error.message, 'error');
+                resetForm();
+            }
+        }
+
+        function displayResults(result) {
+            analyzing.classList.remove('show');
+            results.classList.add('show');
+            convertPdfBtn.disabled = false;
+            leftPanelActions.style.display = 'flex';
+
+            const issuesList = document.getElementById('issuesList');
+            const statusBadge = document.getElementById('statusBadge');
+
+            if (!result.issues || result.issues.length === 0) {
+                statusBadge.textContent = '✓ OK';
+                statusBadge.className = 'status-badge success';
+                issuesList.innerHTML = '<div class="empty-state"><div class="empty-state-icon">🎉</div><p>Documento conforme ABNT!</p></div>';
+                fixButton.disabled = true;
+            } else {
+                statusBadge.textContent = result.issues.length + ' problema' + (result.issues.length > 1 ? 's' : '');
+                statusBadge.className = 'status-badge error';
+
+                issuesList.innerHTML = result.issues.map(issue => {
+                    let suggestion = '';
+                    if (issue.title.includes('Fonte')) {
+                        suggestion = '<span class="issue-suggestion">💡 Sugestão: Times New Roman ou Arial</span>';
+                    }
+                    let preview = '';
+                    if (issue.text_preview) {
+                        preview = `<span class="issue-text-preview">"${issue.text_preview}"</span>`;
+                    }
+                    return `
+                        <div class="issue ${issue.severity}${issue.fixable ? ' fixable' : ''}">
+                            <div class="issue-header">
+                                <span class="issue-title">${issue.title}</span>
+                                <span class="issue-severity ${issue.severity}">${issue.severity === 'error' ? 'Erro' : 'Aviso'}</span>
+                            </div>
+                            <div class="issue-description">${issue.description}</div>
+                            <div class="issue-location">${issue.location}</div>
+                            ${preview}
+                            ${suggestion}
+                        </div>
+                    `;
+                }).join('');
+            }
+        }
+
+        fixButton.addEventListener('click', async () => {
+            if (!currentFile) return;
+
+            fixButton.disabled = true;
+            analyzing.classList.add('show');
+            results.classList.remove('show');
+
+            try {
+                const formData = new FormData();
+                formData.append('file', currentFile);
+
+                const response = await fetch('/api/fix', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    documentAdjusted = true;
+                    analyzing.classList.remove('show');
+                    results.classList.add('show');
+
+                    // Trocar botões de ajustar por baixar
+                    fixButton.style.display = 'none';
+                    downloadButton.style.display = 'block';
+                    fixButtonLeft.style.display = 'none';
+                    downloadButtonLeft.style.display = 'block';
+
+                    showToast('✓ Documento ajustado! Escolha o formato para baixar.', 'success');
+                }
+            } catch (error) {
+                showToast('Erro ao ajustar: ' + error.message, 'error');
+                analyzing.classList.remove('show');
+                results.classList.add('show');
+            }
+
+            fixButton.disabled = false;
+        });
+
+        downloadButton.addEventListener('click', () => {
+            downloadModal.classList.add('show');
+        });
+
+        downloadDocxBtn.addEventListener('click', async () => {
+            downloadModal.classList.remove('show');
+            await downloadAdjustedFile('docx');
+        });
+
+        downloadPdfBtn.addEventListener('click', async () => {
+            downloadModal.classList.remove('show');
+            await downloadAdjustedFile('pdf');
+        });
+
+        cancelDownloadBtn.addEventListener('click', () => {
+            downloadModal.classList.remove('show');
+        });
+
+        async function downloadAdjustedFile(format) {
+            if (!currentFile) return;
+
+            try {
+                const formData = new FormData();
+                formData.append('file', currentFile);
+
+                const endpoint = format === 'pdf' ? '/api/convert-pdf' : '/api/fix';
+                const response = await fetch(endpoint, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    const ext = format === 'pdf' ? 'pdf' : 'docx';
+                    a.download = currentFile.name.replace('.docx', `_ajustado.${ext}`);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                }
+            } catch (error) {
+                showToast('Erro ao baixar: ' + error.message, 'error');
+            }
+        }
+
+        convertPdfBtn.addEventListener('click', async () => {
+            if (!currentFile) return;
+
+            convertPdfBtn.disabled = true;
+            convertPdfBtn.textContent = 'Convertendo...';
+
+            try {
+                const formData = new FormData();
+                formData.append('file', currentFile);
+
+                const response = await fetch('/api/convert-pdf', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = currentFile.name.replace('.docx', '.pdf');
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                } else {
+                    const error = await response.json();
+                    showToast('Erro: ' + error.message, 'error');
+                }
+            } catch (error) {
+                showToast('Erro ao converter: ' + error.message, 'error');
+            } finally {
+                convertPdfBtn.disabled = false;
+                convertPdfBtn.textContent = 'Converter PDF';
+            }
+        });
+
+        newAnalysisBtn.addEventListener('click', resetForm);
+        fixButtonLeft.addEventListener('click', fixButton.onclick = (e) => fixButton.click());
+        downloadButtonLeft.addEventListener('click', () => downloadModal.classList.add('show'));
+        newAnalysisButtonLeft.addEventListener('click', resetForm);
+
+        function resetForm() {
+            currentFile = null;
+            fileInput.value = '';
+            fileInfo.classList.remove('show');
+            analyzing.classList.remove('show');
+            results.classList.remove('show');
+            emptyState.style.display = 'flex';
+            uploadArea.style.display = 'flex';
+            convertPdfBtn.disabled = true;
+            fixButton.disabled = false;
+            documentAdjusted = false;
+            fixButton.style.display = 'block';
+            downloadButton.style.display = 'none';
+            leftPanelActions.style.display = 'none';
+            fixButtonLeft.style.display = 'block';
+            downloadButtonLeft.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
