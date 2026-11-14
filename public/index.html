@@ -6,7 +6,7 @@
     <title>ABNTzando com Lala</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
         // Aplicar tema antes do render para evitar flash
         (function() {
@@ -590,6 +590,720 @@
             color: var(--text-muted);
             padding-bottom: var(--space-2);
             border-bottom: 1px solid var(--border);
+        }
+
+        /* Ação Corrigir no topo do resultado */
+        .results-toolbar {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: var(--space-3);
+        }
+
+        .results-toolbar[hidden],
+        .fix-hint[hidden],
+        .filter-chips[hidden] {
+            display: none;
+        }
+
+        /* Banner de corrigíveis: linha discreta */
+        .fix-hint {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 12px;
+            margin-bottom: var(--space-3);
+            background: var(--surface-muted);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .fix-hint-link {
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            font-weight: 600;
+            color: var(--primary);
+            cursor: pointer;
+            text-decoration: underline;
+            border-radius: 4px;
+        }
+
+        .fix-hint-link:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        /* Chips de filtro por categoria */
+        .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: var(--space-3);
+        }
+
+        .filter-chip {
+            font: inherit;
+            font-size: 13px;
+            padding: 4px 12px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: var(--surface);
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: all 150ms ease;
+        }
+
+        .filter-chip:hover:not(:disabled) {
+            border-color: var(--border-strong);
+            color: var(--text);
+        }
+
+        .filter-chip.active {
+            background: var(--primary-soft);
+            border-color: var(--primary);
+            color: var(--primary);
+            font-weight: 600;
+        }
+
+        .filter-chip:disabled {
+            opacity: 0.45;
+            cursor: default;
+        }
+
+        .filter-chip:focus-visible {
+            outline: none;
+            box-shadow: var(--focus-ring);
+        }
+
+        /* Resumo: subtexto e barra de progresso */
+        .summary-sub {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
+        .progress-bar {
+            height: 6px;
+            margin-top: 8px;
+            background: var(--surface-muted);
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--success);
+            border-radius: 999px;
+            transition: width 300ms ease;
+        }
+
+        /* Lista de correções no modal de confirmação */
+        .fix-list {
+            list-style: none;
+            margin: var(--space-3) 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 240px;
+            overflow: auto;
+        }
+
+        .fix-list li {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            padding: 8px 12px;
+            background: var(--surface-muted);
+            border-radius: var(--radius-sm);
+            font-size: 13px;
+        }
+
+        .fix-list li span {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .modal-note {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        /* ===== Revisão da tela de resultados (tokens só nesta tela) ===== */
+        /* Tema claro: a tela usa os tokens globais da página */
+        .review {
+            --bg: var(--surface-muted);
+            --panel: var(--surface);
+            --line: var(--border);
+            --text: #111827;
+            --muted: var(--text-muted);
+            --accent: var(--primary);
+            --on-accent: #FFFFFF;
+            --error: #DC2626;
+            --warning: #D97706;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            box-shadow: none;
+            color: var(--text);
+            font-family: 'Source Sans 3', system-ui, sans-serif;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Tema escuro: tokens desta tela (substituem os da página só aqui) */
+        :root[data-theme="dark"] .review,
+        :root:not([data-theme="light"]) .review {
+            --bg: #16181D;
+            --panel: #1E2128;
+            --line: #2A2F39;
+            --text: #ECEDEF;
+            --muted: #9AA0AB;
+            --accent: #7DA8F0;
+            --on-accent: #16181D;
+            --error: #E5766E;
+            --warning: #D9A441;
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root:not([data-theme="light"]) .review {
+                --bg: #16181D;
+                --panel: #1E2128;
+                --line: #2A2F39;
+                --text: #ECEDEF;
+                --muted: #9AA0AB;
+                --accent: #7DA8F0;
+                --on-accent: #16181D;
+                --error: #E5766E;
+                --warning: #D9A441;
+            }
+        }
+
+        .review .card-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 16px;
+        }
+
+        .review :focus-visible {
+            outline: 2px solid var(--accent);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .review .btn-primary {
+            background: var(--accent);
+            color: var(--on-accent);
+            border: none;
+        }
+
+        .review .btn-primary:hover:not(:disabled) {
+            filter: brightness(0.94);
+        }
+
+        .review .btn-primary:disabled {
+            background: var(--line);
+            color: var(--muted);
+        }
+
+        .review .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+
+        .review .btn-secondary:hover:not(:disabled) {
+            background: var(--bg);
+        }
+
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+            white-space: nowrap;
+        }
+
+        /* Cabeçalho do painel: sem moldura, borda ou divisória */
+        .res-head {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            grid-template-areas:
+                "title action"
+                "summary summary";
+            align-items: center;
+            column-gap: 16px;
+            row-gap: 6px;
+            margin: 0 0 16px;
+            padding: 0;
+            border: none;
+            box-shadow: none;
+        }
+
+        .res-title {
+            grid-area: title;
+            margin: 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .res-summary {
+            grid-area: summary;
+            margin: 0;
+            font-size: 14px;
+            font-weight: 400;
+            color: var(--muted);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .res-progress {
+            color: var(--muted);
+        }
+
+        .res-action {
+            grid-area: action;
+            height: 36px;
+            min-height: 36px;
+            padding: 0 16px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            background: var(--accent);
+            color: var(--on-accent);
+            font: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .res-action:hover:not(:disabled) {
+            background: color-mix(in srgb, var(--accent) 86%, #000);
+        }
+
+        .res-action:disabled {
+            background: transparent;
+            border: 1px solid var(--line);
+            color: var(--muted);
+            cursor: default;
+        }
+
+        @media (max-width: 600px) {
+            .res-head {
+                grid-template-columns: minmax(0, 1fr);
+                grid-template-areas:
+                    "title"
+                    "summary"
+                    "action";
+            }
+
+            .res-action {
+                width: 100%;
+                height: 44px;
+                min-height: 44px;
+            }
+        }
+
+        .link-btn {
+            align-self: flex-start;
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            font-size: 13px;
+            color: var(--accent);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+
+        /* Abas por categoria */
+        .res-tabs-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+            border-bottom: 1px solid var(--line);
+            margin-bottom: 4px;
+        }
+
+        .res-tabs-row .filter-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            margin: 0;
+        }
+
+        .res-tabs-row .filter-chips[hidden] {
+            display: none;
+        }
+
+        .res-tab {
+            font: inherit;
+            font-size: 15px;
+            color: var(--muted);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            padding: 8px 10px;
+            margin-bottom: -1px;
+            cursor: pointer;
+        }
+
+        .res-tab:hover:not(:disabled) {
+            color: var(--text);
+        }
+
+        .res-tab[aria-selected="true"] {
+            color: var(--text);
+            font-weight: 600;
+            border-bottom-color: var(--accent);
+        }
+
+        .res-tab:disabled {
+            cursor: default;
+            color: var(--muted);
+        }
+
+        .res-tab-count {
+            color: var(--muted);
+            font-weight: 400;
+            margin-left: 2px;
+        }
+
+        .res-pending {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            cursor: pointer;
+            padding-bottom: 8px;
+        }
+
+        .res-pending input,
+        .res-done input {
+            width: 16px;
+            height: 16px;
+            margin: 0;
+            accent-color: var(--accent);
+            cursor: pointer;
+        }
+
+        /* Grupos */
+        .res-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .res-group-head {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            padding: 20px 0 8px;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .res-group-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .res-group-count {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .res-group-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 0;
+            background: none;
+            border: none;
+            font: inherit;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text);
+            text-align: left;
+            cursor: pointer;
+        }
+
+        .res-caret {
+            display: inline-block;
+            width: 7px;
+            height: 7px;
+            border-right: 2px solid currentColor;
+            border-bottom: 2px solid currentColor;
+            transform: rotate(-45deg);
+            transition: transform 150ms ease;
+        }
+
+        .res-group.is-open .res-caret {
+            transform: rotate(45deg);
+        }
+
+        /* Corpo do grupo: transição de altura de 150 ms */
+        .res-group-body {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 150ms ease;
+        }
+
+        .res-group.is-open .res-group-body {
+            grid-template-rows: 1fr;
+        }
+
+        .res-group-inner {
+            min-height: 0;
+            overflow: hidden;
+        }
+
+        .res-tabs-end {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            padding-bottom: 8px;
+        }
+
+        .res-bulk {
+            font: inherit;
+            font-size: 13px;
+            color: var(--accent);
+            background: none;
+            border: none;
+            padding: 0;
+            cursor: pointer;
+        }
+
+        .res-bulk:hover {
+            text-decoration: underline;
+        }
+
+        .res-bulk[hidden] {
+            display: none;
+        }
+
+        /* Itens: linhas, não cards */
+        .res-item {
+            display: flex;
+            gap: 14px;
+            padding: 14px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .res-mark {
+            flex: 0 0 3px;
+            width: 3px;
+            border-radius: 2px;
+            background: var(--line);
+        }
+
+        .res-item.error .res-mark {
+            background: var(--error);
+        }
+
+        .res-item.warning .res-mark {
+            background: var(--warning);
+        }
+
+        .res-item-body {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .res-item-line {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .res-item-title {
+            margin: 0;
+            font-size: 15px;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .res-item-loc {
+            font-size: 13px;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+
+        .res-values {
+            margin: 0;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 16px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .res-toggle {
+            align-self: flex-start;
+            background: none;
+            border: none;
+            padding: 0;
+            font: inherit;
+            font-size: 13px;
+            color: var(--accent);
+            cursor: pointer;
+        }
+
+        .res-toggle:hover {
+            text-decoration: underline;
+        }
+
+        /* Recolhido/expandido com transição de altura de 150 ms */
+        .res-detail-wrap {
+            display: grid;
+            grid-template-rows: 0fr;
+            transition: grid-template-rows 150ms ease;
+        }
+
+        .res-item.is-open .res-detail-wrap {
+            grid-template-rows: 1fr;
+        }
+
+        .res-detail {
+            min-height: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .res-item.is-open .res-detail {
+            padding-top: 4px;
+        }
+
+        .res-action-note {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .res-quote {
+            margin: 0;
+            font-size: 13px;
+            font-style: italic;
+            color: var(--muted);
+            background: var(--bg);
+            border-left: 2px solid var(--line);
+            padding: 8px 12px;
+        }
+
+        .res-quote-ref {
+            font-style: normal;
+            font-weight: 600;
+        }
+
+        .res-more {
+            margin: 0;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .res-item-foot {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 2px;
+        }
+
+        .res-done {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+            color: var(--muted);
+            cursor: pointer;
+        }
+
+        /* Resolvido: texto apagado e título riscado */
+        .res-item.resolvido .res-item-title {
+            color: var(--muted);
+            text-decoration: line-through;
+        }
+
+        .res-item.resolvido .res-mark {
+            background: var(--line);
+        }
+
+        /* Menu Ajustes do cabeçalho */
+        .ajustes {
+            position: relative;
+        }
+
+        .ajustes-btn {
+            font: inherit;
+            font-size: 14px;
+            color: var(--text);
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 8px 14px;
+            cursor: pointer;
+        }
+
+        .ajustes-menu {
+            position: absolute;
+            right: 0;
+            top: calc(100% + 6px);
+            z-index: 50;
+            min-width: 200px;
+            display: flex;
+            flex-direction: column;
+            padding: 6px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+        }
+
+        .ajustes-menu[hidden] {
+            display: none;
+        }
+
+        .ajustes-menu button {
+            font: inherit;
+            font-size: 14px;
+            text-align: left;
+            color: var(--text);
+            background: none;
+            border: none;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .ajustes-menu button:hover:not(:disabled) {
+            background: var(--surface-muted);
+        }
+
+        .ajustes-menu button:disabled {
+            color: var(--muted);
+            cursor: default;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .res-detail-wrap,
+            .res-group-body,
+            .res-caret,
+            .res-tab,
+            .res-toggle {
+                transition: none !important;
+            }
         }
 
         .issue-group-count {
@@ -1795,8 +2509,14 @@
             <h1 class="header-title">ABNTzando com Lala</h1>
         </div>
         <div class="header-actions">
-            <button class="theme-toggle" id="glossarioBtn" aria-label="Abrir glossário" title="Glossário">📖</button>
-            <button class="theme-toggle" id="themeToggle" aria-label="Alternar tema escuro/claro" title="Alternar tema">🌙</button>
+            <div class="ajustes">
+                <button type="button" class="ajustes-btn" id="ajustesBtn" aria-haspopup="true" aria-expanded="false" aria-controls="ajustesMenu">Ajustes</button>
+                <div class="ajustes-menu" id="ajustesMenu" role="menu" hidden>
+                    <button type="button" role="menuitem" id="themeToggle">Tema escuro</button>
+                    <button type="button" role="menuitem" id="glossarioBtn">Guia</button>
+                    <button type="button" role="menuitem" id="desmarcarTodos" disabled>Desmarcar todos</button>
+                </div>
+            </div>
         </div>
     </header>
 
@@ -1833,36 +2553,34 @@
             </div>
 
             <div class="actions" id="leftPanelActions">
-                <button class="btn btn-primary" id="fixButtonLeft">Corrigir</button>
                 <button class="btn btn-primary" id="downloadButtonLeft" style="display: none;">Baixar</button>
                 <button class="btn btn-secondary" id="newAnalysisButtonLeft">Nova análise</button>
             </div>
         </div>
 
         <!-- Right Panel: Results -->
-        <div class="card">
-            <h2 class="card-title">Resultado da análise</h2>
-
+        <div class="card review">
             <div class="results" id="results">
-                <div class="result-summary" id="resultSummary"></div>
+                <header class="res-head">
+                    <h2 class="res-title">Resultado</h2>
+                    <button type="button" class="res-action" id="fixButton" disabled>Nenhum item corrigível</button>
+                    <p class="res-summary" id="resultSummary"></p>
+                </header>
 
-                <div class="fix-info">
-                    <strong>💡 O que pode ser ajustado automaticamente:</strong>
-                    Apenas as margens são corrigidas com segurança. Outros problemas precisam de ajustes manuais no Word.
-                </div>
-
-                <div class="checklist-controls" id="checklistControls" style="display: none;">
-                    <div class="checklist-filter">
+                <div class="checklist-controls res-tabs-row" id="checklistControls" style="display: none;">
+                    <div class="filter-chips" id="filterChips" role="tablist" aria-label="Filtrar por categoria" hidden></div>
+                    <div class="res-tabs-end">
+                    <button type="button" class="res-bulk" id="toggleTodosGrupos" hidden>Recolher todos</button>
+                    <label class="res-pending">
                         <input type="checkbox" id="filterPendentes" />
-                        <label for="filterPendentes">Mostrar só pendentes</label>
+                        <span>Mostrar só pendentes</span>
+                    </label>
                     </div>
-                    <button class="btn-desmarcar-todos" id="desmarcarTodos">Desmarcar todos</button>
                 </div>
 
                 <div class="issues-list" id="issuesList"></div>
 
                 <div class="actions" id="rightPanelActions">
-                    <button class="btn btn-primary" id="fixButton">Corrigir</button>
                     <button class="btn btn-secondary" id="sumarioButton">Sugerir sumário</button>
                     <button class="btn btn-primary" id="downloadButton" style="display: none;">Baixar</button>
                     <button class="btn btn-secondary" id="exportChecklistBtn">Exportar checklist</button>
@@ -1878,6 +2596,20 @@
             <div class="empty-state" id="emptyState">
                 <div class="empty-state-icon">📋</div>
                 <p>Envie um documento para começar</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirmar correção Modal -->
+    <div class="modal-overlay" id="fixConfirmModal">
+        <div class="modal">
+            <h3 class="modal-title" id="fixConfirmTitle">Corrigir automaticamente?</h3>
+            <p class="modal-description">Estas alterações serão aplicadas:</p>
+            <ul class="fix-list" id="fixList"></ul>
+            <p class="modal-note">O arquivo original não será alterado; você baixa uma cópia.</p>
+            <div class="modal-buttons">
+                <button class="btn btn-primary" id="confirmFix">Corrigir</button>
+                <button class="btn btn-secondary" id="cancelFix">Cancelar</button>
             </div>
         </div>
     </div>
@@ -1948,7 +2680,6 @@
         const fixButton = document.getElementById('fixButton');
         const downloadButton = document.getElementById('downloadButton');
         const newAnalysisBtn = document.getElementById('newAnalysisBtn');
-        const fixButtonLeft = document.getElementById('fixButtonLeft');
         const downloadButtonLeft = document.getElementById('downloadButtonLeft');
         const newAnalysisButtonLeft = document.getElementById('newAnalysisButtonLeft');
         const leftPanelActions = document.getElementById('leftPanelActions');
@@ -1966,13 +2697,16 @@
         let currentFileHash = null;
         let issuesResolvidos = [];
         let issuesFull = [];
+        let filtroCategoria = 'Todos';
+        // Grupos abertos (só em memória; reiniciado a cada análise)
+        let gruposAbertos = new Set();
 
         // Theme toggle
         function updateThemeIcon() {
             const theme = document.documentElement.getAttribute('data-theme');
             const isDark = theme === 'dark' ||
                           (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches);
-            themeToggle.textContent = isDark ? '☀️' : '🌙';
+            themeToggle.textContent = isDark ? 'Tema claro' : 'Tema escuro';
         }
 
         themeToggle.addEventListener('click', () => {
@@ -2237,35 +2971,14 @@
                 }
             });
 
-            // Filtrar se necessário
-            issuesList.querySelectorAll('[data-issue-idx]').forEach((el, idx) => {
-                if (filterPendentes && issuesResolvidos.includes(parseInt(el.getAttribute('data-issue-idx')))) {
-                    el.style.display = 'none';
-                } else {
-                    el.style.display = 'grid';
-                }
-            });
-
-            // Atualizar resumo
-            const resolvidos = issuesResolvidos.length;
-            const pendentes = issuesFull.length - resolvidos;
-            resultSummary.innerHTML = `
-                <div class="summary-item">
-                    <div class="summary-label">Total de problemas</div>
-                    <div class="summary-value">${issuesFull.length}</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-label">Resolvidos</div>
-                    <div class="summary-value">${resolvidos}</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-label">Pendentes</div>
-                    <div class="summary-value">${pendentes}</div>
-                </div>
-            `;
+            aplicarFiltros();
+            sincronizarGrupos();
+            renderFiltros();
+            renderResumo();
+            atualizarBotaoCorrigir();
 
             // Atualizar botão "Desmarcar todos"
-            document.getElementById('desmarcarTodos').disabled = resolvidos === 0;
+            document.getElementById('desmarcarTodos').disabled = issuesResolvidos.length === 0;
         }
 
         document.getElementById('filterPendentes').addEventListener('change', atualizarIssuesUI);
@@ -2344,35 +3057,27 @@
         function trechosDoItem(issue, limite = 3) {
             const trechos = issue.trechos || [];
             if (!trechos.length) {
-                return issue.text_preview ? `<div class="issue-trecho">${escaparHtml(issue.text_preview)}</div>` : '';
+                return issue.text_preview ? `<blockquote class="res-quote">${escaparHtml(issue.text_preview)}</blockquote>` : '';
             }
             const mostrarRef = trechos.length > 1;
             const mostrados = trechos.slice(0, limite).map(t =>
-                `<div class="issue-trecho">${mostrarRef ? `<span class="issue-trecho-ref">Parágrafo ${t.paragrafo}</span>` : ''}${escaparHtml(t.texto)}</div>`).join('');
+                `<blockquote class="res-quote">${mostrarRef ? `<span class="res-quote-ref">Parágrafo ${t.paragrafo}</span> ` : ''}${escaparHtml(t.texto)}</blockquote>`).join('');
             const restantes = trechos.length - limite;
-            return mostrados + (restantes > 0 ? `<div class="issue-trecho-extra">e mais ${restantes}</div>` : '');
+            return mostrados + (restantes > 0 ? `<p class="res-more">e mais ${restantes}</p>` : '');
         }
 
-        function valoresHtml(issue) {
-            if (!issue.esperado && !issue.encontrado) return '';
-            const bloco = (rotulo, valor) => `
-                <div>
-                    <div class="issue-value-label">${rotulo}</div>
-                    <div class="issue-value-text">${escaparHtml(valor || '—')}</div>
-                </div>`;
-            return `<div class="issue-values">${bloco('Esperado', issue.esperado)}${bloco('Encontrado', issue.encontrado)}</div>`;
+        // Linha de valores sempre visível: "Esperado 3 cm   Encontrado 2,47 cm"
+        function valoresLinhaHtml(issue) {
+            const partes = [];
+            if (issue.esperado) partes.push(`<span>Esperado ${escaparHtml(issue.esperado)}</span>`);
+            if (issue.encontrado) partes.push(`<span>Encontrado ${escaparHtml(issue.encontrado)}</span>`);
+            return partes.length ? `<p class="res-values">${partes.join('')}</p>` : '';
         }
 
-        // Tudo que não é título/localização/etiqueta fica em "Ver detalhes"
-        function detalhesDoItem(issue) {
-            const valores = valoresHtml(issue);
-            const trechos = trechosDoItem(issue);
-            if (!valores && !trechos) return '';
-            return `
-                <details class="issue-details">
-                    <summary>Ver detalhes</summary>
-                    <div class="issue-details-body">${valores}${trechos}</div>
-                </details>`;
+        // Conteúdo recolhível de "Ver detalhes"
+        function detalheDoItem(issue) {
+            const acao = issue.fixable ? 'Pode ser corrigido automaticamente.' : 'Revisar no Word.';
+            return `<p class="res-action-note">${acao}</p>${trechosDoItem(issue)}`;
         }
 
         function valoresDoItem(issue) {
@@ -2589,6 +3294,10 @@
             const resultSummary = document.getElementById('resultSummary');
             const checklistControls = document.getElementById('checklistControls');
 
+            // Novo resultado: começa sem filtros
+            document.getElementById('filterPendentes').checked = false;
+            filtroCategoria = 'Todos';
+
             // Calcular resumo
             const totalIssues = result.issues ? result.issues.length : 0;
             const fixableCount = result.issues ? result.issues.filter(i => i.fixable).length : 0;
@@ -2596,38 +3305,60 @@
 
             if (!result.issues || result.issues.length === 0) {
                 issuesFull = [];
-                issuesList.innerHTML = '<div class="empty-state success-state"><div class="empty-state-icon">✓</div><p>Nenhum problema encontrado</p><p style="font-size: var(--text-sm); color: var(--text-muted); margin-top: var(--space-2);">Seu documento está em conformidade com a ABNT!</p></div>';
+                issuesList.innerHTML = '<div class="empty-state success-state"><div class="empty-state-icon">✓</div><p>Nenhum problema encontrado</p></div>';
                 checklistControls.style.display = 'none';
-                fixButton.disabled = true;
-                fixButtonLeft.disabled = true;
             } else {
                 issuesFull = ordenarIssues(result.issues);
                 checklistControls.style.display = 'flex';
 
-                issuesList.innerHTML = Array.from(agruparPorCategoria(issuesFull).entries()).map(([category, issues], idx) => `
-                    <div class="issue-group" style="animation-delay: ${idx * 100}ms">
-                        <div class="issue-group-title"><span>${category}</span><span class="issue-group-count">${issues.length}</span></div>
-                        ${issues.map((issue, iIdx) => `
-                            <div class="issue ${issue.severity}" data-issue-idx="${issue.globalIdx}" style="animation-delay: ${(idx * 100) + (iIdx * 50)}ms">
-                                <div class="issue-header">
-                                    <div class="issue-icon"><span class="sev-glyph">${issue.severity === 'error' ? '●' : '◆'}</span><span class="done-glyph">✓</span></div>
-                                    <div class="issue-main">
-                                        <div class="issue-title">${escaparHtml(issue.title)}</div>
-                                        <span class="issue-location">${issue.severity === 'error' ? 'Erro' : 'Aviso'} · ${escaparHtml(issue.location || '')}</span>
+                // Grupos com erro começam abertos; grupos só com avisos começam fechados
+                gruposAbertos = new Set(
+                    Array.from(agruparPorCategoria(issuesFull).entries())
+                        .filter(([, issues]) => issues.some(i => i.severity === 'error'))
+                        .map(([categoria]) => categoria)
+                );
+
+                issuesList.innerHTML = Array.from(agruparPorCategoria(issuesFull).entries()).map(([category, issues], idx) => {
+                    const aberto = gruposAbertos.has(category);
+                    return `
+                    <section class="res-group" data-categoria="${escaparHtml(category)}">
+                        <header class="res-group-head">
+                            <h3 class="res-group-title">
+                                <button type="button" class="res-group-toggle" aria-expanded="${aberto}" aria-controls="grupo-${idx}">${escaparHtml(category)}<span class="res-caret" aria-hidden="true"></span></button>
+                            </h3>
+                            <span class="res-group-count">${issues.length}</span>
+                        </header>
+                        <div class="res-group-body" id="grupo-${idx}" ${aberto ? '' : 'inert'}>
+                        <div class="res-group-inner">
+                        ${issues.map(issue => {
+                            const resolvido = issuesResolvidos.includes(issue.globalIdx);
+                            const rotuloSeveridade = issue.severity === 'error' ? 'Erro: ' : 'Aviso: ';
+                            return `
+                            <article class="res-item ${issue.severity}${resolvido ? ' resolvido' : ''}" data-issue-idx="${issue.globalIdx}">
+                                <span class="res-mark" aria-hidden="true"></span>
+                                <div class="res-item-body">
+                                    <div class="res-item-line">
+                                        <h4 class="res-item-title"><span class="sr-only">${rotuloSeveridade}</span>${escaparHtml(issue.title)}</h4>
+                                        <span class="res-item-loc">${escaparHtml(issue.location || '')}</span>
                                     </div>
-                                    <span class="issue-badge ${issue.fixable ? 'fixable' : 'manual'}">${issue.fixable ? 'Corrigível' : 'Revisão manual'}</span>
+                                    ${valoresLinhaHtml(issue)}
+                                    <button type="button" class="res-toggle" aria-expanded="false" aria-controls="det-${issue.globalIdx}">Ver detalhes</button>
+                                    <div class="res-detail-wrap" id="det-${issue.globalIdx}">
+                                        <div class="res-detail">${detalheDoItem(issue)}</div>
+                                    </div>
+                                    <div class="res-item-foot">
+                                        <label class="res-done">
+                                            <input type="checkbox" class="issue-checkbox" data-idx="${issue.globalIdx}" ${resolvido ? 'checked' : ''} />
+                                            <span>Resolvido</span>
+                                        </label>
+                                    </div>
                                 </div>
-                                ${detalhesDoItem(issue)}
-                                <div class="issue-footer">
-                                    <label class="issue-resolve">
-                                        <input type="checkbox" class="issue-checkbox" data-idx="${issue.globalIdx}" ${issuesResolvidos.includes(issue.globalIdx) ? 'checked' : ''} />
-                                        <span>Marcar como resolvido</span>
-                                    </label>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                `).join('');
+                            </article>`;
+                        }).join('')}
+                        </div>
+                        </div>
+                    </section>`;
+                }).join('');
 
                 // Adicionar event listeners aos checkboxes
                 issuesList.querySelectorAll('.issue-checkbox').forEach(checkbox => {
@@ -2644,38 +3375,33 @@
                 // Aplicar classe de resolvido aos itens
                 atualizarIssuesUI();
 
-                fixButton.disabled = false;
-                fixButtonLeft.disabled = false;
             }
 
-            // Atualizar resumo inicial
-            const resolvidos = issuesResolvidos.length;
-            const pendentes = totalIssues - resolvidos;
-            resultSummary.innerHTML = `
-                <div class="summary-item">
-                    <div class="summary-label">Total de problemas</div>
-                    <div class="summary-value">${totalIssues}</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-label">Resolvidos</div>
-                    <div class="summary-value">${resolvidos}</div>
-                </div>
-                <div class="summary-item">
-                    <div class="summary-label">Pendentes</div>
-                    <div class="summary-value">${pendentes}</div>
-                </div>
-            `;
-
-            // Resetar filtro
-            document.getElementById('filterPendentes').checked = false;
+            renderFiltros();
+            renderResumo();
+            atualizarBotaoCorrigir();
 
             leftPanelActions.classList.add('show');
             rightPanelActions.classList.add('show');
         }
 
-        fixButton.addEventListener('click', async () => {
+        function abrirConfirmacaoCorrecao() {
             if (!currentFile) return;
+            const corrigiveis = issuesFull.filter(i => i.fixable);
+            if (!corrigiveis.length) return;
+            const n = corrigiveis.length;
+            document.getElementById('fixConfirmTitle').textContent =
+                `Corrigir ${n} ${n === 1 ? 'item' : 'itens'} automaticamente?`;
+            document.getElementById('fixList').innerHTML = corrigiveis.map(i => {
+                const mudanca = i.encontrado && i.esperado
+                    ? `${escaparHtml(i.encontrado)} → ${escaparHtml(i.esperado)}`
+                    : escaparHtml(i.esperado || '');
+                return `<li><strong>${escaparHtml(i.title)}</strong><span>${escaparHtml(i.location || '')}${mudanca ? ': ' + mudanca : ''}</span></li>`;
+            }).join('');
+            document.getElementById('fixConfirmModal').classList.add('show');
+        }
 
+        async function executarCorrecao() {
             fixButton.disabled = true;
             analyzing.classList.add('show');
             results.classList.remove('show');
@@ -2697,7 +3423,6 @@
                     // Trocar botões de ajustar por baixar
                     fixButton.style.display = 'none';
                     downloadButton.style.display = 'flex';
-                    fixButtonLeft.style.display = 'none';
                     downloadButtonLeft.style.display = 'flex';
 
                     showToast('✓ Documento ajustado!', 'success');
@@ -2713,7 +3438,9 @@
             }
 
             fixButton.disabled = false;
-        });
+        }
+
+        fixButton.addEventListener('click', abrirConfirmacaoCorrecao);
 
         downloadButton.addEventListener('click', () => {
             downloadModal.classList.add('show');
@@ -2769,7 +3496,165 @@
         }
 
         newAnalysisBtn.addEventListener('click', resetForm);
-        fixButtonLeft.addEventListener('click', () => fixButton.click());
+        // Confirmação antes de corrigir
+        const fixConfirmModal = document.getElementById('fixConfirmModal');
+        document.getElementById('confirmFix').addEventListener('click', () => {
+            fixConfirmModal.classList.remove('show');
+            executarCorrecao();
+        });
+        document.getElementById('cancelFix').addEventListener('click', () => fixConfirmModal.classList.remove('show'));
+        fixConfirmModal.addEventListener('click', (e) => {
+            if (e.target === fixConfirmModal) fixConfirmModal.classList.remove('show');
+        });
+
+        // Filtros por categoria e "Quais itens?"
+        document.getElementById('filterChips').addEventListener('click', (e) => {
+            const aba = e.target.closest('.res-tab');
+            if (!aba || aba.disabled) return;
+            filtroCategoria = aba.dataset.categoria;
+            // Selecionar uma categoria abre o grupo correspondente
+            if (filtroCategoria !== 'Todos' && filtroCategoria !== 'Corrigíveis') gruposAbertos.add(filtroCategoria);
+            atualizarIssuesUI();
+        });
+
+        // Grupos recolhíveis
+        function sincronizarGrupos() {
+            const grupos = Array.from(document.querySelectorAll('#issuesList .res-group'));
+            grupos.forEach(grupo => {
+                const aberto = gruposAbertos.has(grupo.dataset.categoria);
+                grupo.classList.toggle('is-open', aberto);
+                grupo.querySelector('.res-group-toggle').setAttribute('aria-expanded', String(aberto));
+                grupo.querySelector('.res-group-body').inert = !aberto;
+            });
+            const bulk = document.getElementById('toggleTodosGrupos');
+            const todosAbertos = grupos.length > 0 && grupos.every(g => gruposAbertos.has(g.dataset.categoria));
+            bulk.hidden = grupos.length === 0;
+            bulk.textContent = todosAbertos ? 'Recolher todos' : 'Expandir todos';
+        }
+
+        document.getElementById('toggleTodosGrupos').addEventListener('click', () => {
+            const nomes = Array.from(document.querySelectorAll('#issuesList .res-group')).map(g => g.dataset.categoria);
+            const todosAbertos = nomes.every(n => gruposAbertos.has(n));
+            gruposAbertos = todosAbertos ? new Set() : new Set(nomes);
+            sincronizarGrupos();
+        });
+
+        // "Ver detalhes" de cada item e cabeçalhos de grupo (delegação: a lista é recriada a cada análise)
+        document.getElementById('issuesList').addEventListener('click', (e) => {
+            const grupoBotao = e.target.closest('.res-group-toggle');
+            if (grupoBotao) {
+                const nome = grupoBotao.closest('.res-group').dataset.categoria;
+                if (gruposAbertos.has(nome)) gruposAbertos.delete(nome);
+                else gruposAbertos.add(nome);
+                sincronizarGrupos();
+                return;
+            }
+            const botao = e.target.closest('.res-toggle');
+            if (!botao) return;
+            const item = botao.closest('.res-item');
+            const aberto = item.classList.toggle('is-open');
+            botao.setAttribute('aria-expanded', String(aberto));
+            botao.textContent = aberto ? 'Ocultar detalhes' : 'Ver detalhes';
+        });
+
+        // Menu "Ajustes": Tema, Guia e Desmarcar todos
+        const ajustesBtn = document.getElementById('ajustesBtn');
+        const ajustesMenu = document.getElementById('ajustesMenu');
+        function fecharAjustes() {
+            ajustesMenu.hidden = true;
+            ajustesBtn.setAttribute('aria-expanded', 'false');
+        }
+        ajustesBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const abrir = ajustesMenu.hidden;
+            ajustesMenu.hidden = !abrir;
+            ajustesBtn.setAttribute('aria-expanded', String(abrir));
+        });
+        document.addEventListener('click', (e) => {
+            if (!ajustesMenu.contains(e.target) && e.target !== ajustesBtn) fecharAjustes();
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !ajustesMenu.hidden) {
+                fecharAjustes();
+                ajustesBtn.focus();
+            }
+        });
+        ajustesMenu.addEventListener('click', (e) => {
+            if (e.target.closest('#themeToggle, #glossarioBtn, #desmarcarTodos')) fecharAjustes();
+        });
+
+        function aplicarFiltros() {
+            const soPendentes = document.getElementById('filterPendentes').checked;
+            const issuesList = document.getElementById('issuesList');
+            issuesList.querySelectorAll('[data-issue-idx]').forEach(el => {
+                const idx = parseInt(el.getAttribute('data-issue-idx'));
+                const issue = issuesFull[idx];
+                const oculto = (soPendentes && issuesResolvidos.includes(idx))
+                    || (filtroCategoria !== 'Todos' && filtroCategoria !== 'Corrigíveis'
+                        && (issue.categoria || 'Outros') !== filtroCategoria)
+                    || (filtroCategoria === 'Corrigíveis' && !issue.fixable);
+                el.style.display = oculto ? 'none' : '';
+            });
+            // Esconder grupos sem nenhum item visível
+            issuesList.querySelectorAll('.res-group').forEach(grupo => {
+                const algumVisivel = Array.from(grupo.querySelectorAll('[data-issue-idx]'))
+                    .some(el => el.style.display !== 'none');
+                grupo.style.display = algumVisivel ? '' : 'none';
+            });
+        }
+
+        function renderFiltros() {
+            const filterChips = document.getElementById('filterChips');
+            if (!issuesFull.length) {
+                filterChips.innerHTML = '';
+                filterChips.hidden = true;
+                return;
+            }
+            const contagem = new Map();
+            issuesFull.forEach(i => {
+                const c = i.categoria || 'Outros';
+                contagem.set(c, (contagem.get(c) || 0) + 1);
+            });
+            // Recuo só aparece se houver itens dele; os demais sempre aparecem (zerados ficam desabilitados)
+            const base = ORDEM_CATEGORIAS.filter(c => c !== 'Recuo' || contagem.has(c));
+            const extras = [...contagem.keys()].filter(c => !base.includes(c));
+            const corrigiveis = issuesFull.filter(i => i.fixable).length;
+            const chips = [
+                ['Todos', issuesFull.length],
+                ['Corrigíveis', corrigiveis],
+                ...[...base, ...extras].map(c => [c, contagem.get(c) || 0])
+            ];
+            filterChips.innerHTML = chips.map(([nome, n]) => {
+                const ativa = filtroCategoria === nome;
+                return `<button type="button" role="tab" class="res-tab" aria-selected="${ativa}"
+                        data-categoria="${escaparHtml(nome)}" ${n === 0 ? 'disabled' : ''}>${escaparHtml(nome)} <span class="res-tab-count">${n}</span></button>`;
+            }).join('');
+            filterChips.hidden = false;
+        }
+
+        function renderResumo() {
+            const resumo = document.getElementById('resultSummary');
+            const total = issuesFull.length;
+            if (!total) {
+                resumo.textContent = 'Nenhum problema encontrado.';
+                return;
+            }
+            const erros = issuesFull.filter(i => i.severity === 'error').length;
+            const avisos = total - erros;
+            const resolvidas = issuesResolvidos.length;
+            const pendencias = `${total} ${total === 1 ? 'pendência' : 'pendências'}: ` +
+                `${erros} ${erros === 1 ? 'erro' : 'erros'} e ${avisos} ${avisos === 1 ? 'aviso' : 'avisos'}.`;
+            resumo.innerHTML = `<span>${pendencias}</span>` +
+                (resolvidas ? ` <span class="res-progress">${resolvidas} de ${total} resolvidas.</span>` : '');
+        }
+
+        function atualizarBotaoCorrigir() {
+            const corrigiveis = issuesFull.filter(i => i.fixable).length;
+            fixButton.textContent = corrigiveis
+                ? `Corrigir ${corrigiveis} ${corrigiveis === 1 ? 'item' : 'itens'}`
+                : 'Nenhum item corrigível';
+            fixButton.disabled = corrigiveis === 0;
+        }
 
         const sumarioButton = document.getElementById('sumarioButton');
         const sumarioSugestao = document.getElementById('sumarioSugestao');
@@ -2830,11 +3715,9 @@
             emptyState.style.display = 'flex';
             uploadArea.style.display = 'flex';
             fixButton.disabled = false;
-            fixButtonLeft.disabled = false;
             documentAdjusted = false;
             fixButton.style.display = 'flex';
             downloadButton.style.display = 'none';
-            fixButtonLeft.style.display = 'flex';
             downloadButtonLeft.style.display = 'none';
             leftPanelActions.classList.remove('show');
             rightPanelActions.classList.remove('show');

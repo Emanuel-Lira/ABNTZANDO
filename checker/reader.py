@@ -15,29 +15,23 @@ class DocumentReader:
         """Extrai informações gerais do documento"""
         info = {
             'page_count': len(self.doc.paragraphs),
-            'margins': self.get_margins(),
+            'secoes_margens': self.get_margens_por_secao(),
             'paragraphs': self.get_paragraphs_info(),
             'styles': self.get_styles_info(),
         }
         return info
 
-    def get_margins(self) -> Dict[str, float]:
-        """Retorna as margens do documento em cm"""
-        try:
-            sections = self.doc.sections
-            if not sections:
-                return {}
-
-            section = sections[0]
-            margins = {
-                'top': section.top_margin.cm,
-                'bottom': section.bottom_margin.cm,
-                'left': section.left_margin.cm,
-                'right': section.right_margin.cm,
+    def get_margens_por_secao(self) -> List[Dict[str, float]]:
+        """Margens de cada seção do documento, em cm"""
+        return [
+            {
+                'top': secao.top_margin.cm if secao.top_margin is not None else 0.0,
+                'bottom': secao.bottom_margin.cm if secao.bottom_margin is not None else 0.0,
+                'left': secao.left_margin.cm if secao.left_margin is not None else 0.0,
+                'right': secao.right_margin.cm if secao.right_margin is not None else 0.0,
             }
-            return margins
-        except:
-            return {}
+            for secao in self.doc.sections
+        ]
 
     def get_paragraphs_info(self) -> List[Dict[str, Any]]:
         """Extrai informações de cada parágrafo"""
@@ -55,7 +49,7 @@ class DocumentReader:
                 'font_info': self.get_paragraph_font_info(para),
                 'spacing': self._get_effective_spacing(para),
                 'indentation': {
-                    'first_line': para.paragraph_format.first_line_indent.cm if para.paragraph_format.first_line_indent else 0,
+                    'first_line': self._get_effective_first_line(para),
                     'left': para.paragraph_format.left_indent.cm if para.paragraph_format.left_indent else 0,
                     'right': para.paragraph_format.right_indent.cm if para.paragraph_format.right_indent else 0,
                 }
@@ -63,6 +57,15 @@ class DocumentReader:
             paragraphs_info.append(para_info)
 
         return paragraphs_info
+
+    def _get_effective_first_line(self, paragraph) -> float:
+        """Recuo de primeira linha em cm, seguindo: direto > estilo do parágrafo > Normal"""
+        valor = paragraph.paragraph_format.first_line_indent
+        if valor is None:
+            valor = paragraph.style.paragraph_format.first_line_indent if paragraph.style else None
+        if valor is None:
+            valor = self.doc.styles['Normal'].paragraph_format.first_line_indent
+        return valor.cm if valor is not None else 0.0
 
     def _get_effective_spacing(self, paragraph) -> Dict[str, Any]:
         """Extrai valor efetivo de espaçamento (entrelinhas e espaço entre parágrafos)"""
@@ -102,54 +105,40 @@ class DocumentReader:
         }
 
     def get_paragraph_font_info(self, paragraph) -> Dict[str, Any]:
-        """Extrai valor efetivo de fonte seguindo cadeia de estilos"""
-        font_name = None
-        font_size = None
+        """Fonte e tamanho efetivos: run com texto > estilo do parágrafo > estilos base > docDefaults"""
+        run = next((r for r in paragraph.runs if r.text.strip()), None)
+        nome = run.font.name if run is not None else None
+        tamanho = run.font.size.pt if run is not None and run.font.size is not None else None
 
-        # 1. Tentar formatação direta do primeiro run
-        if paragraph.runs:
-            run = paragraph.runs[0]
-            if run.font.name:
-                font_name = run.font.name
-            if run.font.size:
-                font_size = run.font.size.pt
-
-        # 2. Se não tiver, tentar estilo do parágrafo
-        if not font_name or not font_size:
-            try:
-                para_style = paragraph.style
-                if para_style and para_style.font:
-                    if not font_name and para_style.font.name:
-                        font_name = para_style.font.name
-                    if not font_size and para_style.font.size:
-                        font_size = para_style.font.size.pt
-            except:
-                pass
-
-        # 3. Se ainda não tiver, tentar estilo base (Normal)
-        if not font_name or not font_size:
-            try:
-                base_style = self.doc.styles['Normal']
-                if base_style and base_style.font:
-                    if not font_name and base_style.font.name:
-                        font_name = base_style.font.name
-                    if not font_size and base_style.font.size:
-                        font_size = base_style.font.size.pt
-            except:
-                pass
-
-        # 4. Padrões finais
-        if not font_name:
-            font_name = 'Times New Roman'
-        if not font_size:
-            font_size = 12
+        if nome is None:
+            nome = self._nome_na_cadeia(paragraph.style)
+        if tamanho is None:
+            tamanho = self._tamanho_na_cadeia(paragraph.style)
 
         return {
-            'font_name': font_name,
-            'font_size': font_size,
+            'font_name': nome,
+            'font_size': tamanho,
             'bold': None,
             'italic': None,
         }
+
+    def _nome_na_cadeia(self, estilo) -> Any:
+        atual = estilo
+        while atual is not None:
+            if atual.font.name:
+                return atual.font.name
+            atual = atual.base_style
+        valores = self.doc.styles.element.xpath('./w:docDefaults/w:rPrDefault/w:rPr/w:rFonts/@w:ascii')
+        return valores[0] if valores else None
+
+    def _tamanho_na_cadeia(self, estilo) -> Any:
+        atual = estilo
+        while atual is not None:
+            if atual.font.size is not None:
+                return atual.font.size.pt
+            atual = atual.base_style
+        valores = self.doc.styles.element.xpath('./w:docDefaults/w:rPrDefault/w:rPr/w:sz/@w:val')
+        return int(valores[0]) / 2 if valores else None
 
     def get_styles_info(self) -> Dict[str, Any]:
         """Extrai informações dos estilos do documento"""

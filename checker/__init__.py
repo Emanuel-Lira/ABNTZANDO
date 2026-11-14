@@ -1,15 +1,14 @@
 from .reader import DocumentReader
-from .rules import ABNTRules, Issue
+from .rules import ABNTRules, Issue, analisar
 from .fixer import DocumentFixer
 from .llm import LLMAnalyzer, LLMAnalysis
-from .zone_classifier import ZoneClassifier
 
 __all__ = [
     'DocumentReader',
     'ABNTRules',
     'Issue',
+    'analisar',
     'DocumentFixer',
     'LLMAnalyzer',
     'LLMAnalysis',
-    'ZoneClassifier',
 ]

@@ -1,16 +1,20 @@
 from fastapi import FastAPI, UploadFile, File
-from fastapi.responses import FileResponse, HTMLResponse, StreamingResponse
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.middleware.cors import CORSMiddleware
 import sys
 from pathlib import Path
 import json
 import tempfile
+import traceback
 from io import BytesIO
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from checker import DocumentReader, ABNTRules, DocumentFixer
+from docx import Document
+
+from checker import analisar, DocumentFixer
+from checker.sugestao_sumario import SemTitulosNumerados, sugerir_sumario
 
 try:
     from docx2pdf import convert
@@ -49,26 +53,7 @@ async def analyze(file: UploadFile = File(...)):
         # Ler arquivo
         contents = await file.read()
 
-        # Extrair informações do documento
-        reader = DocumentReader(contents)
-        doc_info = reader.get_document_info()
-
-        # Verificar regras ABNT
-        checker = ABNTRules(doc_info)
-        issues = checker.check_all()
-
-        # Converter issues para JSON
-        issues_json = [
-            {
-                'title': issue.title,
-                'description': issue.description,
-                'severity': issue.severity,
-                'location': issue.location,
-                'fixable': issue.fixable,
-                'text_preview': issue.text_preview,
-            }
-            for issue in issues
-        ]
+        issues_json = [issue.to_dict() for issue in analisar(contents)]
 
         return {
             "status": "success",
@@ -104,6 +89,43 @@ async def fix(file: UploadFile = File(...)):
             "status": "error",
             "message": str(e)
         }
+
+TAMANHO_MAXIMO_SUMARIO = 10 * 1024 * 1024
+
+
+def _erro(status: int, mensagem: str) -> JSONResponse:
+    return JSONResponse(status_code=status, content={"status": "error", "message": mensagem})
+
+
+@app.post("/api/sugestao-sumario")
+async def sugestao_sumario(file: UploadFile = File(...)):
+    """Lista de títulos sugerida para o sumário. Não altera o documento."""
+    nome = Path(file.filename or "").name
+    if not nome.lower().endswith(".docx"):
+        return _erro(422, "Envie um arquivo .docx.")
+
+    conteudo = await file.read(TAMANHO_MAXIMO_SUMARIO + 1)
+    if len(conteudo) > TAMANHO_MAXIMO_SUMARIO:
+        return _erro(413, "O arquivo passa do limite de 10 MB.")
+    if not conteudo:
+        return _erro(422, "O arquivo está vazio.")
+
+    try:
+        doc = Document(BytesIO(conteudo))
+    except Exception:
+        return _erro(422, "Não foi possível abrir o arquivo. Verifique se é um .docx válido.")
+
+    try:
+        entradas = sugerir_sumario(doc)
+    except SemTitulosNumerados:
+        return _erro(422, "Nenhum título numerado encontrado. Use títulos como '1 Introdução', "
+                          "'2.1 Conceitos' ou 'CAPÍTULO 1'.")
+    except Exception:
+        traceback.print_exc()
+        return _erro(500, "Não foi possível sugerir o sumário.")
+
+    return {"status": "success", "entradas": entradas}
+
 
 @app.post("/api/convert-pdf")
 async def convert_to_pdf(file: UploadFile = File(...)):
