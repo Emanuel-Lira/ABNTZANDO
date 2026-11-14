@@ -3,7 +3,7 @@
     "id": "fonte.tamanho_apoio",
     "categoria": "Fonte",
     "severidade": "erro",
-    "localizacao": "Parágrafo 40",
+    "localizacao": "Capítulo 4",
     "esperado": "10 pt",
     "encontrado": "12 pt"
   },
@@ -11,7 +11,7 @@
     "id": "ref.ordem",
     "categoria": "Referências",
     "severidade": "erro",
-    "localizacao": "Parágrafo 47",
+    "localizacao": "Referências",
     "esperado": "Ordem alfabética pelo sobrenome; mesmo autor, por ano e sufixo",
     "encontrado": "COSTA, 2021b aparece antes de COSTA, 2021a"
   },
@@ -19,7 +19,7 @@
     "id": "cit.sem_referencia",
     "categoria": "Referências",
     "severidade": "erro",
-    "localizacao": "Parágrafo 25",
+    "localizacao": "Capítulo 2",
     "esperado": "Entrada correspondente na lista de referências",
     "encontrado": "(MENDES, 2015)"
   },
@@ -27,7 +27,7 @@
     "id": "ref.sem_citacao",
     "categoria": "Referências",
     "severidade": "aviso",
-    "localizacao": "Parágrafos 45 e 51",
+    "localizacao": "Referências",
     "esperado": "Cada entrada citada no texto",
     "encontrado": "ALMEIDA, 2010; MENDES, 2012"
   },
@@ -35,7 +35,7 @@
     "id": "org.sumario_coerente",
     "categoria": "Organização",
     "severidade": "erro",
-    "localizacao": "Parágrafo 31",
+    "localizacao": "Capítulo 2",
     "esperado": "“2.3 Legislação aplicável” no sumário",
     "encontrado": "ausente"
   },
@@ -43,7 +43,7 @@
     "id": "org.sumario_coerente",
     "categoria": "Organização",
     "severidade": "erro",
-    "localizacao": "Parágrafo 36",
+    "localizacao": "Capítulo 3",
     "esperado": "3.2 (conforme o sumário)",
     "encontrado": "3.3 (no corpo)"
   },
@@ -51,7 +51,7 @@
     "id": "org.sumario_coerente",
     "categoria": "Organização",
     "severidade": "erro",
-    "localizacao": "Sumário (parágrafo 15)",
+    "localizacao": "Pré-textual",
     "esperado": "Título “APÊNDICE A – Questionário” no corpo",
     "encontrado": "ausente"
   },
@@ -59,7 +59,7 @@
     "id": "org.numeracao",
     "categoria": "Organização",
     "severidade": "erro",
-    "localizacao": "Parágrafo 36",
+    "localizacao": "Capítulo 3",
     "esperado": "Depois de 3.1 vem 3.2",
     "encontrado": "3.3 depois de 3.1"
   },
@@ -67,7 +67,7 @@
     "id": "org.sumario_coerente",
     "categoria": "Organização",
     "severidade": "aviso",
-    "localizacao": "Parágrafo 42",
+    "localizacao": "Capítulo 5",
     "esperado": "“4 Resultados” antes de “5 Conclusões”",
     "encontrado": "“5 Conclusões” aparece antes de “4 Resultados” no sumário"
   }

@@ -5,6 +5,7 @@ id, categoria, severidade, titulo, localizacao, esperado, encontrado, norma, cor
 """
 import re
 import unicodedata
+from contextvars import ContextVar
 
 from docx.oxml.ns import qn
 from docx.table import Table
@@ -96,10 +97,22 @@ class Localizacao(str):
     nums: list
 
 
+# Capítulo (ou zona) de cada parágrafo, da análise em curso
+LOCAIS_ATUAIS: ContextVar = ContextVar('locais_atuais', default=None)
+
+
 def loc_paragrafos(nums) -> Localizacao:
     numeros = list(dict.fromkeys(int(n) for n in nums if n is not None))
+    locais = LOCAIS_ATUAIS.get()
+    nomes = list(dict.fromkeys(locais[n] for n in numeros if locais and n in locais))
     if not numeros:
         texto = "Documento"
+    elif nomes:
+        capitulos = [s.split(" ", 1)[1] for s in nomes if s.startswith("Capítulo ")]
+        if len(nomes) == len(capitulos) and len(capitulos) > 1:
+            texto = f"Capítulos {lista_pt(capitulos)}"
+        else:
+            texto = lista_pt(nomes)
     else:
         textos = [str(n) for n in numeros]
         rot = "Parágrafos" if len(textos) > 1 else "Parágrafo"
@@ -217,7 +230,7 @@ def analisa_sumario(itens, comparar: bool):
                       and normaliza(it["texto"]) in TITULOS_SUMARIO for it in itens)
     if not tem_sumario:
         return [item("org.sumario_presente", "Organização", "erro", "Sumário não encontrado",
-                     "Documento", "Seção SUMÁRIO ou ÍNDICE", "não encontrada")]
+                     "Documento", "Seção SUMÁRIO ou ÍNDICE", "ausente")]
     if not comparar:
         return out
 
@@ -274,7 +287,7 @@ def analisa_sumario(itens, comparar: bool):
         if e["chave"] not in chaves_corpo:
             out.append(item("org.sumario_coerente", "Organização", "erro",
                             "Entrada do sumário sem título no corpo",
-                            f"Sumário (parágrafo {e['n']})",
+                            loc_paragrafos([e["n"]]),
                             f"Título “{rotulo(e)}” no corpo", "ausente",
                             paragrafos=[e["n"]]))
 
@@ -361,7 +374,7 @@ def analisa_referencias(itens):
                      and normaliza(it["texto"]) in TITULOS_REFERENCIAS for it in itens)
     if not tem_titulo:
         return [item("ref.presente", "Referências", "erro", "Seção de referências não encontrada",
-                     "Documento", "Seção REFERÊNCIAS", "não encontrada", norma="NBR 6023")], []
+                     "Documento", "Seção REFERÊNCIAS", "ausente", norma="NBR 6023")], []
 
     entradas = []
     for idx, it in enumerate(itens):
@@ -548,10 +561,43 @@ def analisar_estrutura(doc) -> list:
                     for it in itens if it["zona"] == "corpo" and it["tipo"] == "p")
     if not tem_intro:
         achados.append(item("org.secoes", "Organização", "aviso", "Seção de introdução não encontrada",
-                            "Documento", "Seção 1 Introdução", "não encontrada"))
+                            "Documento", "Seção 1 Introdução", "ausente"))
     return achados
 
 
 def zonas_por_paragrafo(doc) -> dict:
     """Mapa {número do parágrafo: zona}. Use para as regras de formatação pularem as zonas certas."""
     return {it["n"]: it["zona"] for it in classificar(doc) if it["tipo"] == "p"}
+
+
+def capitulos_por_paragrafo(doc) -> dict:
+    """Mapa {número do parágrafo: local}, com local 'Capítulo N', 'Pré-textual', 'Referências' ou 'Pós-textual'.
+
+    Cada parágrafo do corpo recebe o capítulo do título numerado mais recente (1, 2, 3...).
+    Partes sem número (capa, sumário, pré-textual, referências) têm rótulo próprio.
+    """
+    mapa = {}
+    atual = "Sem capítulo numerado"
+    for it in classificar(doc):
+        if it["tipo"] != "p":
+            continue
+        zona = it["zona"]
+        if zona == "referencias":
+            mapa[it["n"]] = "Referências"
+            continue
+        if zona == "pos_textual":
+            mapa[it["n"]] = "Pós-textual"
+            continue
+        if zona in ("capa", "sumario", "pre_textual"):
+            mapa[it["n"]] = "Pré-textual"
+            continue
+        if zona == "corpo" and eh_titulo(it):
+            numero, _ = separa_numero(it["texto"])
+            if numero:
+                atual = f"Capítulo {numero.split('.')[0]}"
+            else:
+                m = CAPITULO.match(it["texto"].strip())
+                if m:
+                    atual = f"Capítulo {m.group(1)}"
+        mapa[it["n"]] = atual
+    return mapa

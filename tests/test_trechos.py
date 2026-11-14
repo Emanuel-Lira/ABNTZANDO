@@ -13,7 +13,7 @@ def _por_id(itens, id_):
 
 def test_item_de_paragrafo_traz_trecho_do_texto():
     item = _por_id(analisar(DOCUMENTO.read_bytes()), 'fonte.tamanho_apoio')
-    assert item.location == 'Parágrafo 40'
+    assert item.location == 'Capítulo 4'
     assert [(t['paragrafo'], 'Tabela 1' in t['texto']) for t in item.trechos] == [(40, True)]
 
 

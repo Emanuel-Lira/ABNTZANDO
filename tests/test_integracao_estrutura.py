@@ -8,15 +8,15 @@ DOCUMENTO = pathlib.Path(__file__).resolve().parent / 'fixtures' / 'teste-abnt-f
 
 ESPERADOS = [
     # (id, localizacao, campo, trecho esperado no campo, severidade)
-    ('org.sumario_coerente', 'Parágrafo 31', 'encontrado', 'ausente', 'erro'),
-    ('org.sumario_coerente', 'Parágrafo 36', 'encontrado', '3.3 (no corpo)', 'erro'),
-    ('org.sumario_coerente', 'Sumário (parágrafo 15)', 'esperado', 'APÊNDICE A', 'erro'),
-    ('org.sumario_coerente', 'Parágrafo 42', 'encontrado', '5 Conclusões', 'aviso'),
-    ('org.numeracao', 'Parágrafo 36', 'encontrado', '3.3 depois de 3.1', 'erro'),
-    ('ref.ordem', 'Parágrafo 47', 'encontrado', 'COSTA, 2021b', 'erro'),
-    ('cit.sem_referencia', 'Parágrafo 25', 'encontrado', '(MENDES, 2015)', 'erro'),
-    ('ref.sem_citacao', 'Parágrafos 45 e 51', 'encontrado', 'MENDES, 2012', 'aviso'),
-    ('fonte.tamanho_apoio', 'Parágrafo 40', 'encontrado', '12 pt', 'erro'),
+    ('org.sumario_coerente', 'Capítulo 2', 'encontrado', 'ausente', 'erro'),
+    ('org.sumario_coerente', 'Capítulo 3', 'encontrado', '3.3 (no corpo)', 'erro'),
+    ('org.sumario_coerente', 'Pré-textual', 'esperado', 'APÊNDICE A', 'erro'),
+    ('org.sumario_coerente', 'Capítulo 5', 'encontrado', '5 Conclusões', 'aviso'),
+    ('org.numeracao', 'Capítulo 3', 'encontrado', '3.3 depois de 3.1', 'erro'),
+    ('ref.ordem', 'Referências', 'encontrado', 'COSTA, 2021b', 'erro'),
+    ('cit.sem_referencia', 'Capítulo 2', 'encontrado', '(MENDES, 2015)', 'erro'),
+    ('ref.sem_citacao', 'Referências', 'encontrado', 'MENDES, 2012', 'aviso'),
+    ('fonte.tamanho_apoio', 'Capítulo 4', 'encontrado', '12 pt', 'erro'),
 ]
 
 IDS_PROIBIDOS = {'ref.presente', 'ref.ano', 'ref.sobrenome', 'ref.separacao', 'fonte.tamanho_fonte', 'org.sumario_presente'}

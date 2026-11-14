@@ -3,7 +3,7 @@ from typing import Any, Dict, List, Optional, Set
 
 from docx.shared import Length
 
-from analise_estrutura import analisar_estrutura, eh_titulo, lista_pt, loc_paragrafos, normaliza, zonas_por_paragrafo
+from analise_estrutura import analisar_estrutura, eh_titulo, lista_pt, loc_paragrafos, normaliza, zonas_por_paragrafo, capitulos_por_paragrafo, LOCAIS_ATUAIS
 
 from .output_formatter import formatar_valor
 from .reader import DocumentReader
@@ -49,6 +49,7 @@ class Issue:
     text_preview: Optional[str] = None
     paragrafos: List[int] = field(default_factory=list)
     trechos: List[Dict[str, Any]] = field(default_factory=list)
+    valores: Dict[int, str] = field(default_factory=dict)  # valor encontrado em cada parágrafo
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -90,9 +91,16 @@ def _formatar(id_: str, valor) -> str:
 MARGENS_ESPERADAS = {'top': 3.0, 'left': 3.0, 'bottom': 2.0, 'right': 2.0}
 
 
-def _formatar_margens(m: Dict[str, float]) -> str:
-    return (f"{formatar_valor(m['top'], 'cm')} sup., {formatar_valor(m['left'], 'cm')} esq., "
-            f"{formatar_valor(m['bottom'], 'cm')} inf., {formatar_valor(m['right'], 'cm')} dir.")
+CAMPOS_MARGEM = [('superior', 'top'), ('esquerda', 'left'), ('inferior', 'bottom'), ('direita', 'right')]
+
+
+def _texto_secoes(numeros: List[int]) -> str:
+    """'Seção 1', 'Seções 1 a 8' (consecutivas) ou 'Seções 2, 5 e 7'."""
+    if len(numeros) == 1:
+        return f'Seção {numeros[0]}'
+    if numeros == list(range(numeros[0], numeros[0] + len(numeros))):
+        return f'Seções {numeros[0]} a {numeros[-1]}'
+    return f'Seções {lista_pt(numeros)}'
 
 
 def _de_estrutura(item: Dict[str, Any]) -> Issue:
@@ -149,11 +157,15 @@ class ABNTRules:
             return
 
         numeros = [n for n, _ in erradas]
-        localizacao = f'Seção {numeros[0]}' if len(numeros) == 1 else f'Seções {lista_pt(numeros)}'
-        encontrado = '; '.join(
-            (f'Seção {n}: ' if len(erradas) > 1 else '') + _formatar_margens(m)
+        localizacao = _texto_secoes(numeros)
+        esperado = [
+            {'campo': campo, 'valor': MARGENS_ESPERADAS[lado]}
+            for campo, lado in CAMPOS_MARGEM
+        ]
+        encontrado = [
+            {'secao': n, **{campo: round(m[lado], 2) for campo, lado in CAMPOS_MARGEM}}
             for n, m in erradas
-        )
+        ]
         self.issues.append(Issue(
             id='pag.margens',
             categoria='Margens',
@@ -161,7 +173,7 @@ class ABNTRules:
             severity='error',
             location=localizacao,
             fixable=True,
-            esperado='3 cm sup. e esq., 2 cm inf. e dir.',
+            esperado=esperado,
             encontrado=encontrado,
             fix_type='margin',
         ))
@@ -211,10 +223,11 @@ class ABNTRules:
         for id_, ocorrencias in falhas.items():
             categoria, titulo, esperado = REGRAS_FORMATACAO[id_]
             paragrafos = [n for n, _ in ocorrencias]
-            valores = list(dict.fromkeys(_formatar(id_, v) for _, v in ocorrencias))
-            encontrado = ', '.join(valores)
+            valores_por_paragrafo = {n: _formatar(id_, v) for n, v in ocorrencias}
             if len(paragrafos) > 1:
-                encontrado += f' em {len(paragrafos)} parágrafos'
+                encontrado = f'em {len(paragrafos)} parágrafos'
+            else:
+                encontrado = valores_por_paragrafo[paragrafos[0]]
             self.issues.append(Issue(
                 id=id_,
                 categoria=categoria,
@@ -226,23 +239,31 @@ class ABNTRules:
                 encontrado=encontrado,
                 fix_type=id_.split('.')[0],
                 paragrafos=paragrafos,
+                valores=valores_por_paragrafo,
             ))
 
 
 def analisar(file_bytes: bytes) -> List[Issue]:
     reader = DocumentReader(file_bytes)
-    info = reader.get_document_info()
-    zonas = zonas_por_paragrafo(reader.doc)
-    estrutura = analisar_estrutura(reader.doc)
-    titulos = {
-        i + 1 for i, p in enumerate(reader.doc.paragraphs)
-        if eh_titulo({'tipo': 'p', 'texto': p.text.strip(), 'obj': p})
-    }
-    textos = {i + 1: p.text.strip() for i, p in enumerate(reader.doc.paragraphs)}
-    issues = ABNTRules(info, zonas, titulos, estrutura).check_all()
+    # Capítulo de cada parágrafo vale para toda a análise: estrutura, regras e trechos
+    locais = capitulos_por_paragrafo(reader.doc)
+    token = LOCAIS_ATUAIS.set(locais)
+    try:
+        info = reader.get_document_info()
+        zonas = zonas_por_paragrafo(reader.doc)
+        estrutura = analisar_estrutura(reader.doc)
+        titulos = {
+            i + 1 for i, p in enumerate(reader.doc.paragraphs)
+            if eh_titulo({'tipo': 'p', 'texto': p.text.strip(), 'obj': p})
+        }
+        textos = {i + 1: p.text.strip() for i, p in enumerate(reader.doc.paragraphs)}
+        issues = ABNTRules(info, zonas, titulos, estrutura).check_all()
+    finally:
+        LOCAIS_ATUAIS.reset(token)
     for issue in issues:
         issue.trechos = [
-            {'paragrafo': n, 'texto': _trecho(textos[n])}
+            {'paragrafo': n, 'capitulo': locais.get(n), 'texto': _trecho(textos[n]),
+             'valor': issue.valores.get(n)}
             for n in issue.paragrafos if textos.get(n)
         ]
     return sorted(issues, key=_chave_ordenacao)

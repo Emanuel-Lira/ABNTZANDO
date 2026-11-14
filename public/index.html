@@ -1320,6 +1320,10 @@
             white-space: nowrap;
         }
 
+        .res-values span {
+            white-space: pre-line;
+        }
+
         .res-values {
             margin: 0;
             display: flex;
@@ -3071,6 +3075,153 @@
                 pointer-events: none;
             }
         }
+        /* Margens: blocos empilhados com rótulos discretos; tabela com filetes, sem zebra */
+        .review .res-item-body > .res-blocos {
+            grid-column: 1 / -1;
+            grid-row: 3;
+            margin-top: 6px;
+        }
+
+        .review .res-blocos {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .review .res-bloco {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .review .res-rotulo {
+            font-size: 12px;
+            color: var(--muted);
+        }
+
+        .review .res-esperado {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px 16px;
+            font-size: 14px;
+            color: var(--muted);
+        }
+
+        .review .res-tabela {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 14px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .review .res-tabela th,
+        .review .res-tabela td {
+            padding: 6px 12px 6px 0;
+            border-bottom: 1px solid var(--line);
+            text-align: left;
+            font-weight: 400;
+            color: var(--text);
+        }
+
+        .review .res-tabela thead th {
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .review .res-tabela tbody th {
+            font-weight: 500;
+        }
+
+        .review .res-tabela .num {
+            text-align: right;
+            padding-right: 0;
+        }
+        /* Lugares do achado: número | trecho (uma linha) | valor, filete entre linhas, sem fundo */
+        .review .res-lugares {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .review .res-lugar {
+            display: grid;
+            grid-template-columns: 40px minmax(0, 1fr) auto;
+            column-gap: 12px;
+            align-items: baseline;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+            font-size: 14px;
+        }
+
+        .review .res-lugar-num {
+            color: var(--muted);
+            font-size: 13px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .review .res-lugar-texto {
+            min-width: 0;
+            font-weight: 400;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .review .res-lugar-valor {
+            color: var(--text);
+            text-align: right;
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Um único toggle: fechado, fica depois das três linhas; aberto, vai para o fim da lista */
+        .review .res-lugares-mais {
+            display: flex;
+            flex-direction: column;
+            margin-top: 6px;
+        }
+
+        .review .res-lugares-mais > summary {
+            order: 0;
+            align-self: flex-start;
+            list-style: none;
+            cursor: pointer;
+            font-size: 13px;
+            color: var(--text);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            padding: 6px 0;
+        }
+
+        .review .res-lugares-mais[open] > summary {
+            order: 2;
+        }
+
+        .review .res-lugares-mais > summary::-webkit-details-marker {
+            display: none;
+        }
+
+        .review .res-lugares-mais > summary:focus-visible,
+        .review .res-lugares-resto:focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 2px;
+        }
+
+        .review .res-lugares-resto {
+            order: 1;
+        }
+
+        /* Lista longa aberta: altura limitada e rolagem interna */
+        .review .res-lista-longa[open] > .res-lugares-resto {
+            max-height: 320px;
+            overflow-y: auto;
+        }
+
+        .review .res-lugares-mais[open] .res-fechado,
+        .review .res-lugares-mais:not([open]) .res-aberto {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -3614,24 +3765,81 @@
                 .replace(/"/g, '&quot;');
         }
 
+        // Lugares do achado: número, trecho em uma linha (com reticências) e valor encontrado.
+        // Os três primeiros ficam visíveis; o restante vai para um único <details>.
         function trechosDoItem(issue, limite = 3) {
             const trechos = issue.trechos || [];
             if (!trechos.length) {
                 return issue.text_preview ? `<blockquote class="res-quote">${escaparHtml(issue.text_preview)}</blockquote>` : '';
             }
-            const mostrarRef = trechos.length > 1;
-            const mostrados = trechos.slice(0, limite).map(t =>
-                `<blockquote class="res-quote">${mostrarRef ? `<span class="res-quote-ref">Parágrafo ${t.paragrafo}</span> ` : ''}${escaparHtml(t.texto)}</blockquote>`).join('');
-            const restantes = trechos.length - limite;
-            return mostrados + (restantes > 0 ? `<p class="res-more">e mais ${restantes}</p>` : '');
+            const lugar = t => `<div class="res-lugar">` +
+                `<span class="res-lugar-num">${t.paragrafo}</span>` +
+                `<span class="res-lugar-texto" title="${escaparHtml(t.texto)}">${escaparHtml(t.texto)}</span>` +
+                `<span class="res-lugar-valor">${t.valor ? escaparHtml(t.valor) : ''}</span>` +
+                `</div>`;
+            const primeiros = trechos.slice(0, limite).map(lugar).join('');
+            const total = trechos.length;
+            if (total <= limite) return `<div class="res-lugares">${primeiros}</div>`;
+            const resto = trechos.slice(limite).map(lugar).join('');
+            const longa = total > 20;
+            return `<div class="res-lugares">${primeiros}</div>` +
+                `<details class="res-lugares-mais${longa ? ' res-lista-longa' : ''}">` +
+                `<summary><span class="res-fechado">Mostrar todos os ${total} parágrafos</span>` +
+                `<span class="res-aberto">Mostrar menos</span></summary>` +
+                `<div class="res-lugares-resto"${longa ? ' tabindex="0"' : ''}>${resto}</div>` +
+                `</details>`;
         }
 
         // Linha de valores sempre visível: "Esperado 3 cm   Encontrado 2,47 cm"
+        const RUBRICA_CAMPO = { superior: 'Superior', esquerda: 'Esquerda', inferior: 'Inferior', direita: 'Direita' };
+        const CAMPOS_MARGEM = ['superior', 'esquerda', 'inferior', 'direita'];
+
+        // Centímetros: sem casas decimais no esperado; duas casas nas medidas encontradas
+        function formatarCm(valor, duasCasas) {
+            return Number(valor).toLocaleString('pt-BR', {
+                minimumFractionDigits: duasCasas ? 2 : 0,
+                maximumFractionDigits: 2
+            }) + ' cm';
+        }
+
+        // Texto corrido de um valor (texto simples ou lista de margens), para exportação e listas
+        function textoDoValor(valor) {
+            if (!Array.isArray(valor)) return valor || '';
+            if (valor.length && valor[0].campo) {
+                return valor.map(c => `${RUBRICA_CAMPO[c.campo]} ${formatarCm(c.valor, false)}`).join(', ');
+            }
+            return valor.map(l => `Seção ${l.secao}: ` +
+                CAMPOS_MARGEM.map(c => `${RUBRICA_CAMPO[c]} ${formatarCm(l[c], true)}`).join(', ')).join('; ');
+        }
+
         function valoresLinhaHtml(issue) {
+            if (Array.isArray(issue.esperado) || Array.isArray(issue.encontrado)) {
+                return blocosDeMargem(issue);
+            }
             const partes = [];
             if (issue.esperado) partes.push(`<span>Esperado ${escaparHtml(issue.esperado)}</span>`);
             if (issue.encontrado) partes.push(`<span>Encontrado ${escaparHtml(issue.encontrado)}</span>`);
             return partes.length ? `<p class="res-values">${partes.join('')}</p>` : '';
+        }
+
+        // Margens: "Esperado" em lista e "Encontrado" em tabela, em blocos empilhados
+        function blocosDeMargem(issue) {
+            const blocos = [];
+            if (Array.isArray(issue.esperado) && issue.esperado.length) {
+                const campos = issue.esperado
+                    .map(c => `<span>${RUBRICA_CAMPO[c.campo]} ${formatarCm(c.valor, false)}</span>`).join('');
+                blocos.push(`<div class="res-bloco"><span class="res-rotulo">Esperado</span>` +
+                    `<div class="res-esperado">${campos}</div></div>`);
+            }
+            if (Array.isArray(issue.encontrado) && issue.encontrado.length) {
+                const cabecalho = '<tr><th scope="col">Seção</th>' +
+                    CAMPOS_MARGEM.map(c => `<th scope="col" class="num">${RUBRICA_CAMPO[c]}</th>`).join('') + '</tr>';
+                const linhas = issue.encontrado.map(l => `<tr><th scope="row">${l.secao}</th>` +
+                    CAMPOS_MARGEM.map(c => `<td class="num">${formatarCm(l[c], true)}</td>`).join('') + '</tr>').join('');
+                blocos.push(`<div class="res-bloco"><span class="res-rotulo">Encontrado</span>` +
+                    `<table class="res-tabela"><thead>${cabecalho}</thead><tbody>${linhas}</tbody></table></div>`);
+            }
+            return `<div class="res-blocos">${blocos.join('')}</div>`;
         }
 
         // Conteúdo recolhível de "Ver detalhes"
@@ -3642,8 +3850,8 @@
 
         function valoresDoItem(issue) {
             const partes = [];
-            if (issue.esperado) partes.push(`Esperado: ${issue.esperado}`);
-            if (issue.encontrado) partes.push(`Encontrado: ${issue.encontrado}`);
+            if (issue.esperado) partes.push(`Esperado: ${textoDoValor(issue.esperado)}`);
+            if (issue.encontrado) partes.push(`Encontrado: ${textoDoValor(issue.encontrado)}`);
             return partes.join(' · ');
         }
 
@@ -3692,7 +3900,7 @@
                     conteudo += `\n${i + 1}. ${status} ${issue.title}\n`;
                     conteudo += `   Local: ${issue.location}\n`;
                     (issue.trechos || []).forEach(t => {
-                        conteudo += `   Parágrafo ${t.paragrafo}: “${t.texto}”\n`;
+                        conteudo += `   ${t.capitulo || `Parágrafo ${t.paragrafo}`}: “${t.texto}”\n`;
                     });
                     if (valores) conteudo += `   ${valores}\n`;
                     conteudo += `   Norma: NBR 14724\n`;
@@ -3956,9 +4164,11 @@
             document.getElementById('fixConfirmTitle').textContent =
                 `Corrigir ${n} ${n === 1 ? 'item' : 'itens'} automaticamente?`;
             document.getElementById('fixList').innerHTML = corrigiveis.map(i => {
-                const mudanca = i.encontrado && i.esperado
-                    ? `${escaparHtml(i.encontrado)} → ${escaparHtml(i.esperado)}`
-                    : escaparHtml(i.esperado || '');
+                const esperado = textoDoValor(i.esperado);
+                const encontrado = textoDoValor(i.encontrado);
+                const mudanca = encontrado && esperado
+                    ? `${escaparHtml(encontrado)} → ${escaparHtml(esperado)}`
+                    : escaparHtml(esperado || '');
                 return `<li><strong>${escaparHtml(i.title)}</strong><span>${escaparHtml(i.location || '')}${mudanca ? ': ' + mudanca : ''}</span></li>`;
             }).join('');
             document.getElementById('fixConfirmModal').classList.add('show');
