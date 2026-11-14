@@ -1,5 +1,6 @@
 from typing import List, Dict, Any
 from dataclasses import dataclass
+from .citacoes import VerificadorCitacoes
 
 @dataclass
 class Issue:
@@ -48,6 +49,7 @@ class ABNTRules:
         self.check_spacing_comprehensive()
         self.check_indentation_comprehensive()
         self.check_alignment()
+        self.check_citacoes()
 
         return self.issues
 
@@ -236,3 +238,32 @@ class ABNTRules:
                         text_preview=self._get_text_preview(para['text'])
                     ))
                     align_issues += 1
+
+    def check_citacoes(self):
+        """Verifica citações cruzadas"""
+        try:
+            paragraphs = self.document_info.get('paragraphs', [])
+            if not paragraphs:
+                return
+
+            # Reconstruir texto completo
+            texto_completo = '\n\n'.join([p['text'] for p in paragraphs])
+
+            # Usar verificador de citações
+            verificador = VerificadorCitacoes()
+            problemas = verificador.verificar(texto_completo)
+
+            # Adicionar problemas encontrados
+            for problema in problemas:
+                self.issues.append(Issue(
+                    title=problema['titulo'],
+                    description=problema['descricao'],
+                    severity=problema['severity'],
+                    location=problema.get('paragrafos', ['Texto'])[0] if 'paragrafos' in problema else 'Referências',
+                    fixable=False,
+                    fix_type='citation',
+                    text_preview=None
+                ))
+        except Exception as e:
+            # Silenciosamente ignorar erros de citação
+            pass
