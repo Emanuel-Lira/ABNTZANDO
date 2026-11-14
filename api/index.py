@@ -178,12 +178,123 @@ async def convert_to_pdf(file: UploadFile = File(...)):
 @app.get("/api/glossario")
 async def get_glossario():
     """Retorna os termos do glossário"""
-    try:
-        glossario_file = public_dir / "data" / "glossario.json"
-        with open(glossario_file, "r", encoding="utf-8") as f:
-            return json.load(f)
-    except Exception as e:
-        return {"error": str(e)}, 500
+    glossario = {
+        "termos": [
+            {
+                "id": "item-0",
+                "nome": "Alinhamento",
+                "definicao": "Distribuição do texto em relação às margens da página. A ABNT recomenda alinhamento justificado ou à esquerda para o corpo do trabalho.",
+                "norma": "NBR 14724",
+                "relacionados": ["margem", "espaçamento"]
+            },
+            {
+                "id": "item-1",
+                "nome": "Citação direta",
+                "definicao": "Reprodução literal de um trecho de outro autor, mantendo as palavras, vírgulas e pontuação originais. Deve aparecer entre aspas.",
+                "norma": "NBR 10520",
+                "relacionados": ["citação indireta", "referência"]
+            },
+            {
+                "id": "item-2",
+                "nome": "Citação indireta",
+                "definicao": "Reescrita com suas próprias palavras de uma ideia de outro autor, mantendo o sentido original. Não usa aspas.",
+                "norma": "NBR 10520",
+                "relacionados": ["citação direta", "referência"]
+            },
+            {
+                "id": "item-3",
+                "nome": "Citação longa",
+                "definicao": "Citação direta com mais de três linhas que deve ser destacada do texto principal com recuo de 4 cm, fonte 10 ou 11 pt e espaçamento simples.",
+                "norma": "NBR 10520",
+                "relacionados": ["citação direta", "recuo"]
+            },
+            {
+                "id": "item-4",
+                "nome": "Entrelinhas",
+                "definicao": "Espaço vertical entre as linhas dentro de um parágrafo. A ABNT recomenda 1,5 para o corpo do texto e 1,0 para citações longas.",
+                "norma": "NBR 14724, 5.2",
+                "relacionados": ["espaçamento", "recuo"]
+            },
+            {
+                "id": "item-5",
+                "nome": "Espaçamento",
+                "definicao": "Distância entre elementos na página, como entre parágrafos ou entre títulos e texto. A ABNT pede espaçamento simples (1,0) entre parágrafos no corpo.",
+                "norma": "NBR 14724, 5.3",
+                "relacionados": ["entrelinhas", "margem"]
+            },
+            {
+                "id": "item-6",
+                "nome": "Folha de rosto",
+                "definicao": "Primeira página do trabalho que contém: autor, título, subtítulo, instituição, curso, nome do orientador e data. Deve estar em branco no verso.",
+                "norma": "NBR 14724, 7.1.1",
+                "relacionados": ["sumário", "paginação"]
+            },
+            {
+                "id": "item-7",
+                "nome": "Fonte",
+                "definicao": "Tipo de letra usado no documento. A ABNT recomenda Times New Roman ou Arial em tamanho 12 pt para o corpo do texto.",
+                "norma": "NBR 14724, 5.1",
+                "relacionados": ["tamanho de fonte", "espaçamento"]
+            },
+            {
+                "id": "item-8",
+                "nome": "Indentação",
+                "definicao": "Recuo da primeira linha de um parágrafo em relação às outras linhas. A ABNT pede recuo de 1,25 cm na primeira linha dos parágrafos.",
+                "norma": "NBR 14724, 5.2",
+                "relacionados": ["recuo", "alinhamento"]
+            },
+            {
+                "id": "item-9",
+                "nome": "Margem",
+                "definicao": "Espaço em branco entre o texto e a borda da página. A ABNT pede: 3 cm (superior e esquerda) e 2 cm (inferior e direita).",
+                "norma": "NBR 14724, 5.0",
+                "relacionados": ["alinhamento", "espaçamento"]
+            },
+            {
+                "id": "item-10",
+                "nome": "Paginação",
+                "definicao": "Numeração das páginas do trabalho, colocada no canto superior direito a 2 cm da borda. Começa a contar na folha de rosto, mas só aparece a partir da introdução.",
+                "norma": "NBR 14724, 7.9",
+                "relacionados": ["folha de rosto", "sumário"]
+            },
+            {
+                "id": "item-11",
+                "nome": "Recuo",
+                "definicao": "Movimento de um trecho de texto para dentro em relação à margem esquerda. Usado em citações longas (4 cm) e na primeira linha de parágrafos (1,25 cm).",
+                "norma": "NBR 14724, 5.2",
+                "relacionados": ["indentação", "margem"]
+            },
+            {
+                "id": "item-12",
+                "nome": "Referência",
+                "definicao": "Lista de todas as obras consultadas para a elaboração do trabalho, listadas em ordem alfabética no final do documento.",
+                "norma": "NBR 6023",
+                "relacionados": ["citação direta", "citação indireta"]
+            },
+            {
+                "id": "item-13",
+                "nome": "Resumo",
+                "definicao": "Síntese do trabalho que apresenta os objetivos, métodos e conclusões principais em um único parágrafo. Deve ter entre 100 e 250 palavras.",
+                "norma": "NBR 14724, 7.2",
+                "relacionados": ["sumário", "introdução"]
+            },
+            {
+                "id": "item-14",
+                "nome": "Sumário",
+                "definicao": "Lista das divisões, seções e outras partes do trabalho com indicação da página onde começam. Deve refletir a estrutura do documento.",
+                "norma": "NBR 14724, 7.3",
+                "relacionados": ["folha de rosto", "paginação"]
+            },
+            {
+                "id": "item-15",
+                "nome": "Tamanho de fonte",
+                "definicao": "Medida da altura das letras em pontos (pt). A ABNT recomenda 12 pt para o corpo do texto, 10 ou 11 pt para notas de rodapé e citações longas.",
+                "norma": "NBR 14724, 5.1",
+                "relacionados": ["fonte", "espaçamento"]
+            }
+        ]
+    }
+    return glossario
 
 @app.get("/health")
 async def health():
