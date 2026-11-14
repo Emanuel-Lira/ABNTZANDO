@@ -1,6 +1,7 @@
 from typing import List, Dict, Any
 from dataclasses import dataclass
 from .citacoes import VerificadorCitacoes
+from .sumario import VerificadorSumario
 
 @dataclass
 class Issue:
@@ -50,6 +51,7 @@ class ABNTRules:
         self.check_indentation_comprehensive()
         self.check_alignment()
         self.check_citacoes()
+        self.check_sumario()
 
         return self.issues
 
@@ -266,4 +268,33 @@ class ABNTRules:
                 ))
         except Exception as e:
             # Silenciosamente ignorar erros de citação
+            pass
+
+    def check_sumario(self):
+        """Verifica sumário contra títulos do documento"""
+        try:
+            paragraphs = self.document_info.get('paragraphs', [])
+            if not paragraphs:
+                return
+
+            # Reconstruir texto completo
+            texto_completo = '\n\n'.join([p['text'] for p in paragraphs])
+
+            # Usar verificador de sumário
+            verificador = VerificadorSumario(self.document_info)
+            problemas = verificador.verificar(texto_completo)
+
+            # Adicionar problemas encontrados
+            for problema in problemas:
+                self.issues.append(Issue(
+                    title=problema['titulo'],
+                    description=problema['descricao'],
+                    severity=problema['severity'],
+                    location='Sumário',
+                    fixable=False,
+                    fix_type='table_of_contents',
+                    text_preview=None
+                ))
+        except Exception as e:
+            # Silenciosamente ignorar erros de sumário
             pass
