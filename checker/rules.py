@@ -3,6 +3,7 @@ from dataclasses import dataclass
 from .citacoes import VerificadorCitacoes
 from .sumario import VerificadorSumario
 from .zone_classifier import ZoneClassifier
+from .references_validator import ReferencesValidator
 
 @dataclass
 class Issue:
@@ -62,6 +63,7 @@ class ABNTRules:
         self.check_alignment()
         self.check_citacoes()
         self.check_sumario()
+        self.check_references_format()
 
         return self.issues
 
@@ -307,4 +309,30 @@ class ABNTRules:
                 ))
         except Exception as e:
             # Silenciosamente ignorar erros de sumário
+            pass
+
+    def check_references_format(self):
+        """Verifica formato da seção de REFERÊNCIAS"""
+        try:
+            paragraphs = self.document_info.get('paragraphs', [])
+            if not paragraphs:
+                return
+
+            # Usar validador de referências
+            validator = ReferencesValidator(paragraphs)
+            ref_issues = validator.validate()
+
+            # Converter para Issue
+            for ref_issue in ref_issues:
+                self.issues.append(Issue(
+                    title=ref_issue.title,
+                    description=ref_issue.description,
+                    severity=ref_issue.severity,
+                    location=ref_issue.location,
+                    fixable=False,
+                    fix_type='references',
+                    text_preview=None
+                ))
+        except Exception as e:
+            # Silenciosamente ignorar erros de referências
             pass
