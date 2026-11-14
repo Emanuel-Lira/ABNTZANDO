@@ -2,6 +2,7 @@ from typing import List, Dict, Any
 from dataclasses import dataclass
 from .citacoes import VerificadorCitacoes
 from .sumario import VerificadorSumario
+from .zone_classifier import ZoneClassifier
 
 @dataclass
 class Issue:
@@ -33,6 +34,15 @@ class ABNTRules:
     def __init__(self, document_info: Dict[str, Any]):
         self.document_info = document_info
         self.issues: List[Issue] = []
+
+        # Classificar parágrafos em zonas
+        paragraphs = document_info.get('paragraphs', [])
+        self.zone_classifier = ZoneClassifier(paragraphs)
+        self.zones = self.zone_classifier.get_all_zones()
+
+    def _get_zone(self, idx: int) -> str:
+        """Retorna a zona de um parágrafo"""
+        return self.zones.get(idx, 'corpo')
 
     def _get_text_preview(self, text: str, max_length: int = 100) -> str:
         """Retorna um preview do texto com tamanho máximo"""

@@ -50,6 +50,7 @@ class DocumentReader:
             para_info = {
                 'index': idx,
                 'text': para.text,
+                'style': para.style.name if para.style else None,
                 'alignment': str(para.alignment),
                 'font_info': self.get_paragraph_font_info(para),
                 'spacing': {
