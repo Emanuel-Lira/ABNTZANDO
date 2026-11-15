@@ -11,6 +11,8 @@ ESPERADOS = [
     ('org.sumario_coerente', 'Capítulo 2', 'encontrado', 'ausente', 'erro'),
     ('org.sumario_coerente', 'Capítulo 3', 'encontrado', '3.3 (no corpo)', 'erro'),
     ('org.sumario_coerente', 'Pré-textual', 'esperado', 'APÊNDICE A', 'erro'),
+    ('alinhamento.justificado', 'Capítulo 5', 'encontrado', 'à esquerda', 'aviso'),
+    ('recuo.primeira_linha', 'Capítulo 5', 'encontrado', '0 cm', 'aviso'),
     ('org.sumario_coerente', 'Capítulo 5', 'encontrado', '5 Conclusões', 'aviso'),
     ('org.numeracao', 'Capítulo 3', 'encontrado', '3.3 depois de 3.1', 'erro'),
     ('ref.ordem', 'Referências', 'encontrado', 'COSTA, 2021b', 'erro'),

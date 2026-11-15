@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import sys
 from pathlib import Path
 import json
+import logging
 import tempfile
 import traceback
 from io import BytesIO
@@ -15,6 +16,8 @@ from docx import Document
 
 from checker import analisar, DocumentFixer
 from checker.sugestao_sumario import SemTitulosNumerados, sugerir_sumario
+
+logger = logging.getLogger("abntzando")
 
 try:
     from docx2pdf import convert
@@ -48,24 +51,27 @@ async def serve_html():
 
 @app.post("/api/analyze")
 async def analyze(file: UploadFile = File(...)):
-    """Analisa um documento .docx e retorna os problemas encontrados"""
+    """Analisa um documento .docx e retorna os problemas encontrados.
+
+    Uma falha de leitura ou de regra vira HTTP 500 com o tipo da exceção; nunca uma
+    lista vazia com status 200, que pareceria um documento sem problemas.
+    """
     try:
-        # Ler arquivo
         contents = await file.read()
-
-        issues_json = [issue.to_dict() for issue in analisar(contents)]
-
-        return {
-            "status": "success",
-            "issues": issues_json,
-            "total_issues": len(issues_json),
-        }
+        issues = analisar(contents)
     except Exception as e:
-        return {
-            "status": "error",
-            "message": str(e),
-            "issues": []
-        }
+        logger.exception("Falha ao analisar o documento")
+        return JSONResponse(
+            status_code=500,
+            content={"erro": "Não foi possível analisar este documento.", "detalhe": type(e).__name__},
+        )
+
+    issues_json = [issue.to_dict() for issue in issues]
+    return {
+        "status": "success",
+        "issues": issues_json,
+        "total_issues": len(issues_json),
+    }
 
 @app.post("/api/fix")
 async def fix(file: UploadFile = File(...)):

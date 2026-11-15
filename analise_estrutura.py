@@ -565,6 +565,12 @@ def analisar_estrutura(doc) -> list:
     return achados
 
 
+def titulos_do_documento(doc) -> set:
+    """Números (1-based) dos parágrafos que são títulos."""
+    return {i + 1 for i, p in enumerate(doc.paragraphs)
+            if eh_titulo({'tipo': 'p', 'texto': p.text.strip(), 'obj': p})}
+
+
 def zonas_por_paragrafo(doc) -> dict:
     """Mapa {número do parágrafo: zona}. Use para as regras de formatação pularem as zonas certas."""
     return {it["n"]: it["zona"] for it in classificar(doc) if it["tipo"] == "p"}

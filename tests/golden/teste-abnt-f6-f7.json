@@ -8,6 +8,14 @@
     "encontrado": "12 pt"
   },
   {
+    "id": "alinhamento.justificado",
+    "categoria": "Alinhamento",
+    "severidade": "aviso",
+    "localizacao": "Capítulo 5",
+    "esperado": "Justificado",
+    "encontrado": "à esquerda"
+  },
+  {
     "id": "ref.ordem",
     "categoria": "Referências",
     "severidade": "erro",
@@ -70,5 +78,13 @@
     "localizacao": "Capítulo 5",
     "esperado": "“4 Resultados” antes de “5 Conclusões”",
     "encontrado": "“5 Conclusões” aparece antes de “4 Resultados” no sumário"
+  },
+  {
+    "id": "recuo.primeira_linha",
+    "categoria": "Recuo",
+    "severidade": "aviso",
+    "localizacao": "Capítulo 5",
+    "esperado": "1,25 cm",
+    "encontrado": "0 cm"
   }
 ]

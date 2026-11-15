@@ -6,7 +6,7 @@ from checker.rules import CATEGORIAS
 RAIZ = pathlib.Path(__file__).resolve().parent.parent
 DOCUMENTO = RAIZ / 'tests' / 'fixtures' / 'teste-abnt-f6-f7.docx'
 HTML = RAIZ / 'public' / 'index.html'
-ORDEM = ['Margens', 'Fonte', 'Espaçamento', 'Referências', 'Organização', 'Recuo']
+ORDEM = ['Margens', 'Fonte', 'Espaçamento', 'Alinhamento', 'Referências', 'Organização', 'Recuo']
 
 
 def _issues():

@@ -1,8 +1,13 @@
 from docx import Document
 from docx.shared import Pt, Inches
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from typing import Dict, List, Any
+from typing import Any, Dict, List, Optional
 from io import BytesIO
+import logging
+
+logger = logging.getLogger(__name__)
+TWIPS_POR_CM = 567.0
+
 
 class DocumentReader:
     def __init__(self, file_path_or_bytes):
@@ -10,6 +15,22 @@ class DocumentReader:
             self.doc = Document(BytesIO(file_path_or_bytes))
         else:
             self.doc = Document(file_path_or_bytes)
+        self._avisou_estilo_normal = False
+
+    def _estilo_normal(self):
+        """Estilo 'Normal' pelo nome. Sem ele (arquivo regravado por outro app), devolve None e avisa uma vez."""
+        try:
+            return self.doc.styles['Normal']
+        except KeyError:
+            if not self._avisou_estilo_normal:
+                logger.warning("Estilo 'Normal' ausente no documento; usando os valores padrão do Word (docDefaults).")
+                self._avisou_estilo_normal = True
+            return None
+
+    def _docdefault(self, xpath: str) -> Optional[str]:
+        """Valor de w:docDefaults (pPrDefault) pelo caminho XPath, ou None."""
+        valores = self.doc.styles.element.xpath(f'./w:docDefaults/w:pPrDefault/w:pPr/{xpath}')
+        return valores[0] if valores else None
 
     def get_document_info(self) -> Dict[str, Any]:
         """Extrai informações gerais do documento"""
@@ -46,6 +67,7 @@ class DocumentReader:
                 'text': para.text,
                 'style': para.style.name if para.style else None,
                 'alignment': str(para.alignment),
+                'alignment_efetivo': self._get_effective_alignment(para),
                 'font_info': self.get_paragraph_font_info(para),
                 'spacing': self._get_effective_spacing(para),
                 'indentation': {
@@ -58,14 +80,43 @@ class DocumentReader:
 
         return paragraphs_info
 
+    def _get_effective_alignment(self, paragraph) -> Optional[str]:
+        """Alinhamento efetivo: parágrafo > estilo e estilos base > docDefaults.
+
+        Devolve 'both' (justificado), 'left', 'center', 'right' ou None (sem definição).
+        O alinhamento não existe no nível de run no Word, então não é consultado.
+        """
+        mapa = {
+            WD_ALIGN_PARAGRAPH.JUSTIFY: 'both',
+            WD_ALIGN_PARAGRAPH.LEFT: 'left',
+            WD_ALIGN_PARAGRAPH.CENTER: 'center',
+            WD_ALIGN_PARAGRAPH.RIGHT: 'right',
+        }
+        valor = paragraph.paragraph_format.alignment
+        if valor is not None:
+            return mapa.get(valor, str(valor))
+        estilo = paragraph.style
+        while estilo is not None:
+            valor = estilo.paragraph_format.alignment
+            if valor is not None:
+                return mapa.get(valor, str(valor))
+            estilo = estilo.base_style
+        padrao = self.doc.styles.element.xpath('./w:docDefaults/w:pPrDefault/w:pPr/w:jc/@w:val')
+        return padrao[0] if padrao else None
+
     def _get_effective_first_line(self, paragraph) -> float:
         """Recuo de primeira linha em cm, seguindo: direto > estilo do parágrafo > Normal"""
         valor = paragraph.paragraph_format.first_line_indent
         if valor is None:
             valor = paragraph.style.paragraph_format.first_line_indent if paragraph.style else None
         if valor is None:
-            valor = self.doc.styles['Normal'].paragraph_format.first_line_indent
-        return valor.cm if valor is not None else 0.0
+            normal = self._estilo_normal()
+            valor = normal.paragraph_format.first_line_indent if normal is not None else None
+        if valor is None:
+            # docDefaults: w:ind/@w:firstLine em twips
+            twips = self._docdefault('w:ind/@w:firstLine')
+            return float(twips) / TWIPS_POR_CM if twips is not None else 0.0
+        return valor.cm
 
     def _get_effective_spacing(self, paragraph) -> Dict[str, Any]:
         """Extrai valor efetivo de espaçamento (entrelinhas e espaço entre parágrafos)"""
@@ -78,21 +129,21 @@ class DocumentReader:
 
         # 2. Se não tiver, tentar estilo do parágrafo
         if not line_spacing:
-            try:
-                para_style = paragraph.style
-                if para_style and para_style.paragraph_format:
-                    line_spacing = para_style.paragraph_format.line_spacing
-            except:
-                pass
+            para_style = paragraph.style
+            if para_style is not None and para_style.paragraph_format:
+                line_spacing = para_style.paragraph_format.line_spacing
 
         # 3. Se ainda não tiver, tentar estilo Normal
         if not line_spacing:
-            try:
-                base_style = self.doc.styles['Normal']
-                if base_style and base_style.paragraph_format:
-                    line_spacing = base_style.paragraph_format.line_spacing
-            except:
-                pass
+            base_style = self._estilo_normal()
+            if base_style is not None and base_style.paragraph_format:
+                line_spacing = base_style.paragraph_format.line_spacing
+
+        # 3b. docDefaults: w:spacing/@w:line em 240avos (240 = simples)
+        if not line_spacing:
+            linha = self._docdefault('w:spacing/@w:line')
+            if linha is not None:
+                line_spacing = float(linha) / 240.0
 
         # 4. Padrão: 1.5
         if not line_spacing:

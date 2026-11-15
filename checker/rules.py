@@ -11,11 +11,11 @@ from .reader import DocumentReader
 SEVERIDADE = {'erro': 'error', 'aviso': 'warning'}
 # Recuo de primeira linha está fora do escopo enxuto do spec. Para reativar,
 # mude para True (no futuro, pelo perfil de norma).
-VERIFICAR_RECUO = False
+VERIFICAR_RECUO = True
 ZONAS_IGNORADAS = {'capa', 'sumario', 'pre_textual'}
 FONTES_ACEITAS = ['Times New Roman', 'Arial']
 TITULOS_REFERENCIAS = {'referencias', 'referencias bibliograficas'}
-CATEGORIAS = ['Margens', 'Fonte', 'Espaçamento', 'Referências', 'Organização', 'Recuo']
+CATEGORIAS = ['Margens', 'Fonte', 'Espaçamento', 'Alinhamento', 'Referências', 'Organização', 'Recuo']
 
 REGRAS_FORMATACAO = {
     'fonte.familia': ('Fonte', 'Fonte fora de Times New Roman ou Arial', 'Times New Roman ou Arial'),
@@ -25,7 +25,20 @@ REGRAS_FORMATACAO = {
     'espaco.texto': ('Espaçamento', 'Entrelinhas fora de 1,5 no texto', '1,5'),
     'espaco.referencias': ('Espaçamento', 'Entrelinhas fora de 1,0 nas referências', '1,0'),
     'recuo.primeira_linha': ('Recuo', 'Recuo de primeira linha fora de 1,25 cm', '1,25 cm'),
+    'alinhamento.justificado': ('Alinhamento', 'Texto do corpo sem alinhamento justificado', 'Justificado'),
 }
+# Severidade e correção automática de cada regra de formatação
+REGRAS_FORMATACAO_META = {
+    'fonte.familia': {'severidade': 'erro', 'corrigivel': True},
+    'fonte.tamanho_texto': {'severidade': 'erro', 'corrigivel': True},
+    'fonte.tamanho_apoio': {'severidade': 'erro', 'corrigivel': True},
+    'fonte.tamanho_fonte': {'severidade': 'erro', 'corrigivel': True},
+    'espaco.texto': {'severidade': 'erro', 'corrigivel': True},
+    'espaco.referencias': {'severidade': 'erro', 'corrigivel': True},
+    'recuo.primeira_linha': {'severidade': 'aviso', 'corrigivel': True},
+    'alinhamento.justificado': {'severidade': 'aviso', 'corrigivel': True},
+}
+ALINHAMENTO_TEXTO = {'left': 'à esquerda', 'center': 'centralizado', 'right': 'à direita'}
 UNIDADE_FORMATACAO = {
     'fonte.tamanho_texto': 'pt',
     'fonte.tamanho_apoio': 'pt',
@@ -83,6 +96,8 @@ def _igual(valor, alvo: float, tolerancia: float = 0.05) -> bool:
 def _formatar(id_: str, valor) -> str:
     if id_ == 'fonte.familia':
         return str(valor)
+    if id_ == 'alinhamento.justificado':
+        return ALINHAMENTO_TEXTO.get(valor, 'sem alinhamento definido')
     if not _numero(valor):
         return 'valor exato'
     return formatar_valor(valor, UNIDADE_FORMATACAO.get(id_, ''))
@@ -217,8 +232,11 @@ class ABNTRules:
                 falha('espaco.referencias', n, entrelinhas)
 
             if VERIFICAR_RECUO and zona == 'corpo' and not e_titulo and len(texto) >= 10 \
-                    and not _igual(recuo, 1.25, tolerancia=0.2):
+                    and not _igual(recuo, 1.25, tolerancia=0.1):
                 falha('recuo.primeira_linha', n, recuo)
+
+            if zona == 'corpo' and not e_titulo and para['alignment_efetivo'] != 'both':
+                falha('alinhamento.justificado', n, para['alignment_efetivo'])
 
         for id_, ocorrencias in falhas.items():
             categoria, titulo, esperado = REGRAS_FORMATACAO[id_]
@@ -232,9 +250,9 @@ class ABNTRules:
                 id=id_,
                 categoria=categoria,
                 title=titulo,
-                severity='error',
+                severity='warning' if REGRAS_FORMATACAO_META[id_]['severidade'] == 'aviso' else 'error',
                 location=loc_paragrafos(paragrafos),
-                fixable=id_ != 'recuo.primeira_linha',
+                fixable=REGRAS_FORMATACAO_META[id_]['corrigivel'],
                 esperado=esperado,
                 encontrado=encontrado,
                 fix_type=id_.split('.')[0],

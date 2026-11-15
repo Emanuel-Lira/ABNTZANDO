@@ -52,7 +52,7 @@ Thumbs.db
 *PRIVATIVAS*.docx
 
 # Fixtures de teste com documentos reais: ficam fora do git
-tests/fixtures/
+tests/fixtures/*.docx
 .impeccable/config.local.json
 
 # Ferramentas locais de design/IA (Impeccable, Gemini) e configurações pessoais

@@ -2,7 +2,7 @@ from io import BytesIO
 
 from docx import Document
 from docx.enum.section import WD_SECTION
-from docx.enum.text import WD_BREAK
+from docx.enum.text import WD_ALIGN_PARAGRAPH, WD_BREAK
 from docx.shared import Cm, Pt
 
 from checker import analisar
@@ -15,7 +15,7 @@ REFERENCIAS_PADRAO = [
 
 
 def _texto(doc, texto, estilo=None, espaco=1.5, depois=0, recuo=None,
-           negrito=False, run_vazio=False):
+           negrito=False, run_vazio=False, alinhamento=None):
     p = doc.add_paragraph(style=estilo)
     if run_vazio:
         p.add_run('')
@@ -28,6 +28,8 @@ def _texto(doc, texto, estilo=None, espaco=1.5, depois=0, recuo=None,
     pf.space_after = Pt(depois)
     if recuo is not None:
         pf.first_line_indent = Cm(recuo)
+    if alinhamento is not None:
+        pf.alignment = alinhamento
     return p
 
 
@@ -49,15 +51,15 @@ def gerar_documento(referencias=None, paragrafos_extra=(), run_vazio=False,
 
     _texto(doc, '1 Introdução', estilo='Heading 1')
     _texto(doc, 'Este trabalho apresenta uma discussão sobre o tema proposto (SOUZA, 2019).',
-           recuo=1.25, run_vazio=run_vazio)
+           recuo=1.25, alinhamento=WD_ALIGN_PARAGRAPH.JUSTIFY, run_vazio=run_vazio)
     _texto(doc, '2 Desenvolvimento', estilo='Heading 1')
-    _texto(doc, 'A formação docente é discutida por diversos autores (SILVA, 2020).', recuo=1.25)
+    _texto(doc, 'A formação docente é discutida por diversos autores (SILVA, 2020).', recuo=1.25, alinhamento=WD_ALIGN_PARAGRAPH.JUSTIFY)
     _texto(doc, '2.1 Subtítulo', estilo='Heading 2')
-    _texto(doc, 'Os resultados confirmam a hipótese inicial da pesquisa, conforme SOUZA (2019).', recuo=1.25)
+    _texto(doc, 'Os resultados confirmam a hipótese inicial da pesquisa, conforme SOUZA (2019).', recuo=1.25, alinhamento=WD_ALIGN_PARAGRAPH.JUSTIFY)
     for texto in paragrafos_extra:
-        _texto(doc, texto, recuo=1.25)
+        _texto(doc, texto, recuo=1.25, alinhamento=WD_ALIGN_PARAGRAPH.JUSTIFY)
     _texto(doc, '3 Conclusão', estilo='Heading 1')
-    _texto(doc, 'Conclui-se que a formação continuada é indispensável ao professor.', recuo=1.25)
+    _texto(doc, 'Conclui-se que a formação continuada é indispensável ao professor.', recuo=1.25, alinhamento=WD_ALIGN_PARAGRAPH.JUSTIFY)
 
     _texto(doc, 'REFERÊNCIAS', espaco=1.0, negrito=True)
     for ref in (REFERENCIAS_PADRAO if referencias is None else referencias):

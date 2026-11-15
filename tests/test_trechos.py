@@ -19,7 +19,7 @@ def test_item_de_paragrafo_traz_trecho_do_texto():
 
 def test_varios_paragrafos_geram_um_trecho_por_paragrafo():
     item = _por_id(analisar(DOCUMENTO.read_bytes()), 'ref.sem_citacao')
-    assert [t['paragrafo'] for t in item.trechos] == [45, 51]
+    assert [t['paragrafo'] for t in item.trechos] == [49, 55]
 
 
 def test_trecho_e_curto_e_sem_quebra_de_linha():

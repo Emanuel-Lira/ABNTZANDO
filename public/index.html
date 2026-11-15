@@ -3222,6 +3222,10 @@
         .review .res-lugares-mais:not([open]) .res-aberto {
             display: none;
         }
+        /* Erro na análise: sem ações de correção, que não se aplicam a um documento não analisado */
+        .res-head:has(.error-state) .res-acoes {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -3735,7 +3739,7 @@
                 .toLowerCase();
         }
 
-        const ORDEM_CATEGORIAS = ['Margens', 'Fonte', 'Espaçamento', 'Referências', 'Organização', 'Recuo'];
+        const ORDEM_CATEGORIAS = ['Margens', 'Fonte', 'Espaçamento', 'Alinhamento', 'Referências', 'Organização', 'Recuo'];
 
         function ordenarIssues(issues) {
             const posicao = categoria => {
@@ -4042,16 +4046,46 @@
                     body: formData
                 });
 
-                const result = await response.json();
+                let corpo = null;
+                try {
+                    corpo = await response.json();
+                } catch (_) {
+                    corpo = null;
+                }
 
                 // Delay de 2 segundos para mostrar as animações
                 await new Promise(resolve => setTimeout(resolve, 2000));
 
-                displayResults(result);
+                // Erro do servidor ou resposta sem a lista de achados: mostra erro, nunca "sem problemas"
+                if (!response.ok || !corpo || !Array.isArray(corpo.issues)) {
+                    const mensagem = (corpo && corpo.erro) || 'Não foi possível analisar este documento.';
+                    mostrarErroAnalise(mensagem);
+                    return;
+                }
+
+                displayResults(corpo);
             } catch (error) {
-                showToast('Erro ao analisar: ' + error.message, 'error');
-                resetForm();
+                mostrarErroAnalise('Não foi possível conectar ao servidor. Tente de novo.');
             }
+        }
+
+        // Estado de erro na área de resultados, com recuperação sem perder o arquivo
+        function mostrarErroAnalise(mensagem) {
+            analyzing.classList.remove('show');
+            results.classList.add('show');
+            issuesFull = [];
+            fixButton.disabled = true;
+            document.getElementById('resultSummary').textContent = '';
+            document.getElementById('checklistControls').style.display = 'none';
+            rightPanelActions.classList.remove('show');
+            issuesList.innerHTML = `
+                <div class="empty-state error-state" role="alert">
+                    <p>${escaparHtml(mensagem)}</p>
+                    <button type="button" class="btn btn-secondary" id="tentarNovamenteBtn">Tentar de novo</button>
+                </div>`;
+            document.getElementById('tentarNovamenteBtn').addEventListener('click', () => {
+                if (currentFile) handleFile(currentFile);
+            });
         }
 
         function displayResults(result) {

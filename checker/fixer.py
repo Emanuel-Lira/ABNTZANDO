@@ -2,8 +2,11 @@ from docx import Document
 from docx.shared import Pt, Cm
 from docx.oxml.ns import qn
 from docx.oxml import OxmlElement
+from docx.enum.text import WD_ALIGN_PARAGRAPH
 from typing import List, Dict, Any
 from io import BytesIO
+
+from analise_estrutura import titulos_do_documento, zonas_por_paragrafo
 
 class DocumentFixer:
     """Aplica correções ABNT ao documento"""
@@ -39,6 +42,9 @@ class DocumentFixer:
 
         # Corrigir espaçamento entre linhas (seguro)
         self.fix_spacing()
+
+        # Justificar e recuar o texto do corpo (títulos e textos curtos ficam de fora)
+        self.fix_alinhamento_e_recuo()
 
         output = BytesIO()
         self.doc.save(output)
@@ -119,6 +125,21 @@ class DocumentFixer:
                     para.paragraph_format.line_spacing = self.LINE_SPACING
         except Exception as e:
             print(f"Erro ao corrigir espaçamento: {e}")
+
+    def fix_alinhamento_e_recuo(self):
+        """Justifica e aplica recuo de primeira linha de 1,25 cm (709 twips) nos parágrafos do corpo"""
+        try:
+            zonas = zonas_por_paragrafo(self.doc)
+            titulos = titulos_do_documento(self.doc)
+            for n, para in enumerate(self.doc.paragraphs, start=1):
+                texto = para.text.strip()
+                if not texto or zonas.get(n) != 'corpo' or n in titulos:
+                    continue
+                para.paragraph_format.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
+                if len(texto) >= 10:
+                    para.paragraph_format.first_line_indent = Cm(1.25)
+        except Exception as e:
+            print(f"Erro ao corrigir alinhamento e recuo: {e}")
 
     def fix_indentation(self):
         """Corrige indentação com cuidado"""
