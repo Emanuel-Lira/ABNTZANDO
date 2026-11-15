@@ -6,7 +6,7 @@
     <title>ABNTzando com Lala</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Sans+3:wght@400;500;600;700&family=Source+Serif+4:wght@600&display=swap" rel="stylesheet">
     <script>
         // Aplicar tema antes do render para evitar flash
         (function() {
@@ -82,13 +82,13 @@
         /* Dark Theme */
         @media (prefers-color-scheme: dark) {
             :root:not([data-theme="light"]) {
-                --bg: #0F1115;
-                --surface: #171A21;
+                --bg: #111214;
+                --surface: #181B21;
                 --surface-muted: #1E222B;
                 --border: #2A2F3A;
                 --border-strong: #3A4150;
-                --text: #F3F4F6;
-                --text-muted: #9CA3AF;
+                --text: #ECEDEF;
+                --text-muted: #9AA0AB;
                 --primary: #ECEDEF;
                 --primary-hover: #FFFFFF;
                 --primary-soft: rgba(236, 237, 239, 0.08);
@@ -106,13 +106,13 @@
         }
 
         [data-theme="dark"] {
-            --bg: #0F1115;
-            --surface: #171A21;
+            --bg: #111214;
+            --surface: #181B21;
             --surface-muted: #1E222B;
             --border: #2A2F3A;
             --border-strong: #3A4150;
-            --text: #F3F4F6;
-            --text-muted: #9CA3AF;
+            --text: #ECEDEF;
+            --text-muted: #9AA0AB;
             --primary: #ECEDEF;
             --primary-hover: #FFFFFF;
             --primary-soft: rgba(236, 237, 239, 0.08);
@@ -860,9 +860,8 @@
         .review .btn-primary {
             background: var(--btn-bg);
             color: var(--btn-fg);
-            border: none;
-            border-radius: 6px;
-            box-shadow: none;
+            border: 1px solid transparent;
+            box-shadow: 0 1px 2px var(--glass-shadow);
         }
 
         .review .btn-primary:hover:not(:disabled) {
@@ -2652,6 +2651,8 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
+            /* Folga para o botão flutuante do VLibras, que fica na borda direita */
+            padding-right: 56px;
         }
 
         .glossario-empty {
@@ -2666,21 +2667,27 @@
             flex-direction: column;
         }
 
+        /* Letras do índice em minúsculas (o texto no DOM continua em maiúsculas, sem mudar o agrupamento) */
         .glossario-group-letter {
             position: sticky;
             top: 0;
-            padding: var(--space-3) var(--space-4);
+            /* Vai até a borda do painel, anulando a folga do conteúdo */
+            margin-right: -56px;
+            padding: var(--space-3) calc(var(--space-4) + 56px) var(--space-3) var(--space-4);
             background: var(--surface-muted);
+            font-family: 'Source Sans 3', system-ui, sans-serif;
             font-weight: 600;
-            font-size: var(--text-xs);
+            font-size: var(--text-sm);
             color: var(--text-muted);
-            text-transform: uppercase;
-            border-bottom: 1px solid var(--border);
+            text-transform: lowercase;
+            border-top: 1px solid var(--border);
+            border-bottom: none;
             z-index: 10;
         }
 
         .glossario-item {
-            padding: var(--space-4);
+            margin-right: -56px;
+            padding: var(--space-4) calc(var(--space-4) + 56px) var(--space-4) var(--space-4);
             border-bottom: 1px solid var(--border);
             cursor: pointer;
             transition: all 200ms ease;
@@ -3226,23 +3233,521 @@
         .res-head:has(.error-state) .res-acoes {
             display: none;
         }
+        /* Cabeçalho: marca, Guia e troca de tema */
+        :root { --header-line: #CFCEC8; }
+        :root:not([data-theme="light"]) { --header-line: #2A2E36; }
+
+        .header {
+            height: auto;
+            min-height: 64px;
+            padding: 14px 24px;
+            background: var(--bg);
+            border-bottom: 1px solid var(--header-line);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .header-brand {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            min-width: 0;
+        }
+
+        .header-logo {
+            width: 24px;
+            height: 24px;
+            flex: 0 0 24px;
+            color: var(--text);
+        }
+
+        .header-texto {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            column-gap: 12px;
+            min-width: 0;
+        }
+
+        .header-title {
+            font-family: 'Source Serif 4', Georgia, serif;
+            font-size: 20px;
+            font-weight: 600;
+            line-height: 1.2;
+            color: var(--text);
+        }
+
+        .header-sub {
+            font-family: 'Source Sans 3', system-ui, sans-serif;
+            font-size: 14px;
+            color: var(--text-muted);
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .header-btn {
+            height: 40px;
+            padding: 0 16px;
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+            color: var(--text);
+            font-family: var(--font-ui);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .header-btn:focus-visible,
+        .theme-switch:focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 2px;
+        }
+
+        .theme-switch {
+            position: relative;
+            flex: 0 0 56px;
+            width: 56px;
+            height: 30px;
+            padding: 0;
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            border-radius: 999px;
+            color: var(--text-muted);
+            cursor: pointer;
+        }
+
+        .theme-switch .ts-icone {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            line-height: 0;
+        }
+
+        .theme-switch .ts-lua { left: 9px; }
+        .theme-switch .ts-sol { right: 9px; }
+
+        .theme-switch-knob {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--text);
+            color: var(--bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 200ms ease;
+        }
+
+        .theme-switch[aria-checked="false"] .theme-switch-knob {
+            transform: translateX(26px);
+        }
+
+        .theme-switch[aria-checked="true"] .ts-knob-sol,
+        .theme-switch[aria-checked="false"] .ts-knob-lua {
+            display: none;
+        }
+
+        .theme-switch-knob svg {
+            line-height: 0;
+        }
+
+        /* Botões em superfície escura com brilho na base, como o botão de referência.
+           A transição usa uma curva suave e mais longa; o brilho aparece no hover. */
+        :root {
+            --glass-top: #FFFFFF;
+            --glass-bottom: #ECEBE6;
+            --glass-edge: rgba(27, 27, 25, 0.16);
+            --glass-edge-hover: rgba(27, 27, 25, 0.28);
+            --glass-glow: rgba(255, 255, 255, 0.95);
+            --glass-shadow: rgba(27, 27, 25, 0.18);
+            --glass-fg: #1B1B19;
+            --glass-sheen: rgba(255, 255, 255, 0.6);
+            --ease-suave: cubic-bezier(0.22, 0.61, 0.36, 1);
+        }
+        :root:not([data-theme="light"]),
+        [data-theme="dark"] {
+            --glass-top: #2A2A2E;
+            --glass-bottom: #141416;
+            --glass-edge: rgba(255, 255, 255, 0.12);
+            --glass-edge-hover: rgba(255, 255, 255, 0.24);
+            --glass-glow: rgba(255, 255, 255, 0.55);
+            --glass-shadow: rgba(0, 0, 0, 0.5);
+            --glass-fg: #F2F2F4;
+            --glass-sheen: rgba(255, 255, 255, 0.08);
+        }
+
+        .btn-primary,
+        .btn-secondary,
+        .header-btn {
+            position: relative;
+            isolation: isolate;
+            overflow: hidden;
+            background: var(--glass-bottom);
+            color: var(--glass-fg);
+            border: 1px solid var(--glass-edge);
+            border-radius: 999px;
+            box-shadow: 0 1px 2px var(--glass-shadow), inset 0 1px 0 var(--glass-sheen);
+            transition:
+                transform 320ms var(--ease-suave),
+                box-shadow 320ms var(--ease-suave),
+                border-color 320ms var(--ease-suave),
+                color 320ms var(--ease-suave),
+                opacity 320ms var(--ease-suave);
+        }
+
+        .btn-primary::before,
+        .btn-secondary::before,
+        .header-btn::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: -2;
+            background: linear-gradient(180deg, var(--glass-top) 0%, var(--glass-bottom) 100%);
+            transition: opacity 320ms var(--ease-suave);
+        }
+
+        /* Brilho na base: elipse que aparece pela borda inferior */
+        .btn-primary::after,
+        .btn-secondary::after,
+        .header-btn::after {
+            content: "";
+            position: absolute;
+            left: 14%;
+            right: 14%;
+            bottom: -55%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(closest-side, var(--glass-glow), transparent 100%);
+            opacity: 0.45;
+            z-index: -1;
+            pointer-events: none;
+            transition: opacity 320ms var(--ease-suave);
+        }
+
+        .btn-primary:hover:not(:disabled),
+        .btn-secondary:hover:not(:disabled),
+        .header-btn:hover {
+            background: var(--glass-bottom);
+            border-color: var(--glass-edge-hover);
+            box-shadow: 0 6px 16px var(--glass-shadow), inset 0 1px 0 var(--glass-sheen);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:hover:not(:disabled)::after,
+        .btn-secondary:hover:not(:disabled)::after,
+        .header-btn:hover::after {
+            opacity: 1;
+        }
+
+        .btn-primary:active:not(:disabled),
+        .btn-secondary:active:not(:disabled) {
+            transform: translateY(0) scale(0.99);
+        }
+
+        /* Botões desta tela seguem o mesmo desenho, nas cores da tela */
+        .review .btn-primary::before {
+            background: var(--btn-bg);
+        }
+        .review .btn-secondary {
+            border: 1px solid var(--line);
+            color: var(--text);
+        }
+        .review .btn-secondary::before {
+            background: var(--bg);
+        }
+        .review .btn-secondary::after {
+            opacity: 0;
+        }
+
+        /* Switch de tema: troca suave da posição e da cor */
+        .theme-switch {
+            background: var(--glass-bottom);
+            border-color: var(--glass-edge);
+            box-shadow: 0 1px 2px var(--glass-shadow), inset 0 1px 0 var(--glass-sheen);
+            transition:
+                border-color 320ms var(--ease-suave),
+                box-shadow 320ms var(--ease-suave),
+                color 320ms var(--ease-suave);
+        }
+        .theme-switch-knob {
+            transition:
+                transform 420ms var(--ease-suave),
+                background-color 320ms var(--ease-suave),
+                color 320ms var(--ease-suave);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn-primary, .btn-secondary, .header-btn,
+            .btn-primary::before, .btn-secondary::before, .header-btn::before,
+            .btn-primary::after, .btn-secondary::after, .header-btn::after,
+            .theme-switch, .theme-switch-knob, .theme-switch .ts-icone {
+                transition: none !important;
+            }
+        }
+
+        /* Guia: plano, sem degradê nem sombra; contorno de 1px e raio de 6px */
+        .header-btn,
+        .header-btn:hover,
+        .header-btn:active {
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+            color: var(--text);
+            box-shadow: none;
+            transform: none;
+        }
+        .header-btn {
+            transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+        }
+        .header-btn:hover:not(:disabled) {
+            background: var(--surface-muted);
+            border-color: var(--text-muted);
+            color: var(--text);
+        }
+        .header-btn::before,
+        .header-btn::after {
+            display: none;
+        }
+        .header-btn:focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 2px;
+        }
+
+        /* Sol inativo no tema escuro: mais claro que o trilho (contraste acima de 3:1) */
+        :root:not([data-theme="light"]) .theme-switch .ts-sol {
+            color: #B4BAC4;
+        }
+
+        /* Aviso de limitação na tela de resultados */
+        .aviso-analise {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin: 0 0 16px;
+            padding: 12px 16px;
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 6px;
+            color: var(--muted);
+            font-family: 'Source Sans 3', system-ui, sans-serif;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .aviso-analise[hidden] {
+            display: none;
+        }
+        .aviso-analise p {
+            margin: 0;
+            flex: 1;
+        }
+        .aviso-fechar {
+            flex-shrink: 0;
+            padding: 0;
+            background: none;
+            border: none;
+            border-radius: 4px;
+            color: var(--text);
+            font: inherit;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            cursor: pointer;
+        }
+        .aviso-fechar:focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 2px;
+        }
+
+        /* Nova análise: superfície chapada, sem degradê nem sombra */
+        #newAnalysisBtn,
+        #newAnalysisButtonLeft {
+            background: transparent;
+            border: 1px solid var(--border-strong);
+            border-radius: 6px;
+            color: var(--text);
+            box-shadow: none;
+            transform: none;
+        }
+        #newAnalysisBtn::before,
+        #newAnalysisBtn::after,
+        #newAnalysisButtonLeft::before,
+        #newAnalysisButtonLeft::after {
+            display: none;
+        }
+        #newAnalysisBtn:hover:not(:disabled),
+        #newAnalysisButtonLeft:hover:not(:disabled) {
+            background: var(--surface-muted);
+            border-color: var(--text-muted);
+            box-shadow: none;
+            transform: none;
+        }
+
+        /* Subtítulo sobe para a linha de baixo do nome em telas estreitas */
+        @media (max-width: 480px) {
+            .header {
+                padding: 12px 16px;
+            }
+
+            .header-sub {
+                flex-basis: 100%;
+            }
+        }
+        /* ===== Sistema de botões: primário, secundário e de texto =====
+           Bloco final: vale sobre as regras anteriores de botões, sem sombra, degradê ou imagem de fundo. */
+        :root {
+            --ui-prim-bg: #1B1B19;
+            --ui-prim-fg: #EFEEE9;
+            --ui-prim-hover: #33332F;
+            --ui-sec-line: #CFCEC8;
+            --ui-sec-fg: #1B1B19;
+            --ui-sec-hover-bg: #EFEEE9;
+            --ui-sec-hover-line: #B8B7B0;
+            --ui-txt-fg: #5E5E58;
+            --ui-txt-hover: #1B1B19;
+        }
+        :root:not([data-theme="light"]) {
+            --ui-prim-bg: #ECEDEF;
+            --ui-prim-fg: #111214;
+            --ui-prim-hover: #D9DADD;
+            --ui-sec-line: #2A2E36;
+            --ui-sec-fg: #ECEDEF;
+            --ui-sec-hover-bg: #181B21;
+            --ui-sec-hover-line: #3A3F49;
+            --ui-txt-fg: #9AA0AB;
+            --ui-txt-hover: #ECEDEF;
+        }
+
+        /* Base comum a todos os botões */
+        .btn, .btn-small, .header-btn, .res-action, .res-toggle, .res-bulk, .aviso-fechar,
+        #newAnalysisBtn, #newAnalysisButtonLeft, #desmarcarTodos, .review #desmarcarTodos {
+            font-family: 'Source Sans 3', system-ui, sans-serif;
+            font-weight: 600;
+            border-radius: 6px;
+            background-image: none;
+            box-shadow: none;
+            transform: none;
+            cursor: pointer;
+            transition: background-color 120ms ease, color 120ms ease;
+        }
+        .btn:focus-visible, .btn-small:focus-visible, .header-btn:focus-visible, .res-action:focus-visible,
+        .res-toggle:focus-visible, .res-bulk:focus-visible, .aviso-fechar:focus-visible,
+        #newAnalysisBtn:focus-visible, #newAnalysisButtonLeft:focus-visible, #desmarcarTodos:focus-visible,
+        .review .btn:focus-visible, .review .res-action:focus-visible, .review #desmarcarTodos:focus-visible {
+            outline: 2px solid var(--text);
+            outline-offset: 2px;
+        }
+
+        /* Acabamentos antigos (brilho, degradê) desligados nesta tela */
+        .btn::before, .btn::after, .header-btn::before, .header-btn::after,
+        .res-action::before, .res-action::after,
+        #newAnalysisBtn::before, #newAnalysisBtn::after,
+        #newAnalysisButtonLeft::before, #newAnalysisButtonLeft::after,
+        .review .btn-primary::before, .review .btn-secondary::before, .review .btn-secondary::after {
+            content: none;
+            display: none;
+        }
+
+        /* Primário: preenchimento sólido */
+        .btn-primary, .review .btn-primary, #fixButton {
+            height: 40px;
+            min-height: 40px;
+            padding: 0 16px;
+            border: 1px solid transparent;
+            background: var(--ui-prim-bg);
+            color: var(--ui-prim-fg);
+        }
+        .btn-primary:hover:not(:disabled), .review .btn-primary:hover:not(:disabled), #fixButton:hover:not(:disabled) {
+            background: var(--ui-prim-hover);
+            color: var(--ui-prim-fg);
+            transform: none;
+        }
+        .btn-primary:disabled, .review .btn-primary:disabled, #fixButton:disabled {
+            background: var(--ui-prim-bg);
+            color: var(--ui-prim-fg);
+            border-color: transparent;
+        }
+
+        /* Secundário: fundo transparente e contorno de 1px */
+        .btn-secondary, .review .btn-secondary, .header-btn, #newAnalysisBtn, #newAnalysisButtonLeft {
+            height: 40px;
+            min-height: 40px;
+            padding: 0 16px;
+            background: transparent;
+            border: 1px solid var(--ui-sec-line);
+            color: var(--ui-sec-fg);
+        }
+        .btn-secondary:hover:not(:disabled), .review .btn-secondary:hover:not(:disabled),
+        .header-btn:hover:not(:disabled), #newAnalysisBtn:hover:not(:disabled), #newAnalysisButtonLeft:hover:not(:disabled) {
+            background: var(--ui-sec-hover-bg);
+            border-color: var(--ui-sec-hover-line);
+            color: var(--ui-sec-fg);
+            transform: none;
+        }
+
+        /* Texto: sem contorno nem fundo; altura automática */
+        .aviso-fechar, .btn-small, .res-toggle, #toggleTodosGrupos, #desmarcarTodos, .review #desmarcarTodos {
+            height: auto;
+            min-height: 0;
+            padding: 0;
+            background: none;
+            border: none;
+            color: var(--ui-txt-fg);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+        .aviso-fechar:hover:not(:disabled), .btn-small:hover:not(:disabled), .res-toggle:hover:not(:disabled),
+        #toggleTodosGrupos:hover:not(:disabled), #desmarcarTodos:hover:not(:disabled), .review #desmarcarTodos:hover:not(:disabled) {
+            color: var(--ui-txt-hover);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+        }
+
+        /* Desabilitado: meio opaco, sem reação ao hover */
+        .btn:disabled, .btn-small:disabled, .res-action:disabled, .res-toggle:disabled,
+        #desmarcarTodos:disabled, .review #desmarcarTodos:disabled, .review .btn:disabled,
+        #newAnalysisBtn:disabled, #newAnalysisButtonLeft:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            text-decoration: none;
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .btn, .btn-small, .header-btn, .res-action, .res-toggle, .res-bulk, .aviso-fechar,
+            #newAnalysisBtn, #newAnalysisButtonLeft, #desmarcarTodos, .review #desmarcarTodos {
+                transition: none !important;
+            }
+        }
     </style>
 </head>
 <body>
     <!-- Header -->
     <header class="header">
         <div class="header-brand">
-            <div class="header-icon"><svg class="icon icon-brand" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m21.44 11.05-9.19 9.19a6 6 0 0 1-8.49-8.49l8.57-8.57A4 4 0 1 1 18 8.84l-8.59 8.57a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg></div>
-            <h1 class="header-title">ABNTzando com Lala</h1>
+            <svg class="header-logo" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" aria-hidden="true"><rect x="4" y="2.5" width="16" height="19" rx="1.5"/><line x1="6.25" y1="2.5" x2="6.25" y2="21.5"/><line x1="9" y1="7" x2="17" y2="7"/><line x1="9" y1="11" x2="17" y2="11"/><line x1="9" y1="15" x2="15" y2="15"/></svg>
+            <div class="header-texto">
+                <h1 class="header-title">ABNTzando com Lala</h1>
+                <p class="header-sub">Conferência de formatação ABNT para .docx</p>
+            </div>
         </div>
         <div class="header-actions">
-            <button type="button" class="libras-btn" id="librasBtn" hidden>Libras</button>
-            <div class="ajustes">
-                <button type="button" class="ajustes-btn" id="ajustesBtn" aria-haspopup="true" aria-expanded="false" aria-controls="ajustesMenu">Ajustes</button>
-                <div class="ajustes-menu" id="ajustesMenu" role="menu" hidden>
-                    <button type="button" role="menuitem" id="themeToggle">Tema escuro</button>
-                    <button type="button" role="menuitem" id="glossarioBtn">Guia</button>                </div>
-            </div>
+            <button type="button" class="header-btn" id="glossarioBtn">Guia</button>
+            <button type="button" class="theme-switch" id="themeSwitch" role="switch" aria-checked="true" aria-label="Tema escuro">
+                <span class="ts-icone ts-lua"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span>
+                <span class="ts-icone ts-sol"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span>
+                <span class="theme-switch-knob"><span class="ts-knob-lua"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg></span><span class="ts-knob-sol"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg></span></span>
+            </button>
         </div>
     </header>
 
@@ -3297,6 +3802,11 @@
                     <p class="res-summary" id="resultSummary"></p>
                 </header>
 
+                <div class="aviso-analise" id="avisoAnalise" role="note">
+                    <p>Esta conferência segue as regras gerais da ABNT e pode não cobrir todos os casos. Revise o trabalho e confira o manual da sua instituição.</p>
+                    <button type="button" class="aviso-fechar" id="fecharAviso" aria-label="Fechar aviso">Fechar aviso</button>
+                </div>
+
                 <div class="checklist-controls res-tabs-row" id="checklistControls" style="display: none;">
                     <div class="filter-chips" id="filterChips" role="tablist" aria-label="Filtrar por categoria" hidden></div>
                     <div class="res-tabs-end">
@@ -3304,6 +3814,10 @@
                     <label class="res-pending">
                         <input type="checkbox" id="filterPendentes" />
                         <span>Mostrar só pendentes</span>
+                    </label>
+                    <label class="res-pending">
+                        <input type="checkbox" id="filterCorrigiveis" />
+                        <span>Mostrar só corrigíveis</span>
                     </label>
                     </div>
                 </div>
@@ -3423,7 +3937,7 @@
         const downloadPdfBtn = document.getElementById('downloadPdf');
         const cancelDownloadBtn = document.getElementById('cancelDownload');
         const toastContainer = document.getElementById('toastContainer');
-        const themeToggle = document.getElementById('themeToggle');
+        const themeSwitch = document.getElementById('themeSwitch');
         let currentFile = null;
         let documentAdjusted = false;
         let currentFileHash = null;
@@ -3432,29 +3946,24 @@
         let filtroCategoria = 'Todos';
         // Grupos abertos (só em memória; reiniciado a cada análise)
         let gruposAbertos = new Set();
+        // Estado dos grupos guardado ao ligar "Mostrar só corrigíveis" (restaurado ao desligar)
+        let estadoGruposSalvo = null;
 
-        // Theme toggle
+        // Tema: escuro por padrão; a escolha fica salva e não segue o sistema
         function updateThemeIcon() {
-            const isDark = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark';
-            themeToggle.textContent = isDark ? 'Tema claro' : 'Tema escuro';
+            const escuro = (document.documentElement.getAttribute('data-theme') || 'dark') === 'dark';
+            themeSwitch.setAttribute('aria-checked', String(escuro));
         }
 
-        themeToggle.addEventListener('click', () => {
+        themeSwitch.addEventListener('click', () => {
             const atual = document.documentElement.getAttribute('data-theme') || 'dark';
             const novo = atual === 'dark' ? 'light' : 'dark';
             document.documentElement.setAttribute('data-theme', novo);
             try { localStorage.setItem('abntzando.tema.v2', novo); } catch (e) { /* sem armazenamento: vale só nesta sessão */ }
-
             updateThemeIcon();
         });
 
-        // Atualizar ícone ao carregar
         updateThemeIcon();
-
-        // Escutar mudanças no sistema de preferência de tema
-        if (window.matchMedia) {
-            window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', updateThemeIcon);
-        }
 
         // Glossário
         const glossarioBtn = document.getElementById('glossarioBtn');
@@ -3697,6 +4206,24 @@
         }
 
         document.getElementById('filterPendentes').addEventListener('change', atualizarIssuesUI);
+        // Ligar: abre os grupos que têm itens visíveis. Desligar: volta ao estado guardado.
+        function aoMudarCorrigiveis() {
+            const ligado = document.getElementById('filterCorrigiveis').checked;
+            if (ligado) {
+                estadoGruposSalvo = new Set(gruposAbertos);
+                aplicarFiltros();
+                gruposAbertos = new Set(
+                    Array.from(document.querySelectorAll('#issuesList .res-group'))
+                        .filter(grupo => grupo.style.display !== 'none')
+                        .map(grupo => grupo.dataset.categoria)
+                );
+            } else if (estadoGruposSalvo) {
+                gruposAbertos = new Set(estadoGruposSalvo);
+                estadoGruposSalvo = null;
+            }
+            atualizarIssuesUI();
+        }
+        document.getElementById('filterCorrigiveis').addEventListener('change', aoMudarCorrigiveis);
         const confirmDesmarcarModal = document.getElementById('confirmDesmarcarModal');
         const confirmDesmarcarBtn = document.getElementById('confirmDesmarcar');
         const cancelDesmarcarBtn = document.getElementById('cancelDesmarcar');
@@ -4098,6 +4625,8 @@
 
             // Novo resultado: começa sem filtros
             document.getElementById('filterPendentes').checked = false;
+            document.getElementById('filterCorrigiveis').checked = false;
+            estadoGruposSalvo = null;
             filtroCategoria = 'Todos';
 
             // Calcular resumo
@@ -4320,7 +4849,7 @@
             if (!aba || aba.disabled) return;
             filtroCategoria = aba.dataset.categoria;
             // Selecionar uma categoria abre o grupo correspondente
-            if (filtroCategoria !== 'Todos' && filtroCategoria !== 'Corrigíveis') gruposAbertos.add(filtroCategoria);
+            if (filtroCategoria !== 'Todos') gruposAbertos.add(filtroCategoria);
             atualizarIssuesUI();
         });
 
@@ -4364,49 +4893,26 @@
             botao.textContent = aberto ? 'Ocultar detalhes' : 'Ver detalhes';
         });
 
-        // Menu "Ajustes": Tema, Guia e Desmarcar todos
-        const ajustesBtn = document.getElementById('ajustesBtn');
-        const ajustesMenu = document.getElementById('ajustesMenu');
-        function fecharAjustes() {
-            ajustesMenu.hidden = true;
-            ajustesBtn.setAttribute('aria-expanded', 'false');
-        }
-        ajustesBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            const abrir = ajustesMenu.hidden;
-            ajustesMenu.hidden = !abrir;
-            ajustesBtn.setAttribute('aria-expanded', String(abrir));
-        });
-        document.addEventListener('click', (e) => {
-            if (!ajustesMenu.contains(e.target) && e.target !== ajustesBtn) fecharAjustes();
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && !ajustesMenu.hidden) {
-                fecharAjustes();
-                ajustesBtn.focus();
-            }
-        });
-        ajustesMenu.addEventListener('click', (e) => {
-            if (e.target.closest('#themeToggle, #glossarioBtn, #desmarcarTodos')) fecharAjustes();
-        });
-
         function aplicarFiltros() {
             const soPendentes = document.getElementById('filterPendentes').checked;
+            const soCorrigiveis = document.getElementById('filterCorrigiveis').checked;
             const issuesList = document.getElementById('issuesList');
             issuesList.querySelectorAll('[data-issue-idx]').forEach(el => {
                 const idx = parseInt(el.getAttribute('data-issue-idx'));
                 const issue = issuesFull[idx];
                 const oculto = (soPendentes && issuesResolvidos.includes(idx))
-                    || (filtroCategoria !== 'Todos' && filtroCategoria !== 'Corrigíveis'
-                        && (issue.categoria || 'Outros') !== filtroCategoria)
-                    || (filtroCategoria === 'Corrigíveis' && !issue.fixable);
+                    || (soCorrigiveis && !issue.fixable)
+                    || (filtroCategoria !== 'Todos'
+                        && (issue.categoria || 'Outros') !== filtroCategoria);
                 el.style.display = oculto ? 'none' : '';
             });
-            // Esconder grupos sem nenhum item visível
+            // Esconder grupos sem nenhum item visível e atualizar o contador de cada grupo
             issuesList.querySelectorAll('.res-group').forEach(grupo => {
-                const algumVisivel = Array.from(grupo.querySelectorAll('[data-issue-idx]'))
-                    .some(el => el.style.display !== 'none');
-                grupo.style.display = algumVisivel ? '' : 'none';
+                const itens = Array.from(grupo.querySelectorAll('[data-issue-idx]'));
+                const visiveis = itens.filter(el => el.style.display !== 'none').length;
+                grupo.style.display = visiveis ? '' : 'none';
+                grupo.querySelector('.res-group-count').textContent =
+                    soCorrigiveis ? `${visiveis} de ${itens.length}` : String(itens.length);
             });
         }
 
@@ -4425,10 +4931,8 @@
             // Recuo só aparece se houver itens dele; os demais sempre aparecem (zerados ficam desabilitados)
             const base = ORDEM_CATEGORIAS.filter(c => c !== 'Recuo' || contagem.has(c));
             const extras = [...contagem.keys()].filter(c => !base.includes(c));
-            const corrigiveis = issuesFull.filter(i => i.fixable).length;
             const chips = [
                 ['Todos', issuesFull.length],
-                ['Corrigíveis', corrigiveis],
                 ...[...base, ...extras].map(c => [c, contagem.get(c) || 0])
             ];
             filterChips.innerHTML = chips.map(([nome, n]) => {
@@ -4514,6 +5018,23 @@
         });
         newAnalysisButtonLeft.addEventListener('click', resetForm);
 
+        // Aviso de limitação da conferência: fechado uma vez, não volta nas próximas análises
+        const avisoAnalise = document.getElementById('avisoAnalise');
+        const fecharAvisoBtn = document.getElementById('fecharAviso');
+        try {
+            if (localStorage.getItem('abntzando.aviso.fechado') === '1') avisoAnalise.hidden = true;
+        } catch (e) { /* sem armazenamento: o aviso aparece */ }
+        fecharAvisoBtn.addEventListener('click', () => {
+            avisoAnalise.hidden = true;
+            try { localStorage.setItem('abntzando.aviso.fechado', '1'); } catch (e) { /* vale só nesta sessão */ }
+            // O foco sai do botão escondido: vai para o título da tela de resultados
+            const titulo = document.querySelector('.res-title');
+            if (titulo) {
+                titulo.setAttribute('tabindex', '-1');
+                titulo.focus();
+            }
+        });
+
         function resetForm() {
             currentFile = null;
             currentFileHash = null;
@@ -4533,6 +5054,7 @@
             leftPanelActions.classList.remove('show');
             rightPanelActions.classList.remove('show');
             document.getElementById('filterPendentes').checked = false;
+            document.getElementById('filterCorrigiveis').checked = false;
             document.getElementById('checklistControls').style.display = 'none';
         }
     </script>
@@ -4545,25 +5067,17 @@
     </div>
     <script>
       (function () {
-        var botao = document.getElementById('librasBtn');
         var s = document.createElement('script');
         s.src = 'https://vlibras.gov.br/app/vlibras-plugin.js';
         s.onload = function () {
           try {
             new window.VLibras.Widget('https://vlibras.gov.br/app');
-            botao.hidden = false;
           } catch (e) {
-            botao.hidden = true;
+            /* widget indisponível: a página segue funcionando */
           }
         };
-        s.onerror = function () {
-          botao.hidden = true;
-        };
+        s.onerror = function () { /* sem rede: a página segue funcionando */ };
         document.body.appendChild(s);
-        botao.addEventListener('click', function () {
-          var acionador = document.querySelector('[vw-access-button]');
-          if (acionador) acionador.click();
-        });
       })();
     </script>
 </body>
