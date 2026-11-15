@@ -5,7 +5,7 @@
     "severidade": "erro",
     "localizacao": "Capítulo 4",
     "esperado": "10 pt",
-    "encontrado": "12 pt"
+    "encontrado": "em 1 lugar"
   },
   {
     "id": "alinhamento.justificado",
@@ -13,7 +13,7 @@
     "severidade": "aviso",
     "localizacao": "Capítulo 5",
     "esperado": "Justificado",
-    "encontrado": "à esquerda"
+    "encontrado": "em 1 lugar"
   },
   {
     "id": "ref.ordem",
@@ -85,6 +85,6 @@
     "severidade": "aviso",
     "localizacao": "Capítulo 5",
     "esperado": "1,25 cm",
-    "encontrado": "0 cm"
+    "encontrado": "em 1 lugar"
   }
 ]

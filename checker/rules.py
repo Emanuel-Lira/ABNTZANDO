@@ -242,10 +242,8 @@ class ABNTRules:
             categoria, titulo, esperado = REGRAS_FORMATACAO[id_]
             paragrafos = [n for n, _ in ocorrencias]
             valores_por_paragrafo = {n: _formatar(id_, v) for n, v in ocorrencias}
-            if len(paragrafos) > 1:
-                encontrado = f'em {len(paragrafos)} parágrafos'
-            else:
-                encontrado = valores_por_paragrafo[paragrafos[0]]
+            n_lugares = len(paragrafos)
+            encontrado = f"em {n_lugares} lugar" + ('es' if n_lugares > 1 else '')
             self.issues.append(Issue(
                 id=id_,
                 categoria=categoria,
