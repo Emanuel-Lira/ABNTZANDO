@@ -59,3 +59,6 @@ tests/fixtures/*.docx
 .claude/
 .gemini/
 .impeccable/
+
+# Arquivos reais de estudantes para testes locais: nunca versionar
+tests/fixtures/local/
